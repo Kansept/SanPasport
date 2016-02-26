@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog_GroupChange</class>
+ <widget class="QDialog" name="Dialog_GroupChange">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>674</width>
+    <height>465</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Пакетная обработка</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../resourse.qrc">
+    <normaloff>:/resourse/default/doc_convert.png</normaloff>:/resourse/default/doc_convert.png</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="1" colspan="4">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="toolButton_AddPatterns">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Добавить</string>
+       </property>
+       <property name="text">
+        <string>Добавить</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../resourse.qrc">
+         <normaloff>:/resourse/default/File_Add.png</normaloff>:/resourse/default/File_Add.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButton_DeletePatterns">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Удалить</string>
+       </property>
+       <property name="text">
+        <string>Удалить</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../resourse.qrc">
+         <normaloff>:/resourse/default/File_Delete.png</normaloff>:/resourse/default/File_Delete.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButton_Clear">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Очистить</string>
+       </property>
+       <property name="text">
+        <string>Очистить</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../resourse.qrc">
+         <normaloff>:/resourse/default/edit_clear_list.png</normaloff>:/resourse/default/edit_clear_list.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="pushButton_Start">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Пуск</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../../resourse.qrc">
+       <normaloff>:/resourse/default/player_play.png</normaloff>:/resourse/default/player_play.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Сохранить в:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="4">
+    <widget class="QTableWidget" name="tableWidget_Patterns">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2" colspan="2">
+    <widget class="QLineEdit" name="lineEdit_Path"/>
+   </item>
+   <item row="4" column="4">
+    <widget class="QPushButton" name="pushButton_PathSave">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>75</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Обзор...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="3">
+    <widget class="QCheckBox" name="checkBox_Replase">
+     <property name="text">
+      <string>Перезаписать файлы</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>tableWidget_Patterns</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../resourse.qrc"/>
+  <include location="../../resourse.qrc"/>
+ </resources>
+ <connections/>
+</ui>

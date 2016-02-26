@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SitPlan</class>
+ <widget class="QMainWindow" name="SitPlan">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>839</width>
+    <height>708</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Ситуационный план</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../resourse.qrc">
+    <normaloff>:/resourse/default/SitPlan.png</normaloff>:/resourse/default/SitPlan.png</iconset>
+  </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="MySitPlanView" name="graphicsView">
+      <property name="renderHints">
+       <set>QPainter::Antialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>839</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="action_ExportPDF"/>
+    <addaction name="separator"/>
+    <addaction name="action_Print"/>
+    <addaction name="action_PrintQuick"/>
+    <addaction name="action_DocumentConfig"/>
+    <addaction name="separator"/>
+    <addaction name="action_SettingsSave"/>
+    <addaction name="separator"/>
+    <addaction name="action_Exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_SitPlan">
+    <property name="title">
+     <string>Изображение</string>
+    </property>
+    <widget class="QMenu" name="menu_SitPlanScale">
+     <property name="title">
+      <string>Подогнать размер</string>
+     </property>
+     <addaction name="action_SitPlanForWidth"/>
+     <addaction name="action_SitPlanForHeight"/>
+     <addaction name="action_SitPlanForCanvas"/>
+     <addaction name="separator"/>
+     <addaction name="action_SitPlanAuto"/>
+    </widget>
+    <widget class="QMenu" name="menu_Rotate">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Поворот</string>
+     </property>
+     <addaction name="action_PixRotate90Po"/>
+     <addaction name="action_PixRotate90Protiv"/>
+     <addaction name="action_PixRotate180"/>
+    </widget>
+    <addaction name="action_SitPlanLoad"/>
+    <addaction name="menu_SitPlanScale"/>
+    <addaction name="menu_Rotate"/>
+    <addaction name="action_SitPlanLook"/>
+   </widget>
+   <widget class="QMenu" name="menu_Title">
+    <property name="title">
+     <string>Заголовок</string>
+    </property>
+    <addaction name="action_TitleFont"/>
+    <addaction name="action_FontMask"/>
+   </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>Вид</string>
+    </property>
+    <widget class="QMenu" name="menu_ViewVisible">
+     <property name="title">
+      <string>Показать/Скрыть</string>
+     </property>
+     <addaction name="action_VisibleTitle"/>
+     <addaction name="action_VisbleSitPlan"/>
+     <addaction name="action_VisibleGrid"/>
+    </widget>
+    <widget class="QMenu" name="menu_Navigation">
+     <property name="title">
+      <string>Перейти</string>
+     </property>
+     <addaction name="action_PageFirst"/>
+     <addaction name="action_PageBack"/>
+     <addaction name="action_PageNext"/>
+     <addaction name="action_PageLast"/>
+    </widget>
+    <addaction name="action_ModeDrag"/>
+    <addaction name="action_ModeSelect"/>
+    <addaction name="separator"/>
+    <addaction name="action_ViewZoomOut"/>
+    <addaction name="action_ViewZoomIn"/>
+    <addaction name="action_ViewOriginal"/>
+    <addaction name="action_ViewBest"/>
+    <addaction name="separator"/>
+    <addaction name="menu_ViewVisible"/>
+    <addaction name="menu_Navigation"/>
+   </widget>
+   <widget class="QMenu" name="menu_Zoz">
+    <property name="title">
+     <string>Зоз</string>
+    </property>
+    <addaction name="action_ZO_Load"/>
+    <addaction name="action_ZozLoadFromProject"/>
+    <addaction name="action_ZO_Delete"/>
+    <addaction name="action_ZoClear"/>
+    <addaction name="separator"/>
+    <addaction name="action_ZO_Param"/>
+    <addaction name="separator"/>
+    <addaction name="action_GridFont"/>
+    <addaction name="action_GridConfig"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_View"/>
+   <addaction name="menu_Title"/>
+   <addaction name="menu_Zoz"/>
+   <addaction name="menu_SitPlan"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>249</width>
+     <height>416</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>249</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Параметры</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_9">
+     <property name="leftMargin">
+      <number>3</number>
+     </property>
+     <property name="topMargin">
+      <number>3</number>
+     </property>
+     <property name="rightMargin">
+      <number>3</number>
+     </property>
+     <property name="bottomMargin">
+      <number>3</number>
+     </property>
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="groupBox_Zo">
+       <property name="title">
+        <string>Страницы</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="4">
+         <widget class="QToolButton" name="toolButton_ZoMovePageUp">
+          <property name="toolTip">
+           <string>Вниз</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../resourse.qrc">
+            <normaloff>:/resourse/default/top.png</normaloff>:/resourse/default/top.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="12">
+         <widget class="TableViewSp" name="tableView_Pages">
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="dragEnabled">
+           <bool>false</bool>
+          </property>
+          <property name="dragDropOverwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::NoDragDrop</enum>
+          </property>
+          <property name="defaultDropAction">
+           <enum>Qt::IgnoreAction</enum>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>false</bool>
+          </property>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="9" colspan="2">
+         <widget class="QPushButton" name="pushButton_ParamZO">
+          <property name="toolTip">
+           <string>Настройки ЗО</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../resourse.qrc">
+            <normaloff>:/resourse/default/paintbrush.png</normaloff>:/resourse/default/paintbrush.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QToolButton" name="toolButton_ZoMoveUp">
+          <property name="toolTip">
+           <string>Поднять</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../resourse.qrc">
+            <normaloff>:/resourse/default/up.png</normaloff>:/resourse/default/up.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="8">
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <widget class="QToolButton" name="toolButton_ZoMoveDown">
+          <property name="toolTip">
+           <string>Опустить</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../resourse.qrc">
+            <normaloff>:/resourse/default/down.png</normaloff>:/resourse/default/down.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QToolButton" name="toolButton_ZoMovePageDown">
+          <property name="toolTip">
+           <string>Вверх</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../resourse.qrc">
+            <normaloff>:/resourse/default/bottom.png</normaloff>:/resourse/default/bottom.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="3" alignment="Qt::AlignLeft">
+         <widget class="QWidget" name="widget_4" native="true">
+          <layout class="QGridLayout" name="gridLayout_7">
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <item row="0" column="2">
+            <widget class="QToolButton" name="toolButton_ZozRemove">
+             <property name="toolTip">
+              <string>Удалить</string>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../../resourse.qrc">
+               <normaloff>:/resourse/default/list_remove.png</normaloff>:/resourse/default/list_remove.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QToolButton" name="toolButton_ZoAdd">
+             <property name="toolTip">
+              <string>Добавить</string>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../../resourse.qrc">
+               <normaloff>:/resourse/default/list_add.png</normaloff>:/resourse/default/list_add.png</iconset>
+             </property>
+             <property name="shortcut">
+              <string>Ctrl++</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="11">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>140</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Заголовок</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="2" column="0" colspan="3">
+         <widget class="QTextEdit" name="textEdit_Title">
+          <property name="maximumSize">
+           <size>
+            <width>20000</width>
+            <height>80</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="3">
+         <widget class="QWidget" name="widget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="sizeConstraint">
+            <enum>QLayout::SetDefaultConstraint</enum>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QToolButton" name="toolButton_TitleFont">
+             <property name="minimumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Шрифт</string>
+             </property>
+             <property name="text">
+              <string>Шрифт</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../../resourse.qrc">
+               <normaloff>:/resourse/default/fontforge.png</normaloff>:/resourse/default/fontforge.png</iconset>
+             </property>
+             <property name="popupMode">
+              <enum>QToolButton::DelayedPopup</enum>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonIconOnly</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButton_TitleFontMask">
+             <property name="minimumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Маскировка</string>
+             </property>
+             <property name="text">
+              <string>Маскировка</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../../resourse.qrc">
+               <normaloff>:/resourse/default/color_fill.png</normaloff>:/resourse/default/color_fill.png</iconset>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonIconOnly</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="toolButton_TitleInsertVar">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Вставить параметры</string>
+             </property>
+             <property name="text">
+              <string>Вставить </string>
+             </property>
+             <property name="popupMode">
+              <enum>QToolButton::InstantPopup</enum>
+             </property>
+             <property name="autoRaise">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_Exit">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/window_close.png</normaloff>:/resourse/default/window_close.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="action_Print">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/printer.png</normaloff>:/resourse/default/printer.png</iconset>
+   </property>
+   <property name="text">
+    <string>Просмотр...</string>
+   </property>
+  </action>
+  <action name="action_SitPlanLoad">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/insert_image.png</normaloff>:/resourse/default/insert_image.png</iconset>
+   </property>
+   <property name="text">
+    <string>Загрузить Сит.План</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="action_SitPlanForWidth">
+   <property name="text">
+    <string>По ширине окна</string>
+   </property>
+  </action>
+  <action name="action_SitPlanForHeight">
+   <property name="text">
+    <string>По высоте окна</string>
+   </property>
+  </action>
+  <action name="action_SitPlanForCanvas">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/scale_image.png</normaloff>:/resourse/default/scale_image.png</iconset>
+   </property>
+   <property name="text">
+    <string>Вписать</string>
+   </property>
+  </action>
+  <action name="action_FontBold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/bold.png</normaloff>:/resourse/default/bold.png</iconset>
+   </property>
+   <property name="text">
+    <string>Жирный</string>
+   </property>
+  </action>
+  <action name="action_FontItalic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/italic.png</normaloff>:/resourse/default/italic.png</iconset>
+   </property>
+   <property name="text">
+    <string>Курсив</string>
+   </property>
+  </action>
+  <action name="action_FontUnderline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/underline.png</normaloff>:/resourse/default/underline.png</iconset>
+   </property>
+   <property name="text">
+    <string>Подчёркнутый</string>
+   </property>
+  </action>
+  <action name="action_FontMask">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/color_fill.png</normaloff>:/resourse/default/color_fill.png</iconset>
+   </property>
+   <property name="text">
+    <string>Маскировка</string>
+   </property>
+  </action>
+  <action name="action_SitPlanLook">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/locked.png</normaloff>:/resourse/default/locked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Закрепить</string>
+   </property>
+  </action>
+  <action name="action_ViewOriginal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/zoom_original.png</normaloff>:/resourse/default/zoom_original.png</iconset>
+   </property>
+   <property name="text">
+    <string>Оригинальный размер</string>
+   </property>
+   <property name="shortcut">
+    <string>*</string>
+   </property>
+  </action>
+  <action name="action_ViewZoomIn">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/zoom_in.png</normaloff>:/resourse/default/zoom_in.png</iconset>
+   </property>
+   <property name="text">
+    <string>Увеличить</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="action_ViewZoomOut">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/zoom_out.png</normaloff>:/resourse/default/zoom_out.png</iconset>
+   </property>
+   <property name="text">
+    <string>Уменьшить</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
+   </property>
+  </action>
+  <action name="action_VisibleZo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Зона ограничения</string>
+   </property>
+  </action>
+  <action name="action_VisibleRosaW">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Роза ветров</string>
+   </property>
+  </action>
+  <action name="action_VisibleGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Сетка</string>
+   </property>
+  </action>
+  <action name="action_VisibleTitle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Заголовок</string>
+   </property>
+  </action>
+  <action name="action_ZO_Load">
+   <property name="text">
+    <string>Загрузить Зоз из файла...</string>
+   </property>
+  </action>
+  <action name="action_ZO_Delete">
+   <property name="text">
+    <string>Удалить</string>
+   </property>
+  </action>
+  <action name="action_ZO_Param">
+   <property name="text">
+    <string>Параметры ЗО...</string>
+   </property>
+  </action>
+  <action name="action_SitPlanClear">
+   <property name="text">
+    <string>Очистить</string>
+   </property>
+  </action>
+  <action name="action_ViewBest">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/zoom_fit_best.png</normaloff>:/resourse/default/zoom_fit_best.png</iconset>
+   </property>
+   <property name="text">
+    <string>Вписать</string>
+   </property>
+  </action>
+  <action name="action_DocumentConfig">
+   <property name="text">
+    <string>Параметры страницы...</string>
+   </property>
+  </action>
+  <action name="action_ModeDrag">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/hand-tool.png</normaloff>:/resourse/default/hand-tool.png</iconset>
+   </property>
+   <property name="text">
+    <string>Рука</string>
+   </property>
+  </action>
+  <action name="action_ModeSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/pointer.png</normaloff>:/resourse/default/pointer.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выделение</string>
+   </property>
+  </action>
+  <action name="action_PageFirst">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/go_last_rtl.png</normaloff>:/resourse/default/go_last_rtl.png</iconset>
+   </property>
+   <property name="text">
+    <string>Первая страница</string>
+   </property>
+  </action>
+  <action name="action_PageNext">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/go_previous_rtl.png</normaloff>:/resourse/default/go_previous_rtl.png</iconset>
+   </property>
+   <property name="text">
+    <string>Следующяя страница</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="action_PageBack">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/go_next_rtl.png</normaloff>:/resourse/default/go_next_rtl.png</iconset>
+   </property>
+   <property name="text">
+    <string>Предыдущяя страница</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Left</string>
+   </property>
+  </action>
+  <action name="action_PageLast">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/go_first_rtl.png</normaloff>:/resourse/default/go_first_rtl.png</iconset>
+   </property>
+   <property name="text">
+    <string>Последняя страница</string>
+   </property>
+  </action>
+  <action name="action_VisbleSitPlan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ситуационный план</string>
+   </property>
+  </action>
+  <action name="action_GridConfig">
+   <property name="text">
+    <string>Параметры сетки...</string>
+   </property>
+  </action>
+  <action name="action_SettingsSave">
+   <property name="text">
+    <string>Сохранить настройки</string>
+   </property>
+  </action>
+  <action name="action_SitPlanAuto">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Автоматически</string>
+   </property>
+  </action>
+  <action name="action_ExportPDF">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/application_pdf.png</normaloff>:/resourse/default/application_pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Экспорт в PDF</string>
+   </property>
+  </action>
+  <action name="action_GridFont">
+   <property name="text">
+    <string>Шрифт сетки...</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Шрифт</string>
+   </property>
+  </action>
+  <action name="action_PixRotate90Po">
+   <property name="text">
+    <string>Поворот по часовой стрелки на 90˚</string>
+   </property>
+  </action>
+  <action name="action_PixRotate90Protiv">
+   <property name="text">
+    <string>Поворот против часовой стрелки на 90˚</string>
+   </property>
+  </action>
+  <action name="action_PixRotate180">
+   <property name="text">
+    <string>Повернуть на 180˚</string>
+   </property>
+  </action>
+  <action name="action_PrintQuick">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/document_print_preview.png</normaloff>:/resourse/default/document_print_preview.png</iconset>
+   </property>
+   <property name="text">
+    <string>Быстрая печать</string>
+   </property>
+  </action>
+  <action name="action_ZoClear">
+   <property name="text">
+    <string>Очистить</string>
+   </property>
+  </action>
+  <action name="action_ZozLoadFromProject">
+   <property name="text">
+    <string>Загрузить Зоз из проекта</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
+  <action name="action_TitleFont">
+   <property name="icon">
+    <iconset resource="../../resourse.qrc">
+     <normaloff>:/resourse/default/fontforge.png</normaloff>:/resourse/default/fontforge.png</iconset>
+   </property>
+   <property name="text">
+    <string>Шрифт</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableViewSp</class>
+   <extends>QTableView</extends>
+   <header>MyWidget\tableviewsp.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MySitPlanView</class>
+   <extends>QGraphicsView</extends>
+   <header>MyWidget\sitplanview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../resourse.qrc"/>
+  <include location="../../resourse.qrc"/>
+ </resources>
+ <connections/>
+</ui>

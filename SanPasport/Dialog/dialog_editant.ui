@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog_EditAnt</class>
+ <widget class="QDialog" name="Dialog_EditAnt">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>689</width>
+    <height>663</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="7" column="0" colspan="5">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="8" column="4" alignment="Qt::AlignRight">
+    <widget class="QPushButton" name="pushButton_Cancel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>Отмена</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QPushButton" name="pushButton_Ok">
+     <property name="maximumSize">
+      <size>
+       <width>75</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Ок</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="3">
+    <spacer name="horizontalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="3" rowspan="7" colspan="2">
+    <widget class="QFrame" name="frame">
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="groupBox_Dn">
+        <property name="title">
+         <string>Диаграммы направленности:</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <item row="2" column="0">
+          <widget class="QToolButton" name="toolButton_DnCw">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Поворот по часовой стрелке&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resourse.qrc">
+             <normaloff>:/resourse/default/rotate_cw.png</normaloff>:/resourse/default/rotate_cw.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="9">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="2" alignment="Qt::AlignLeft">
+          <widget class="QToolButton" name="toolButton_DnMirror">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Отзеркалить&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Отразить</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resourse.qrc">
+             <normaloff>:/resourse/default/Flip vertically.png</normaloff>:/resourse/default/Flip vertically.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QToolButton" name="toolButton_DnCcw">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Поворот против часовой стрелки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resourse.qrc">
+             <normaloff>:/resourse/default/rotate_ccw.png</normaloff>:/resourse/default/rotate_ccw.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
+          <widget class="QToolButton" name="toolButton_DnPreload">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Поджать боковые лепестки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resourse.qrc">
+             <normaloff>:/resourse/default/preload.png</normaloff>:/resourse/default/preload.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QToolButton" name="toolButton_DnSymmetryBottom">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Симметрия нижней части&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resourse.qrc">
+             <normaloff>:/resourse/default/document_page_last.png</normaloff>:/resourse/default/document_page_last.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QToolButton" name="toolButton_DnSymmetryTop">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Симметрия верхней части&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../resourse.qrc">
+             <normaloff>:/resourse/default/document_page.png</normaloff>:/resourse/default/document_page.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="10">
+          <widget class="QToolButton" name="toolButton_DnReset">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Сбросить &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="11">
+          <widget class="QwtPolarPlot" name="PlotPolar"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="3">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Координаты фазового центра:</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="5" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Высота подвеса, м:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Координата Y, м:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Угол наклона:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Координата X, м:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Установочный азимут, град:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="DotLineEdit" name="lineEdit_Y">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="DotLineEdit" name="lineEdit_X">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="DotLineEdit" name="lineEdit_Az">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="DotLineEdit" name="lineEdit_Z">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="DotLineEdit" name="lineEdit_ElTilt">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="3">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Характеристики передатчика и АФТ:</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="9" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Потери в АФТ:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="15" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Уровень ПДУ:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Мощность на входе, Вт:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Длина фидера:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Мощность ПРД:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>КСВН:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Прочие потери:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Кол-во передатчиков:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="DotLineEdit" name="lineEdit_PRD">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="frame">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="DotLineEdit" name="lineEdit_PowerPRD">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="1">
+       <widget class="DotLineEdit" name="lineEdit_KSVN">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="DotLineEdit" name="lineEdit_Loss">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdit_PowerTotal">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(236, 236, 236);</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="DotLineEdit" name="lineEdit_LeghtAFT">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="1">
+       <widget class="DotLineEdit" name="lineEdit_LossOther">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="15" column="1">
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="4" colspan="3">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Характеристики излучения антенны:</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item row="9" column="1" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Размер, м:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>КУ, dBi:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Частота, МГц:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" rowspan="2" colspan="4">
+       <widget class="QLineEdit" name="lineEdit_Name"/>
+      </item>
+      <item row="4" column="0" colspan="4">
+       <widget class="QLineEdit" name="lineEdit_Owner"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Название:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Сектор:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" rowspan="5">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="5" column="2">
+       <widget class="DotLineEdit" name="lineEdit_Freq">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="DotLineEdit" name="lineEdit_Gain">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="2">
+       <widget class="DotLineEdit" name="lineEdit_Height">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DotLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>../MyWidget/DotLineEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QwtPolarPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_polar_plot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>lineEdit_Name</tabstop>
+  <tabstop>lineEdit_Owner</tabstop>
+  <tabstop>pushButton_Ok</tabstop>
+  <tabstop>pushButton_Cancel</tabstop>
+  <tabstop>toolButton_DnMirror</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../resourse.qrc"/>
+  <include location="../../resourse.qrc"/>
+ </resources>
+ <connections/>
+</ui>

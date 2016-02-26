@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog_Preferens</class>
+ <widget class="QDialog" name="Dialog_Preferens">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>485</width>
+    <height>374</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Настройки</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="1">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="3">
+    <widget class="QPushButton" name="pushButton_Cancel">
+     <property name="text">
+      <string>Отмена</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButton_Ok">
+     <property name="text">
+      <string>Ок</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="4">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="2">
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="page_3">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Вертикальное сечение:</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="1" column="1">
+              <widget class="DotLineEdit" name="dotlineEdit_VsHmin"/>
+             </item>
+             <item row="0" column="3">
+              <widget class="DotLineEdit" name="dotlineEdit_VsRmax"/>
+             </item>
+             <item row="0" column="5">
+              <widget class="DotLineEdit" name="dotlineEdit_VsRd"/>
+             </item>
+             <item row="1" column="3">
+              <widget class="DotLineEdit" name="dotlineEdit_VsHmax"/>
+             </item>
+             <item row="1" column="5">
+              <widget class="DotLineEdit" name="dotlineEdit_VsHd"/>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>dR:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Hmin:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="DotLineEdit" name="dotlineEdit_VsRmin"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Rmin:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Rmax:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="4">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>dH:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Hmax:</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Зона ограничения:</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="1" column="4">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>dY:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Xmax:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="DotLineEdit" name="dotlineEdit_ZoXmin"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Ymin:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="DotLineEdit" name="dotlineEdit_ZoYmin"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Xmin:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="DotLineEdit" name="dotlineEdit_ZoXmax"/>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Ymax:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="DotLineEdit" name="dotlineEdit_ZoYmax"/>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>dX:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="5">
+              <widget class="DotLineEdit" name="dotlineEdit_ZoYd"/>
+             </item>
+             <item row="0" column="5">
+              <widget class="DotLineEdit" name="dotlineEdit_ZoXd"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page">
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>База данных:</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="2">
+              <widget class="QToolButton" name="toolButton_PathDb">
+               <property name="text">
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Корневой каталог:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineEdit_DbPath"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>229</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QListWidget" name="listWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Умолчания</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>База данных</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DotLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>../MyWidget/DotLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
