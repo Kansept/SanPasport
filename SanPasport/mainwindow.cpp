@@ -100,6 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->tableView_Prto->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(prtoMoved(int,int,int)) );
     connect( ui->action_PrtoMoveUp, SIGNAL(triggered()), SLOT(prtoMoveUp()) );
     connect( ui->action_PrtoMoveDown, SIGNAL(triggered()), SLOT(prtoMoveDown()) );
+    connect( ui->action_PrtoExportCSV, SIGNAL(triggered()), SLOT(prtoExportCSV()) );
     /// ЗАДАНИЯ
     connect( ui->action_TaskView, SIGNAL(triggered()), this, SLOT(taskView()) );          // Показать задание
     connect( ui->action_TaskDelete, SIGNAL(triggered()), this, SLOT(taskRemove()) );      // Удалить задание
@@ -318,6 +319,7 @@ void MainWindow::fileOpen(const QString fOpen)
 }
 
 
+
 /* ------- Загрузка модели ------- */
 void MainWindow::fileLoadModel(const QSqlDatabase db)
 {
@@ -332,10 +334,12 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
     modelPrto->setTable("Prto");
     modelPrto->select();
 
+    qDebug() << "ffd - " << TblPrtoHeader::Name;
+
     // Устанавливаем названия столбцов
     modelPrto->setHeaderData(0, Qt::Horizontal, "ИД");
     modelPrto->setHeaderData(1, Qt::Horizontal, "Вкл");
-    modelPrto->setHeaderData(2, Qt::Horizontal, "Название");
+    modelPrto->setHeaderData( 2, Qt::Horizontal, "Название" );
     modelPrto->setHeaderData(3, Qt::Horizontal, "Сектор");
     modelPrto->setHeaderData(4, Qt::Horizontal, "Частота");
     modelPrto->setHeaderData(5, Qt::Horizontal, "КУ");
@@ -358,7 +362,6 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
     modelPrto->setHeaderData(22, Qt::Horizontal, "ДН Верт");
 
     ui->tableView_Prto->setModel(modelPrto);
-
 
     ui->tableView_Prto->hideColumn(0);
     ui->tableView_Prto->hideColumn(7);
@@ -600,7 +603,7 @@ void MainWindow::prtoEnableAll()
 /* ------- ПРТО - Отключить все антенны ------- */
 void MainWindow::prtoDisableAll()
 {
-    for(int row = 0; row < modelPrto->rowCount(); row++)
+    for ( int row = 0; row < modelPrto->rowCount(); row++ )
     {
         QSqlRecord record = modelPrto->record(row);
         record.setValue("Enabled", false);
@@ -818,6 +821,7 @@ void MainWindow::prtoLoadPPC()
 
     if(fPPC.open(QIODevice::ReadOnly))
     {
+
         QTextStream txtstrem(&fPPC);
         txtstrem.setCodec("Windows-1251");
         strAll = txtstrem.readAll();
@@ -840,7 +844,7 @@ void MainWindow::prtoLoadPPC()
             prtoPPC.Z = srtlLine.at(8).toFloat();         // Высота
             prtoPPC.Tilt = srtlLine.at(9).toFloat();      // Угол наклона
             prtoPPC.PowerPRD = srtlLine.at(10).toFloat(); // Мощность
-
+            prtoPPC.PowerTotal = prtoPPC.calcPower();
             prtoPPC.Type = 15;
             prtoAdd(prtoPPC);
         }
@@ -940,6 +944,15 @@ void MainWindow::prtoKeyPresed(int numKey, int numModifierKey)
     else if(numKey == Qt::Key_Down) ui->tableView_Prto->selectRow(ui->tableView_Prto->currentIndex().row() + 1);
 }
 
+
+void MainWindow::prtoExportCSV()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), "project", tr("CSV (*.csv);;All Files (*)"));
+    if( fileName.isEmpty() )
+        return;
+
+    createDb().savePrtoAsCsv(fileName);
+}
 
 
 /// ---------------------------------------------------------------------------------------------------------------- //
@@ -1555,9 +1568,9 @@ void MainWindow::helpPpcCsv()
     if(filePPC.open(QIODevice::WriteOnly))
     {
         QTextStream txtstrem(&filePPC);
-        txtstrem.setCodec("Windows-1251");
-        txtstrem << QString::fromWCharArray(L"Сектор;Модель антенны;Частота;Размер;КУ;Азимут;"
-                                            "X;Y;Высота;Угол наклона;Мощность;");
+        txtstrem.setCodec("UTF-8");
+        txtstrem << QString("Сектор;Модель антенны;Частота;Размер;КУ;Азимут;"
+                            "X;Y;Высота;Угол наклона;Мощность;").toUtf8();
         filePPC.close();
     }
 }
@@ -1584,26 +1597,6 @@ void MainWindow::helpAbout()
     about->setInformativeText(strAbout);
     about->exec();
     delete about;
-
-
-//    int zPrd(24.5);
-//    int zTask(10);
-
-//    float pntX(10);
-//    float pntZ(zPrd - zTask);
-//    float AngleV(0);
-
-//    if(pntZ != 0)
-//    {
-//        AngleV = (atan2(pntX, pntZ)*180) / 3.14;
-//        AngleV = -(AngleV - 90);
-//        if(AngleV < 0) { AngleV = AngleV + 360; }
-//    }
-//    else
-//        AngleV = (pntX >= 0)? 0 : 180;
-
-
-//    qDebug() << pntZ << AngleV;
 }
 
 /* ------- Открыть ситуационный план ------- */

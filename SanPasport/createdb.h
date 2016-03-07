@@ -26,6 +26,7 @@ public:
     QVector<task> taskFromDb();
     float koef();
 
+    bool savePrtoAsCsv(const QString fileName);
 public slots:
     void prtoAddPPC();
 

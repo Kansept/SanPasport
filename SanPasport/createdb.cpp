@@ -254,6 +254,7 @@ void createDb::importPKAEMO(const QString f)
                 dan.Azimut = strlstParam.at(21).toFloat();
                 dan.Z = strlstParam.at(22).toFloat();
                 dan.Type = 15;
+                dan.PowerTotal = dan.calcPower();
             }
             vecPrto.append(dan);
         } // while ( q.next() )
@@ -685,4 +686,42 @@ QString createDb::quotedStr(const QString str)
 {
     QString result;
     return result.append("'").append(str).append("'");
+}
+
+bool createDb::savePrtoAsCsv(const QString fileName)
+{
+    QFile fileCsv(fileName);
+    if ( !fileCsv.open(QIODevice::WriteOnly) )
+        return false;
+
+    QTextStream out(&fileCsv);
+    out.setCodec("UTF-8");
+    out << QString("Название;Сектор;Частота;КУ;Размер;Мощность на входе;X;Y;Высота;Азимут;Угол наклона").toUtf8()
+        << "\n";
+
+    QVector<Prto> prto ( prtoFromDb() );
+    QStringList line;
+    for ( int i = 0; i < prto.count(); i++ )
+    {
+        line.clear();
+        if ( prto.at(i).Enabled )
+        {
+            line.append( prto.at(i).Name );
+            line.append( prto.at(i).Owner );
+            line.append( QString::number(prto.at(i).Freq) );
+            line.append( QString::number(prto.at(i).Gain) );
+            line.append( QString::number(prto.at(i).Height) );
+            line.append( QString::number(prto.at(i).PowerTotal) );
+            line.append( QString::number(prto.at(i).X) );
+            line.append( QString::number(prto.at(i).Y) );
+            line.append( QString::number(prto.at(i).Z) );
+            line.append( QString::number(prto.at(i).Azimut) );
+            line.append( QString::number(prto.at(i).Tilt) );
+            out << line.join(";") << "\n";
+        }
+    }
+
+    fileCsv.close();
+    return true;
+
 }

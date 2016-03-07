@@ -96,14 +96,8 @@ class mDelegateStat:public QStyledItemDelegate{
 public:
     mDelegateStat(QWidget *parent=0):QStyledItemDelegate(parent){}
     QString displayText(const QVariant &value, const QLocale &locale) const{
-
         QString mytext = value.toString();
-
-        if(mytext == "1")
-            mytext = "да";
-        else
-            mytext = "нет";
-
+        mytext = (mytext == "1")? "да" : "нет";
         return QStyledItemDelegate::displayText(mytext, locale);
     }
 };
@@ -258,6 +252,13 @@ class Dialog_TaskVS;
 class Dialog_TaskPoint;
 class SitPlan;
 
+
+namespace TblPrtoHeader {
+    enum TblPrtoHeader { Id = 1, Name = 2};
+}
+
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -275,6 +276,8 @@ public:
     createDb *prjFile;
     ~MainWindow();
 
+
+
 private:
     Ui::MainWindow *ui;
 
@@ -291,6 +294,8 @@ private:
     QProgressBar *pbar;
 
     CalcZozThread *Thread;
+
+
 
 signals:
     void sendIdEditAnt(Prto qsIdSend);
@@ -338,6 +343,7 @@ private slots:
      void prtoMoveUp();                     // Переместить вверх
      void prtoMoveDown();                   // Переместить вниз
      void prtoMoved(int LogicIndex, int OldVisualIndex, int NewVisualIndex); // Переместить
+     void prtoExportCSV();
 
      /// База данных
      void dbPrtoView();                     // Просмотр ДН
@@ -384,6 +390,8 @@ private slots:
 
      /// Дополнительно
      QString quotedStr(const QString str);  // Кавычки
+
+
 
 public slots:
      void saveEditantPattern(Prto dan);
