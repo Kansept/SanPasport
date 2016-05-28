@@ -49,13 +49,13 @@ void PlotZozPicker::drawTracker( QPainter *painter )
 
 PlotZozMarker::PlotZozMarker(const int LineStyle)
 {
-    if(QwtPlotMarker::VLine == LineStyle) {
+    if (QwtPlotMarker::VLine == LineStyle) {
         setLineStyle( QwtPlotMarker::VLine );
         setLabelAlignment( Qt::AlignLeft | Qt::AlignTop );
     }
-    else if(QwtPlotMarker::HLine == LineStyle) {
+    else if (QwtPlotMarker::HLine == LineStyle) {
         setLineStyle( QwtPlotMarker::HLine );
-        setLabelAlignment( Qt::AlignRight | Qt::AlignTop );
+        setLabelAlignment(Qt::AlignRight | Qt::AlignTop);
     }
     setLinePen( Qt::red, 1, Qt::DotLine );
 }
@@ -83,20 +83,20 @@ void PlotZozMarker::setFont(const QFont Font)
 }
 
 
-PlotZO::PlotZO(QWidget *)
+PlotZoz::PlotZoz(QWidget *)
 {
     // Прозрачность полотна
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
-    canvas->setFrameStyle( QFrame::NoFrame );
+    canvas->setFrameStyle(QFrame::NoFrame);
     canvas->setPaintAttribute(QwtPlotCanvas::BackingStore, false);
     canvas->setPaintAttribute(QwtPlotCanvas::Opaque, false);
-    canvas->setAttribute( Qt::WA_OpaquePaintEvent, false );
+    canvas->setAttribute(Qt::WA_OpaquePaintEvent, false);
     canvas->setAutoFillBackground( false );
     setCanvas(canvas);
     plotLayout()->setAlignCanvasToScales(true);
 
     // Отключаем щкалы деления
-    for(int i=0; i<QwtPlot::axisCnt; i++) {
+    for (int i=0; i<QwtPlot::axisCnt; i++) {
         axisScaleDraw(i)->enableComponent(QwtScaleDraw::Ticks, false);
         axisScaleDraw(i)->enableComponent(QwtScaleDraw::Backbone, false);
     }
@@ -122,20 +122,20 @@ PlotZO::PlotZO(QWidget *)
 
     canvas->setCursor(Qt::ArrowCursor);
     setMouseTracking(true);
-    for(int i=0; i<QwtPlot::axisCnt; i++)
+    for (int i=0; i<QwtPlot::axisCnt; i++)
         axisWidget(i)->setMouseTracking(true);
 }
 
 
 /* ------- Положение мыши ------- */
-void PlotZO::mouseMoveEvent(QMouseEvent *event)
+void PlotZoz::mouseMoveEvent(QMouseEvent *event)
 {
-    if( !canvas()->geometry().contains(event->pos().x(), event->y()) )
+    if ( !canvas()->geometry().contains(event->pos().x(), event->y()) )
         emit sgnlOutCanvas();
 }
 
 
-void PlotZO::resizeEvent(QResizeEvent* ev)
+void PlotZoz::resizeEvent(QResizeEvent* ev)
 {
     QFrame::resizeEvent( ev );
     updateLayout();
@@ -143,37 +143,37 @@ void PlotZO::resizeEvent(QResizeEvent* ev)
 
 
 /* ------- Вкл/Выкл Оси ------- */
-void PlotZO::setAxisEnableForAll(bool b)
+void PlotZoz::setAxisEnableForAll(bool b)
 {
-    for(int i=0; i<4; i++)
+    for (int i=0; i<4; i++)
         enableAxis(i,b);
 }
 
 
 /* ------- Шрифт сетки ------- */
-void PlotZO::setAxisFontForAll(QFont fntAxis)
+void PlotZoz::setAxisFontForAll(QFont fntAxis)
 {
-    for(int i=0; i<QwtPlot::axisCnt; i++)
+    for (int i=0; i<QwtPlot::axisCnt; i++)
         setAxisFont(i, fntAxis);
 }
 
 
 /* ------- Шрифт сетки ------- */
-void PlotZO::setLegendFont(QFont fntAxis)
+void PlotZoz::setLegendFont(QFont fntAxis)
 {
     legend()->setFont(fntAxis);
 }
 
 
 /* ------- Масштаб Сетки ------- */
-void PlotZO::setAxisScaleForAll(float fSide, int numStep)
+void PlotZoz::setAxisScaleForAll(float fSide, int numStep)
 {
-    for(int i=0; i<4; i++)
+    for (int i=0; i<4; i++)
         setAxisScale(i,-fSide, fSide, numStep);
 }
 
 
-void PlotZO::setAxisVisible(bool left, bool right, bool bottom, bool top)
+void PlotZoz::setAxisVisible(bool left, bool right, bool bottom, bool top)
 {
     enableAxis(QwtPlot::yLeft, left);
     enableAxis(QwtPlot::yRight, right);
@@ -182,14 +182,13 @@ void PlotZO::setAxisVisible(bool left, bool right, bool bottom, bool top)
 }
 
 
-void PlotZO::setData(QVector<double> vecData, float fZoSide, QColor clrPlot, float fPen)
+void PlotZoz::setData(QVector<double> vecData, float fZoSide, QColor clrPlot, float fPen)
 {
     pltRasterData->setValueMatrix( vecData, sqrt(vecData.size()) );
     pltSpectrogram->setRenderThreadCount( 0 ); // use system specific thread count
     pltSpectrogram->setData(pltRasterData);
 
-    if(fZoSide != 0)
-    {
+    if (fZoSide != 0) {
         pltRasterData->setInterval( Qt::XAxis, QwtInterval( -fZoSide, fZoSide, QwtInterval::ExcludeMaximum ) );
         pltRasterData->setInterval( Qt::YAxis, QwtInterval( -fZoSide, fZoSide, QwtInterval::ExcludeMaximum ) );
     }
@@ -198,39 +197,39 @@ void PlotZO::setData(QVector<double> vecData, float fZoSide, QColor clrPlot, flo
 }
 
 
-void PlotZO::setRastDatInterval(float minX, float maxX, float minY, float maxY)
+void PlotZoz::setRastDatInterval(float minX, float maxX, float minY, float maxY)
 {
     pltRasterData->setInterval( Qt::XAxis, QwtInterval( minX, maxX, QwtInterval::ExcludeMaximum ) );
     pltRasterData->setInterval( Qt::YAxis, QwtInterval( minY, maxY, QwtInterval::ExcludeMaximum ) );
 }
 
  /* ------- Стиль ЗОЗ ------- */
-void PlotZO::setContourPen(QColor clrPlot, float fPen )
+void PlotZoz::setContourPen(QColor clrPlot, float fPen )
 {
     pltSpectrogram->setDefaultContourPen(clrPlot, fPen, Qt::SolidLine);
 }
 
 
 /* ------- Видимость сетки ------- */
-void PlotZO::setGridVisible(const bool b)
+void PlotZoz::setGridVisible(const bool b)
 {
     pltGrid->setVisible(b);
 }
 
 
 /* ------- Видимость сетки ------- */
-bool PlotZO::gridIsVisible()
+bool PlotZoz::gridIsVisible()
 {
     return pltGrid->isVisible();
 }
 
 
-void PlotZO::setGridPen(const QPen pen)
+void PlotZoz::setGridPen(const QPen pen)
 {
     pltGrid->setPen(pen);
 }
 
-void PlotZO::setGridStep(const int Step)
+void PlotZoz::setGridStep(const int Step)
 {               
     setAxisScale(QwtPlot::yLeft,
                  int(pltRasterData->interval(Qt::YAxis).minValue()),
@@ -244,35 +243,35 @@ void PlotZO::setGridStep(const int Step)
 }
 
 
-double PlotZO::zozValue(float x, float y)
+double PlotZoz::zozValue(float x, float y)
 {
     return pltRasterData->value(x,y);
 }
 
-float PlotZO::valueXMax()
+float PlotZoz::valueXMax()
 {
     int valueXMin (pltRasterData->interval(Qt::XAxis).minValue());
     int valueXMax (pltRasterData->interval(Qt::XAxis).maxValue());
     int valueYMin (pltRasterData->interval(Qt::YAxis).minValue());
     int valueYMax (pltRasterData->interval(Qt::YAxis).maxValue());
 
-    for(float i = valueXMax; i > valueXMin; i-=0.1)
-        for(float j = valueYMax; j > valueYMin; j-=0.1)
-            if(zozValue(i,j) > 1)
+    for (float i = valueXMax; i > valueXMin; i-=0.1)
+        for (float j = valueYMax; j > valueYMin; j-=0.1)
+            if (zozValue(i,j) > 1)
                 return i;
     return 0;
 }
 
-float PlotZO::valueYMin()
+float PlotZoz::valueYMin()
 {
     int valueXMin (pltRasterData->interval(Qt::XAxis).minValue());
     int valueXMax (pltRasterData->interval(Qt::XAxis).maxValue());
     int valueYMin (pltRasterData->interval(Qt::YAxis).minValue());
     int valueYMax (pltRasterData->interval(Qt::YAxis).maxValue());
 
-    for(float i = valueYMin; i < valueYMax; i+=0.1)
-        for(float j = valueXMin; j < valueXMax; j+=0.1)
-            if(zozValue(j,i) > 1)
+    for (float i = valueYMin; i < valueYMax; i+=0.1)
+        for (float j = valueXMin; j < valueXMax; j+=0.1)
+            if (zozValue(j,i) > 1)
                 return i;
     return 0;
 }

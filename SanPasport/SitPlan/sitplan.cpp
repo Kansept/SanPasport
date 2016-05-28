@@ -106,7 +106,7 @@ SitPlan::SitPlan(QWidget *parent) :
     text->setFlag(QGraphicsItem::ItemIsSelectable);
     text->setPos(scene->width()/3,scene->height()/20);
 
-    plotZoz = new PlotZO();
+    plotZoz = new PlotZoz();
     //  ------------------------------------------------------------- Скрываем шкалы деления и текст <<
 
     QHBoxLayout *layout = new QHBoxLayout;
@@ -663,8 +663,8 @@ void SitPlan::zozLoad(QStringList srtlFiles)
 void SitPlan::zozLoadFromProject()
 {
     QString strProjPath(QFileInfo(MainWindow().currentPath()).absolutePath());
-    createDb prjLoadTask;
-    QVector<task> vecTask(prjLoadTask.taskFromDb());
+    Project prjLoadTask;
+    QVector<Task> vecTask(prjLoadTask.taskFromDb());
     QStringList qslf;
 
     for(int i=0; i < vecTask.count(); i++)

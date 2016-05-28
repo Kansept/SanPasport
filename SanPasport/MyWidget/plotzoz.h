@@ -67,12 +67,12 @@ public:
 };
 
 
-class PlotZO: public QwtPlot
+class PlotZoz: public QwtPlot
 {
     Q_OBJECT
 
 public:
-    PlotZO(QWidget * = NULL);
+    PlotZoz(QWidget * = NULL);
 
 public slots:
     void setAxisEnableForAll(bool b);                                   // Вкл/Выкл Оси

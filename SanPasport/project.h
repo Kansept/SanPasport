@@ -8,25 +8,25 @@
 
 #include <prto.h>
 
-class createDb
+class Project
 {
 
 public:
-    createDb();
+    Project();
 
-    bool dbNew();
-    bool dbSaveAs( QSqlDatabase memdb, QString filename, bool save );
-    bool taskAdd(task tsk);
-    bool prtoAdd(Prto adIns);
+    static bool init();
+    bool saveAs( QSqlDatabase memdb, QString filename, bool save );
+    bool addTask(Task tsk);
+    bool addAntenna(Prto adIns);
     bool prtoEdit(Prto dan);
 
-    void importPKAEMO(const QString f);
+    static void importPKAEMO(const QString f);
     void exportPKAEMO(const QString fileCopy);
     QVector<Prto> prtoFromDb();
-    QVector<task> taskFromDb();
+    QVector<Task> taskFromDb();
     float koef();
 
-    bool savePrtoAsCsv(const QString fileName);
+    bool saveAntennasToCsv(const QString fileName);
 public slots:
     void prtoAddPPC();
 

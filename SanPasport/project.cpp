@@ -1,4 +1,4 @@
-#include "createdb.h"
+#include "project.h"
 
 #include <sqlite3.h>
 #include <QVariant>
@@ -9,7 +9,7 @@
 using namespace std;
 
 
-createDb::createDb()
+Project::Project()
 {
 }
 
@@ -18,14 +18,13 @@ createDb::createDb()
  *
  * @param trytrytr
  */
-bool createDb::dbNew()
+bool Project::init()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","project");
     db.setDatabaseName(":memory:");
 
-    if( !db.database("project").open() ) {
+    if (!db.database("project").open())
         return false;
-    }
 
     QSqlQuery query(db);
 
@@ -95,15 +94,15 @@ bool createDb::dbNew()
 
 
 // ------------------------------ Сохранить (SQLite API) ------------------------------ //
-bool createDb::dbSaveAs( QSqlDatabase memdb, QString filename, bool save )
+bool Project::saveAs( QSqlDatabase memdb, QString filename, bool save )
 {
     bool state = false;
     QVariant v = memdb.driver()->handle();
-    if( v.isValid() && qstrcmp(v.typeName(),"sqlite3*") == 0 )
+    if (v.isValid() && qstrcmp(v.typeName(),"sqlite3*") == 0)
     {
         // v.data() returns a pointer to the handle
         sqlite3 * handle = *static_cast<sqlite3 **>(v.data());
-        if( handle != 0 ) // check that it is not NULL
+        if (handle != 0) // check that it is not NULL
         {
             sqlite3 * pInMemory = handle;
             QByteArray array = filename.toUtf8();
@@ -160,26 +159,24 @@ bool createDb::dbSaveAs( QSqlDatabase memdb, QString filename, bool save )
 
 
 /* ------------------------------------ Импорт из ПКАЭМО ------------------------------------ */
-void createDb::importPKAEMO(const QString f)
+void Project::importPKAEMO(const QString f)
 {
-    QVector<Prto> vecPrto;
-    QVector<task> vecTask;
+    QVector<Prto> antennas;
+    QVector<Task> tasks;
 
     Prto dan;
 
     QSqlDatabase dbPKAEMO = QSqlDatabase::addDatabase("QODBC","PKAEMO");
     dbPKAEMO.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DSN='';CharSet='UTF8';DBQ="+f);
 
-    if (dbPKAEMO.database("PKAEMO").open())
-    {
+    if (dbPKAEMO.database("PKAEMO").open()) {
         QSqlQuery q(dbPKAEMO);
         QStringList strlstRadH;
         QStringList strlstRadV;
         QStringList strlstParam;
 
         q.exec("SELECT * FROM Sost ORDER BY Nmbr Asc");
-        while ( q.next() )
-        {
+        while (q.next()) {
             dan.clear();
             dan.Enabled = q.value(13).toBool();
             dan.Name = q.value(2).toString();
@@ -189,8 +186,7 @@ void createDb::importPKAEMO(const QString f)
 
             strlstParam = q.value(6).toString().split(";");
             // для панельных антенн
-            if(q.value(1).toInt() == 100)
-            {
+            if (q.value(1).toInt() == 100) {
                 dan.Gain = q.value(5).toFloat();               // 0 - Тип передатчика (0 - Связной 1 — Вещятельный 2 — Телевизионный ), 0
                 dan.PowerPRD = strlstParam.at(1).toFloat();    // 1 - Мощность передатчика Вт
                 // 2 - ?
@@ -238,8 +234,7 @@ void createDb::importPKAEMO(const QString f)
             }  // конец if для панельных антенн
 
             // для РРС
-            if(q.value(1).toInt() == 15)
-            {
+            if (q.value(1).toInt() == 15) {
                 dan.Gain = strlstParam.at(0).toFloat();
                 dan.Height = strlstParam.at(1).toFloat();
                 dan.PowerPRD = strlstParam.at(11).toFloat();
@@ -256,14 +251,13 @@ void createDb::importPKAEMO(const QString f)
                 dan.Type = 15;
                 dan.PowerTotal = dan.calcPower();
             }
-            vecPrto.append(dan);
+            antennas.append(dan);
         } // while ( q.next() )
 
         // Задания
-        task tskRead;
+        Task tskRead;
         q.exec("SELECT * FROM Calc_Task ORDER BY Nmbr Asc");
-        while ( q.next() )
-        {
+        while ( q.next() ) {
             QStringList strlTask(q.value(2).toString().split(";"));
 
             tskRead.Enabled = q.value(4).toBool();
@@ -273,7 +267,7 @@ void createDb::importPKAEMO(const QString f)
             strlTask.removeFirst();
             strlTask.removeLast();
             tskRead.Data = strlTask.join(";");
-            vecTask.append(tskRead);
+            tasks.append(tskRead);
 
             strlTask.clear();
         }
@@ -282,32 +276,30 @@ void createDb::importPKAEMO(const QString f)
 
         dbPKAEMO.database("PKAEMO").close();
 
-        dbNew();
+        init();
 
-        for(int i=0; i<vecPrto.size(); i++)
-            prtoAdd(vecPrto.at(i));
-        for(int i=0; i<vecTask.size(); i++)
-            taskAdd(vecTask.at(i));
+        for (int i=0; i<antennas.size(); i++)
+            Project().addAntenna(antennas.at(i));
+
+        for (int i=0; i<tasks.size(); i++)
+            Project().addTask(tasks.at(i));
     }
 }
 
 /* ------------------------------------ Добавить ПРТО ------------------------------------ */
-bool createDb::prtoAdd(Prto adIns)
+bool Project::addAntenna(Prto adIns)
 {
     QString qsDanHoriz = "";
     QString qsDanVert = "";
 
-    for (int i=0; i<=360; i++)
-    {
+    for (int i=0; i<=360; i++) {
         qsDanHoriz = qsDanHoriz.append( QString::number(adIns.RadHoriz[i]) );
         qsDanHoriz = qsDanHoriz.append(";");
         qsDanVert = qsDanVert.append( QString::number(adIns.RadVert[i]) );
         qsDanVert = qsDanVert.append(";");
     }
 
-
     QSqlQuery query(QSqlDatabase::database("project"));
-
 
     query.exec("SELECT Number FROM Prto ORDER BY Number DESC");
     query.first();
@@ -344,13 +336,12 @@ bool createDb::prtoAdd(Prto adIns)
     return query.exec();
 }
 
-bool createDb::prtoEdit(Prto dan)
+bool Project::prtoEdit(Prto dan)
 {
     QString qsDanHoriz = "";
     QString qsDanVert = "";
 
-    for (int i=0; i<=360; i++)
-    {
+    for (int i=0; i<=360; i++) {
         qsDanHoriz = qsDanHoriz.append( QString::number(dan.RadHoriz[i]) );
         qsDanHoriz = qsDanHoriz.append(";");
         qsDanVert = qsDanVert.append( QString::number(dan.RadVert[i]) );
@@ -359,9 +350,15 @@ bool createDb::prtoEdit(Prto dan)
 
     QSqlQuery query(QSqlDatabase::database("project"));
 
-    query.prepare(" UPDATE Prto SET Type = :Type, Enabled = :Enabled, Name = :Name, Owner = :Owner, Freq = :Freq, Gain = :Gain, Height = :Height, Number = :Number, "
-                  " PowerTotal = :PowerTotal, PowerPRD = :PowerPRD, FeederLeght = :FeederLeght, FeederLoss = :FeederLoss, KSVN = :KSVN, LossOther = :LossOther, "
-                  " PRD = :PRD, X = :X, Y = :Y, Z = :Z, Azimut = :Azimut, Tilt = :Tilt, RadHoriz = :RadHoriz, RadVert = :RadVert, Type = :Type WHERE id = :id");
+    query.prepare(
+        " UPDATE Prto SET "
+        "   Type = :Type, Enabled = :Enabled, Name = :Name, Owner = :Owner, Freq = :Freq, Gain = :Gain, "
+        "   Height = :Height, Number = :Number, PowerTotal = :PowerTotal, PowerPRD = :PowerPRD, "
+        "   FeederLeght = :FeederLeght, FeederLoss = :FeederLoss, KSVN = :KSVN, LossOther = :LossOther, "
+        "   PRD = :PRD, X = :X, Y = :Y, Z = :Z, Azimut = :Azimut, Tilt = :Tilt, RadHoriz = :RadHoriz, "
+        "   RadVert = :RadVert, Type = :Type "
+        " WHERE id = :id"
+    );
     query.bindValue(":Type",        dan.Type);
     query.bindValue(":Enabled",     dan.Enabled);
     query.bindValue(":Name",        dan.Name);
@@ -391,7 +388,7 @@ bool createDb::prtoEdit(Prto dan)
 
 
 /* ------------------------------------ Добавить ПРТО РРС ------------------------------------ */
-void createDb::prtoAddPPC()
+void Project::prtoAddPPC()
 {
     Prto dan;
     dan.Enabled = true;
@@ -408,12 +405,12 @@ void createDb::prtoAddPPC()
     dan.Z = 0;
     dan.Type = 15;
 
-    prtoAdd(dan);
+    addAntenna(dan);
 }
 
 
 /* ------------------------------------ Все ПРТО в вектор ------------------------------------ */
-QVector<Prto> createDb::prtoFromDb()
+QVector<Prto> Project::prtoFromDb()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
     QVector<Prto> vecPrto;
@@ -452,8 +449,7 @@ QVector<Prto> createDb::prtoFromDb()
         qslRadHoriz = query.value("RadHoriz").toString().split(";");
         qslRadVert = query.value("RadVert").toString().split(";");
 
-        for(int i = 0; i < 360; i++)
-        {
+        for (int i = 0; i < 360; i++) {
             apRead.AzHoriz[i] = i;
             apRead.AzVert[i] = i;
             apRead.RadHoriz[i] = qslRadHoriz.at(i).toFloat();
@@ -466,33 +462,32 @@ QVector<Prto> createDb::prtoFromDb()
 
 
 /* ------------------------------------ Все Задания в вектор ------------------------------------ */
-QVector<task> createDb::taskFromDb()
+QVector<Task> Project::taskFromDb()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
-    QVector<task> vecTask;
-    task tsk;
+    QVector<Task> tasks;
+    Task task;
 
     query.exec("SELECT * FROM TaskCalc ORDER BY Number ASC");
 
-    while (query.next())
-    {
-        tsk.clear();
-        tsk.Enabled = query.value("Enabled").toBool();
-        tsk.Number = query.value("Number").toInt();
-        tsk.Type = query.value("TYPE").toInt();
-        tsk.Data = query.value("TASK").toString();
-        tsk.Path = query.value("Path").toString();
-        vecTask.append(tsk);
+    while (query.next()) {
+        task.clear();
+        task.Enabled = query.value("Enabled").toBool();
+        task.Number = query.value("Number").toInt();
+        task.Type = query.value("TYPE").toInt();
+        task.Data = query.value("TASK").toString();
+        task.Path = query.value("Path").toString();
+        tasks.append(task);
     }
-    return vecTask;
+    return tasks;
 }
 
 
 /* ------------------------------------ Экспорт в ПКАЭМО ------------------------------------ */
-void createDb::exportPKAEMO(const QString fileCopy)
+void Project::exportPKAEMO(const QString fileCopy)
 {
-    if(QFile(fileCopy).exists()) {
-        QFile(fileCopy).remove(); }
+    if (QFile(fileCopy).exists())
+        QFile(fileCopy).remove();
 
     QFile qfExport("pkaemo.rto");
 
@@ -501,7 +496,8 @@ void createDb::exportPKAEMO(const QString fileCopy)
     qfExport.rename(fileCopy);
 
     QSqlDatabase dbPKAEMO = QSqlDatabase::addDatabase("QODBC","expPKAEMO");
-    dbPKAEMO.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DSN='';CharSet='UTF8';DBQ="+qfExport.fileName());
+    dbPKAEMO.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DSN='';CharSet='UTF8';DBQ="
+                             + qfExport.fileName());
 
     if (dbPKAEMO.database("expPKAEMO").open())
     {
@@ -606,22 +602,22 @@ void createDb::exportPKAEMO(const QString fileCopy)
         } //  for(int i=0; i < vecPrtoAll.count(); i++)
 
         // Экспорт заданий
-        QVector<task> vecTaskAll(taskFromDb());
+        QVector<Task> vecTaskAll(taskFromDb());
 
         for(int i=0; i < vecTaskAll.count(); i++)
         {
-            task tsk;
-            tsk = vecTaskAll.at(i);
+            Task task;
+            task = vecTaskAll.at(i);
 
             qEdit.prepare("INSERT INTO Calc_Task ( Npp, Nmbr, Task, Path, Incl) VALUES (:Npp, :Nmbr, :Task, :Path, :Incl)");
             qEdit.bindValue(":Npp",  i);
             qEdit.bindValue(":Nmbr", i);
-            qEdit.bindValue(":Task", QString(QString::number(tsk.Type)).append(";").append(tsk.Data).append(";0") );
-            qEdit.bindValue(":Path", tsk.Path);
-            qEdit.bindValue(":Incl", tsk.Enabled);
+            qEdit.bindValue(":Task", QString(QString::number(task.Type)).append(";").append(task.Data).append(";0") );
+            qEdit.bindValue(":Path", task.Path);
+            qEdit.bindValue(":Incl", task.Enabled);
             qEdit.exec();
 
-            tsk.clear();
+            task.clear();
         }
         // Опции
         qEdit.exec("UPDATE Prmt SET Prmt.Koef_r = " + str(koef()) );
@@ -631,7 +627,7 @@ void createDb::exportPKAEMO(const QString fileCopy)
 
 
 /* ------------------------------------ Коэфициент ------------------------------------ */
-float createDb::koef()
+float Project::koef()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
 
@@ -643,52 +639,49 @@ float createDb::koef()
 
 
 /* ------------------------------------ Добавить задание ------------------------------------ */
-bool createDb::taskAdd(task tsk)
+bool Project::addTask(Task task)
 {
     QSqlQuery query(QSqlDatabase::database("project"));
 
-    if(tsk.Id == -1)
-    {
+    if (task.Id == -1) {
         query.exec("SELECT Number FROM TaskCalc ORDER BY Number DESC");
         query.first();
         int Number(query.value(0).toInt() + 1);
 
         query.prepare("INSERT INTO TaskCalc (Enabled, TYPE, TASK, Path, Number) "
                       "VALUES(:enabled, :type, :task, :path, :number) " );
-        query.bindValue(":enabled", tsk.Enabled);
-        query.bindValue(":type",    tsk.Type);
-        query.bindValue(":task",    tsk.Data);
-        query.bindValue(":path",    tsk.Path);
+        query.bindValue(":enabled", task.Enabled);
+        query.bindValue(":type",    task.Type);
+        query.bindValue(":task",    task.Data);
+        query.bindValue(":path",    task.Path);
         query.bindValue(":number",  Number);
-    }
-    else
-    {
+    } else {
         query.prepare ("UPDATE TaskCalc SET Enabled = :enabled, TYPE = :type, TASK = :task, Path = :path, Number = :number WHERE id = :id");
-        query.bindValue(":enabled", tsk.Enabled);
-        query.bindValue(":type",    tsk.Type);
-        query.bindValue(":task",    tsk.Data);
-        query.bindValue(":path",    tsk.Path);
-        query.bindValue(":number",  tsk.Number);
-        query.bindValue(":id",  tsk.Id);
+        query.bindValue(":enabled", task.Enabled);
+        query.bindValue(":type",    task.Type);
+        query.bindValue(":task",    task.Data);
+        query.bindValue(":path",    task.Path);
+        query.bindValue(":number",  task.Number);
+        query.bindValue(":id",  task.Id);
     }
     return query.exec();
 }
 
 
 /* ------------------------------------ Число в строку ------------------------------------ */
-QString createDb::str(double dNum)
+QString Project::str(double dNum)
 {
     return QString::number(dNum);
 }
 
 // ------------------------------------ Кавычки ------------------------------------ /
-QString createDb::quotedStr(const QString str)
+QString Project::quotedStr(const QString str)
 {
     QString result;
     return result.append("'").append(str).append("'");
 }
 
-bool createDb::savePrtoAsCsv(const QString fileName)
+bool Project::saveAntennasToCsv(const QString fileName)
 {
     QFile fileCsv(fileName);
     if ( !fileCsv.open(QIODevice::WriteOnly) )
@@ -701,11 +694,9 @@ bool createDb::savePrtoAsCsv(const QString fileName)
 
     QVector<Prto> prto ( prtoFromDb() );
     QStringList line;
-    for ( int i = 0; i < prto.count(); i++ )
-    {
+    for (int i = 0; i < prto.count(); i++) {
         line.clear();
-        if ( prto.at(i).Enabled )
-        {
+        if ( prto.at(i).Enabled ) {
             line.append( prto.at(i).Name );
             line.append( prto.at(i).Owner );
             line.append( QString::number(prto.at(i).Freq) );
@@ -723,5 +714,4 @@ bool createDb::savePrtoAsCsv(const QString fileName)
 
     fileCsv.close();
     return true;
-
 }

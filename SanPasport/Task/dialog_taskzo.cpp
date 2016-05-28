@@ -4,10 +4,10 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "createdb.h"
+#include "project.h"
 
 
-task g_taskZoz;
+Task g_taskZoz;
 
 Dialog_TaskZo::Dialog_TaskZo(QWidget *parent) :
     QDialog(parent),
@@ -41,7 +41,7 @@ void Dialog_TaskZo::pushButton_Ok()
 {
     QString qsSendZo;
     QStringList qslHeight;
-    task tskZo;
+    Task tskZo;
 
     qslHeight = ui->lineEdit_Height->text().split(" ", QString::SkipEmptyParts);
 
@@ -68,8 +68,8 @@ void Dialog_TaskZo::pushButton_Ok()
         tskZo.Type = 1;
         tskZo.Data = qsSendZo;
 
-        createDb cbd;
-        cbd.taskAdd(tskZo);
+        Project cbd;
+        cbd.addTask(tskZo);
         emit sendTaskZo();
 
         qsSendZo.clear();
@@ -105,7 +105,7 @@ void Dialog_TaskZo::clearUI()
 }
 
 
-void Dialog_TaskZo::insertData(task tsk)
+void Dialog_TaskZo::insertData(Task tsk)
 {
     clearUI();
     QStringList stlTask(tsk.Data.split(";"));

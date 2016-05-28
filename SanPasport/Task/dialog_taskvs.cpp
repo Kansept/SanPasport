@@ -1,10 +1,10 @@
 #include "dialog_taskvs.h"
 #include "ui_dialog_taskvs.h"
 
-#include "createdb.h"
+#include "project.h"
 
 
-task g_taskVS;
+Task g_taskVS;
 
 Dialog_TaskVs::Dialog_TaskVs(QWidget *parent) :
     QDialog(parent),
@@ -33,7 +33,7 @@ void Dialog_TaskVs::pushButton_Ok()
 {
     QString qsSendVs;
     QStringList qslnAzimut(ui->lineEdit_Azimut->text().split(" ", QString::SkipEmptyParts));
-    task tskVs;
+    Task tskVs;
 
     for(int i = 0; i < qslnAzimut.size(); i++)
     {
@@ -54,8 +54,8 @@ void Dialog_TaskVs::pushButton_Ok()
         tskVs.Type = 2;
         tskVs.Data = qsSendVs;
 
-        createDb cbd;
-        cbd.taskAdd(tskVs);
+        Project cbd;
+        cbd.addTask(tskVs);
         emit sendTaskVs();
 
         qsSendVs.clear();
@@ -97,7 +97,7 @@ void Dialog_TaskVs::clearUI()
 }
 
 
-void Dialog_TaskVs::insertData(task tsk)
+void Dialog_TaskVs::insertData(Task tsk)
 {
     clearUI();
     QStringList stlTask(tsk.Data.split(";"));

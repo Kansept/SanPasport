@@ -31,11 +31,11 @@ SOURCES += main.cpp\
     SitPlan/Dialog/dialog_configdocument.cpp \
     SitPlan/Dialog/dialog_configgrid.cpp \
     SitPlan/Dialog/dialog_configzo.cpp \
-    createdb.cpp \
     ViewPlot/viewplot.cpp \
     MyWidget/qsingleitemsquarelayout.cpp \
     ViewPlot/dialog/dialog_confizgraph.cpp \
-    MyWidget/plotzoz.cpp
+    MyWidget/plotzoz.cpp \
+    project.cpp
 
 HEADERS  += mainwindow.h \
     Dialog/dialog_editant.h \
@@ -51,19 +51,24 @@ HEADERS  += mainwindow.h \
     SitPlan/Dialog/dialog_configzo.h \
     SitPlan/config.h \
     SitPlan/MyTableView.h \
-    createdb.h \
     ../MyWidget/MySitPlanView.h \
     MyWidget/DotLineEdit.h \
     ../MyWidget/DotLineEdit.h \
     MyWidget/tableviewsp.h \
     ViewPlot/viewplot.h \
     MyWidget/qsingleitemsquarelayout.h \
-    MyWidget/mymodeltask.h \
     MyWidget/sitplanview.h \
     ViewPlot/dialog/dialog_confizgraph.h \
-    MyWidget/toolbuttoncolor.h \
+    MyWidget/ToolButtonColor.h \
     MyWidget/qsquarewidget.h \
-    MyWidget/plotzoz.h
+    MyWidget/plotzoz.h \
+    project.h \
+    Delegates/DelegateTaskPath.h \
+    Delegates/DelegateStatus.h \
+    Delegates/DelegateTaskDescription.h \
+    Threads/ThreadCalcZoz.h \
+    Models/ModelTasks.h \
+    Models/ModelAntennas.h
 
 FORMS    += mainwindow.ui \
     Dialog/dialog_editant.ui \
@@ -83,8 +88,8 @@ include(../qwt.pri)
 include(../qwtpolar.pri)
 
 
-INCLUDEPATH += D:/Qt/5.5/Src/qtbase/src/3rdparty/sqlite
-SOURCES += D:/Qt/5.5/Src/qtbase/src/3rdparty/sqlite/sqlite3.c
+INCLUDEPATH += D:/Qt/Qt5.2.1/5.5/Src/qtbase/src/3rdparty/sqlite
+SOURCES += D:/Qt/Qt5.2.1/5.5/Src/qtbase/src/3rdparty/sqlite/sqlite3.c
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../prto/release/ -lprto
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../prto/debug/ -lprto

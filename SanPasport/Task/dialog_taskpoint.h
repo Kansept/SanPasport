@@ -22,7 +22,7 @@ private slots:
     void on_pushButton_Cancel_clicked();
 
 public slots:
-    void insertData(task tsk);
+    void insertData(Task tsk);
 
 private:
     Ui::Dialog_TaskPoint *ui;

@@ -27,7 +27,7 @@ private slots:
     void clearUI();
 
 public slots:
-    void insertData(task tsk);
+    void insertData(Task tsk);
     void insertHeight(const QString strZ);
 
 signals:

@@ -19,10 +19,9 @@ public slots:
     /* ------- Выбрать цвет ------- */
     QColor setColor()
     {
-        QColor Color( QColorDialog::getColor(Qt::red));
+        QColor Color(QColorDialog::getColor(Qt::red));
 
-        if(Color.isValid())
-        {
+        if (Color.isValid()) {
             setStyleSheet("");
             setStyleSheet("background-color: " + Color.name());
         }
@@ -33,11 +32,11 @@ public slots:
     /* ------- Текущий цвет ------- */
     QColor currentColor()
     {
-        QColor clrCurrent;
-        if(styleSheet().split(":").size() == 2) {
-            clrCurrent.setNamedColor(styleSheet().split(":").at(1).simplified()); }
+        QColor currentColor;
+        if (styleSheet().split(":").size() == 2)
+            currentColor.setNamedColor(styleSheet().split(":").at(1).simplified());
 
-        return clrCurrent;
+        return currentColor;
     }
 
     /* ------- Установить цвет фона ------- */

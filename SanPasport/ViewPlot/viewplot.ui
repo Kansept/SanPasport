@@ -86,7 +86,7 @@
         <number>0</number>
        </property>
        <item row="0" column="0">
-        <widget class="PlotZO" name="qwtPlot_spectrogram">
+        <widget class="PlotZoz" name="qwtPlot_spectrogram">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -191,7 +191,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PlotZO</class>
+   <class>PlotZoz</class>
    <extends>QFrame</extends>
    <header>MyWidget\plotzoz.h</header>
    <container>1</container>

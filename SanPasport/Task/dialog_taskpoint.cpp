@@ -1,10 +1,9 @@
 #include "dialog_taskpoint.h"
 #include "ui_dialog_taskpoint.h"
+#include "project.h"
 
-#include "createdb.h"
 
-
-task g_taskPoint;
+Task g_taskPoint;
 
 Dialog_TaskPoint::Dialog_TaskPoint(QWidget *parent) :
     QDialog(parent),
@@ -23,7 +22,7 @@ Dialog_TaskPoint::~Dialog_TaskPoint()
 
 void Dialog_TaskPoint::on_pushButton_Ok_clicked()
 {
-    task tskPoint;
+    Task tskPoint;
 
     QString qsSendPoint;
     qsSendPoint.append( ui->lineEdit_X->text() ).append(";");
@@ -36,8 +35,8 @@ void Dialog_TaskPoint::on_pushButton_Ok_clicked()
     tskPoint.Type = 3;
     tskPoint.Data = qsSendPoint;
 
-    createDb cbd;
-    cbd.taskAdd(tskPoint);
+    Project cbd;
+    cbd.addTask(tskPoint);
     emit sendTaskPoint();
 
     clearUI();
@@ -60,7 +59,7 @@ void Dialog_TaskPoint::clearUI()
 }
 
 
-void Dialog_TaskPoint::insertData(task tsk)
+void Dialog_TaskPoint::insertData(Task tsk)
 {
     clearUI();
     QStringList stlTask(tsk.Data.split(";"));

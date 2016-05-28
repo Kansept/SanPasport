@@ -48,7 +48,6 @@ private:
     Ui::Dialog_EditAnt *ui;
     QwtPolarGrid *gridPolar;                       // координатная сетка
     QwtPolarCurve *CurvPolarHoriz,*CurvPolarVert,*CurvPolar3db;   // кривые, отображаемые на графике
-
 };
 
 #endif // DIALOG_EDITANT_H

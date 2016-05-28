@@ -199,7 +199,7 @@ private:
     QGraphicsProxyWidget *proxyPlot;
     QGraphicsSvgItem *svgSitPlan;
 
-    PlotZO *plotZoz;
+    PlotZoz *plotZoz;
 
     QSqlTableModel *modelFilesZO;
     QSqlTableModel *modelOptionsSitPlan;
