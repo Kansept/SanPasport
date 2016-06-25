@@ -10,7 +10,6 @@
 
 class Project
 {
-
 public:
     Project();
 
@@ -19,16 +18,16 @@ public:
     bool addTask(Task tsk);
     bool addAntenna(Prto adIns);
     bool prtoEdit(Prto dan);
-
     static void importPKAEMO(const QString f);
     void exportPKAEMO(const QString fileCopy);
     QVector<Prto> prtoFromDb();
     QVector<Task> taskFromDb();
     float koef();
-
     bool saveAntennasToCsv(const QString fileName);
+
 public slots:
     void prtoAddPPC();
+    QVector<Task> getTasks(int type);
 
 private:
     QString str(double dNum);

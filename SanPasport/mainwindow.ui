@@ -467,6 +467,7 @@
     <addaction name="separator"/>
     <addaction name="action_TaskMoveUp"/>
     <addaction name="action_TaskMoveDown"/>
+    <addaction name="actionTasksVertSort"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -1076,6 +1077,11 @@
   <action name="action_PrtoExportCSV">
    <property name="text">
     <string>Экспорт в CSV</string>
+   </property>
+  </action>
+  <action name="actionTasksVertSort">
+   <property name="text">
+    <string>Сортировать задания</string>
    </property>
   </action>
  </widget>

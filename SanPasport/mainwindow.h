@@ -141,6 +141,7 @@ private slots:
      void taskMoveUp();               // Переместить вверх
      void taskMoveDown();             // Переместить вниз
      void taskMoved(int LogicIndex, int OldVisualIndex, int NewVisualIndex); // Переместить
+     void sortTasks();
      /// РАСЧЕТ
      void calcStart();                               // Старт расчёта
      void UICalc(bool b);                            // Заморозка UI

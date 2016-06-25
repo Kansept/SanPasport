@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect( ui->tableView_Task->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(taskMoved(int,int,int)) );
     connect( ui->action_TaskMoveUp, SIGNAL(triggered()), SLOT(taskMoveUp()) );
     connect( ui->action_TaskMoveDown, SIGNAL(triggered()), SLOT(taskMoveDown()) );
+    connect( ui->actionTasksVertSort, SIGNAL(triggered()), SLOT(sortTasks()) );
     /// Параметры проекта
     connect( ui->action_Param, SIGNAL(triggered()), this, SLOT(showDlgParametrs()) );
     connect( dlg_Parametrs, SIGNAL(SendOptionsFromDlgOption(QString)), SLOT(signal_SendOptions(QString)) );
@@ -431,10 +432,10 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
     ui->tableView_Task->horizontalHeader()->resizeSection(1,40);
     ui->tableView_Task->horizontalHeader()->resizeSection(2,40);
     ui->tableView_Task->horizontalHeader()->resizeSection(3,1000);
-    ui->tableView_Task->hideColumn(0);
-    ui->tableView_Task->hideColumn(2);
-    ui->tableView_Task->hideColumn(2);
-    ui->tableView_Task->hideColumn(5);
+  //  ui->tableView_Task->hideColumn(0);
+  //  ui->tableView_Task->hideColumn(2);
+  //  ui->tableView_Task->hideColumn(2);
+  //  ui->tableView_Task->hideColumn(5);
     // Сортировка
     ui->tableView_Task->verticalHeader()->setSectionsMovable(true);
     ui->tableView_Task->sortByColumn(5, Qt::AscendingOrder);
@@ -498,8 +499,8 @@ void MainWindow::fileSaveCalc()
             strFileName.replace("\\","/");
             flTask.setFileName(strFileName);
 
-            if(flTask.exists())
-                if( !(flTask.copy(strPathNew + strFileName.split("/").last())) ) {
+            if (flTask.exists())
+                if ( !(flTask.copy(strPathNew + strFileName.split("/").last())) ) {
                     QMessageBox msgBox;
                     msgBox.setText("Ошибка сохранения!");
                     msgBox.exec();
@@ -1234,7 +1235,7 @@ bool MainWindow::taskRemove()
 
     QModelIndex index;
 
-    foreach(index, ui->tableView_Task->selectionModel()->selectedRows())
+    foreach (index, ui->tableView_Task->selectionModel()->selectedRows())
         modelTask->removeRow(index.row());
 
     modelTask->submitAll();
@@ -1263,7 +1264,6 @@ void MainWindow::tasZoFromPrto()
     dialogTaskZoz->show();
     dialogTaskZoz->insertHeight( strlHeght.join(" ") );
 }
-
 
 /* ------- Верткальные сечения на основе ПРТО ------- */
 void MainWindow::taskVertFromPrto()
@@ -1312,6 +1312,39 @@ void MainWindow::taskVertFromPrto()
     }
 }
 
+void MainWindow::sortTasks() {
+    QList<float> listAzimut;
+    QVector<Task> tasksVs (project->getTasks(Task::Vs));
+
+    foreach (Task task, tasksVs) {
+        float azimut (task.Data.split(";").at(8).toFloat());
+        listAzimut.append(azimut);
+    }
+    qStableSort(listAzimut.begin(), listAzimut.end(), qLess<float>());
+
+    foreach (Task task, tasksVs) {
+        task.Number = listAzimut.indexOf(task.Data.split(";").at(8).toFloat());
+        project->addTask(task);
+    }
+
+    int countVs (listAzimut.count());
+
+    QList<float> listHeight;
+    QVector<Task> tasksZoz (project->getTasks(Task::Zoz));
+
+    foreach (Task task, tasksZoz) {
+        float height (task.Data.split(";").at(6).toFloat());
+        listHeight.append(height);
+    }
+    qStableSort(listHeight.begin(), listHeight.end(), qGreater<float>());
+
+    foreach (Task task, tasksZoz) {
+        task.Number = countVs + listHeight.indexOf(task.Data.split(";").at(6).toFloat());
+        project->addTask(task);
+    }
+
+    modelTask->submitAll();
+}
 
 // ----------------------------------- ЗАДАНИЕ - Переместить вверх ----------------------------------- //
 void MainWindow::taskMoveUp()

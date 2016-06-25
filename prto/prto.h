@@ -92,7 +92,12 @@ public:
 /// ------------------------ ВРЕМЕННО РАЗМЕЩЯЕМ ЗДЕСЬ
 class Task
 {
+Q_ENUMS(RequestTypes)
 public:
+    enum TaskType {
+        Zoz = 1,
+        Vs = 2
+    };
 
     bool Enabled;
     int Type;

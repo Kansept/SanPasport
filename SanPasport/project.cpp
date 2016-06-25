@@ -8,7 +8,6 @@
 
 using namespace std;
 
-
 Project::Project()
 {
 }
@@ -29,12 +28,14 @@ bool Project::init()
     QSqlQuery query(db);
 
     // Таблица с заданиями
-    query.exec("create table TaskCalc (id INTEGER PRIMARY KEY, " // 0
-               "Enabled INTEGER, "  // 1
-               "TYPE INTEGER, "     // 2
-               "TASK TEXT, "        // 3
-               "Path TEXT, "        // 4
-               "Number REAL)");     // 5
+    query.exec("create table TaskCalc ( "
+                   "id INTEGER PRIMARY KEY, " // 0
+                   "Enabled INTEGER, " // 1
+                   "TYPE INTEGER, "    // 2
+                   "TASK TEXT, "       // 3
+                   "Path TEXT, "       // 4
+                   "Number REAL "      // 5
+               ")");
 
     // Таблица с параметрами
     query.exec("create table Options (Koef REAL, "
@@ -44,31 +45,32 @@ bool Project::init()
     query.exec("insert into Options values(1.22, 3, 0)");
 
     // Таблица с Антенами
-    query.exec("create table Prto (id INTEGER PRIMARY KEY, "  // 0
-               "Enabled TEXT, "         // 1
-               "Name TEXT, "            // 2
-               "Owner TEXT, "           // 3
-               "Freq REAL, "            // 4
-               "Gain REAL, "            // 5
-               "Height REAL, "          // 6
-               "Polarization TEXT, "    // 7
-               "PowerTotal REAL, "      // 8
-               "PowerPRD REAL, "        // 9
-               "PRD INT, "              // 10
-               "FeederLeght REAL, "     // 11
-               "FeederLoss REAL, "      // 12
-               "Ksvn REAL, "            // 13
-               "LossOther REAL, "       // 14
-               "X REAL, "               // 15
-               "Y REAL, "               // 16
-               "Z REAL, "               // 17
-               "Azimut REAL, "          // 18
-               "Tilt REAL, "            // 19
-               "Number REAL, "          // 20
-               "RadHoriz TEXT, "        // 21
-               "RadVert TEXT, "         // 22
-               "Pdu INT,"               // 23
-               "Type INT"               // 24
+    query.exec("create table Prto ("
+                   "id INTEGER PRIMARY KEY, " // 0
+                   "Enabled TEXT, "         // 1
+                   "Name TEXT, "            // 2
+                   "Owner TEXT, "           // 3
+                   "Freq REAL, "            // 4
+                   "Gain REAL, "            // 5
+                   "Height REAL, "          // 6
+                   "Polarization TEXT, "    // 7
+                   "PowerTotal REAL, "      // 8
+                   "PowerPRD REAL, "        // 9
+                   "PRD INT, "              // 10
+                   "FeederLeght REAL, "     // 11
+                   "FeederLoss REAL, "      // 12
+                   "Ksvn REAL, "            // 13
+                   "LossOther REAL, "       // 14
+                   "X REAL, "               // 15
+                   "Y REAL, "               // 16
+                   "Z REAL, "               // 17
+                   "Azimut REAL, "          // 18
+                   "Tilt REAL, "            // 19
+                   "Number REAL, "          // 20
+                   "RadHoriz TEXT, "        // 21
+                   "RadVert TEXT, "         // 22
+                   "Pdu INT,"               // 23
+                   "Type INT"               // 24
                ")");
 
     // Таблица СитПлан
@@ -472,6 +474,7 @@ QVector<Task> Project::taskFromDb()
 
     while (query.next()) {
         task.clear();
+        task.Id = query.value("id").toInt();
         task.Enabled = query.value("Enabled").toBool();
         task.Number = query.value("Number").toInt();
         task.Type = query.value("TYPE").toInt();
@@ -482,6 +485,26 @@ QVector<Task> Project::taskFromDb()
     return tasks;
 }
 
+/* ------------------------------------ Все Задания в вектор ------------------------------------ */
+QVector<Task> Project::getTasks(int type)
+{
+    QSqlQuery query(QSqlDatabase::database("project"));
+    QVector<Task> tasks;
+    Task task;
+    query.exec("SELECT * FROM TaskCalc WHERE TYPE = " + QString::number(type) + " ORDER BY Number ASC");
+
+    while (query.next()) {
+        task.clear();
+        task.Id = query.value("id").toInt();
+        task.Enabled = query.value("Enabled").toBool();
+        task.Number = query.value("Number").toInt();
+        task.Type = query.value("TYPE").toInt();
+        task.Data = query.value("TASK").toString();
+        task.Path = query.value("Path").toString();
+        tasks.append(task);
+    }
+    return tasks;
+}
 
 /* ------------------------------------ Экспорт в ПКАЭМО ------------------------------------ */
 void Project::exportPKAEMO(const QString fileCopy)
