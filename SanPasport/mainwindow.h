@@ -3,7 +3,6 @@
 
 #include "SitPlan/sitplan.h"
 #include "project.h"
-#include "MyWidget/mymodeltask.h"
 #include "Task/dialog_taskpoint.h"
 #include "Task/dialog_taskzo.h"
 #include "Task/dialog_taskvs.h"

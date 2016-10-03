@@ -1,7 +1,6 @@
 #ifndef SITPLAN_H
 #define SITPLAN_H
 
-#include "MyWidget/mymodeltask.h"
 #include "MyWidget/plotzoz.h"
 #include "Dialog/dialog_configdocument.h"
 #include "Dialog/dialog_configzo.h"
