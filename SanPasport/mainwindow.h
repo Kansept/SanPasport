@@ -31,6 +31,18 @@ namespace Ui {
 class MainWindow;
 }
 
+namespace TaskHeader
+{
+    enum TaskHeader {
+        Id,
+        Enabled,
+        Type,
+        Params,
+        Path,
+        Sort
+    };
+}
+
 class Dialog_EditAnt;
 class Dialog_Parametrs;
 class Dialog_TaskZo;

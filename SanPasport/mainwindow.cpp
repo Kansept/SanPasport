@@ -417,28 +417,25 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
     modelTask->setTable("TaskCalc");
     modelTask->select();
     ui->tableView_Task->setModel(modelTask);
-    ui->tableView_Task->setItemDelegateForColumn(3,new DelegateTaskDescription);
-    ui->tableView_Task->setItemDelegateForColumn(1,new DelegateStatus);
-    ui->tableView_Task->setItemDelegateForColumn(4,new DelegateTaskPath);
+    ui->tableView_Task->setItemDelegateForColumn(TaskHeader::Enabled, new DelegateStatus);
+    ui->tableView_Task->setItemDelegateForColumn(TaskHeader::Params, new DelegateTaskDescription);
+    ui->tableView_Task->setItemDelegateForColumn(TaskHeader::Path, new DelegateTaskPath);
 
-    modelTask->setHeaderData(0, Qt::Horizontal, "ИД");
-    modelTask->setHeaderData(1, Qt::Horizontal, "Вкл");
-    modelTask->setHeaderData(2, Qt::Horizontal, "Тип");
-    modelTask->setHeaderData(3, Qt::Horizontal, "Параметры");
-    modelTask->setHeaderData(4, Qt::Horizontal, "Статус");
-    modelTask->setHeaderData(5, Qt::Horizontal, "Порядок");
+    modelTask->setHeaderData(TaskHeader::Id, Qt::Horizontal, "ИД");
+    modelTask->setHeaderData(TaskHeader::Enabled, Qt::Horizontal, "Вкл");
+    modelTask->setHeaderData(TaskHeader::Type, Qt::Horizontal, "Тип");
+    modelTask->setHeaderData(TaskHeader::Params, Qt::Horizontal, "Параметры");
+    modelTask->setHeaderData(TaskHeader::Path, Qt::Horizontal, "Статус");
+    modelTask->setHeaderData(TaskHeader::Sort, Qt::Horizontal, "Порядок");
 
-    ui->tableView_Task->horizontalHeader()->resizeSection(0,40);
-    ui->tableView_Task->horizontalHeader()->resizeSection(1,40);
-    ui->tableView_Task->horizontalHeader()->resizeSection(2,40);
-    ui->tableView_Task->horizontalHeader()->resizeSection(3,1000);
-  //  ui->tableView_Task->hideColumn(0);
-  //  ui->tableView_Task->hideColumn(2);
-  //  ui->tableView_Task->hideColumn(2);
-  //  ui->tableView_Task->hideColumn(5);
+    ui->tableView_Task->horizontalHeader()->resizeSection(TaskHeader::Enabled, 40);
+    ui->tableView_Task->horizontalHeader()->resizeSection(TaskHeader::Params, 1000);
+    ui->tableView_Task->hideColumn(TaskHeader::Id);
+    ui->tableView_Task->hideColumn(TaskHeader::Type);
+    ui->tableView_Task->hideColumn(TaskHeader::Sort);
     // Сортировка
     ui->tableView_Task->verticalHeader()->setSectionsMovable(true);
-    ui->tableView_Task->sortByColumn(5, Qt::AscendingOrder);
+    ui->tableView_Task->sortByColumn(TaskHeader::Sort, Qt::AscendingOrder);
     ui->tableView_Task->setSortingEnabled(false);
 
     sbKoef->setText( "Коэф. " + QSqlRecord(modelOptions->record(0)).value("Koef").toString() );
