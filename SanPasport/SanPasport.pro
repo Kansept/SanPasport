@@ -88,8 +88,8 @@ include(../qwt.pri)
 include(../qwtpolar.pri)
 
 
-INCLUDEPATH += D:/Qt/Qt5.2.1/5.5/Src/qtbase/src/3rdparty/sqlite
-SOURCES += D:/Qt/Qt5.2.1/5.5/Src/qtbase/src/3rdparty/sqlite/sqlite3.c
+INCLUDEPATH += ../3rdparty/sqlite
+SOURCES += ../3rdparty/sqlite/sqlite3.c
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../prto/release/ -lprto
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../prto/debug/ -lprto
