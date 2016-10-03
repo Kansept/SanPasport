@@ -36,7 +36,7 @@ void Prto::clear()
     Azimut = 0;
     Type = 0;
 
-    for(int i=0; i<=361; i++)
+    for (int i=0; i<=360; i++)
     {
         AzHoriz[i] = 0;
         AzVert[i] = 0;
@@ -538,16 +538,9 @@ float Prto::calcPower()
 /* -------- Нормирование ДН -------- */
 void Prto::NormalzationPattern()
 {
-    float fRadHorizMin, fRadVertMin;
-    fRadHorizMin = radHorizMin();
-    fRadVertMin = radVertMin();
-
     rotate(Azimut, Tilt);
 
-    for ( int i = 0; i < 361; i++ )
-    {
-//        RadHorizNorm[i] = pow( (float(fabs(fRadHorizMin)) - float(fabs(RadHoriz[i]))) / -fRadHorizMin, 10 );
-//        RadVertNorm[i]  = pow( (float(fabs(fRadVertMin)) - float(fabs(RadVert[i]))) / -fRadVertMin, 10 );
+    for ( int i = 0; i < 361; i++ ) {
         RadHorizNorm[i] = pow( 10, (RadHoriz[i]/10) );
         RadVertNorm[i]  = pow( 10, (RadVert[i]/10)  );
     }
@@ -585,36 +578,36 @@ float Prto::radVertMin()
 /* -------- Расчет ПДУ -------- */
 float Prto::calcPDU(const float Xpos, const float Ypos, const float Zpos, const float fKoef)
 {
-    float E, P, G, R, L, AngleH, AngleV, Ang;
+    float E, P, G, R, L, AngleH, AngleV;
 
     P = calcPower();
     G = Gain;
     L = sqrt( pow((X - Xpos),2) + pow((Y - Ypos), 2) );
     R = sqrt( pow((Z - Zpos),2) + pow(L, 2) );
 
-    Ang = qAtan((Z - Zpos)/L);
-
     // Координата по горизонтали --------------------------
-    if(Xpos != 0)
-    {
+    if (Xpos != 0) {
         AngleH = (atan2(Ypos,Xpos)*180)/3.14;
         AngleH = -(AngleH - 90);
-        if(AngleH < 0) { AngleH = AngleH + 360; }
+        if (AngleH < 0) {
+            AngleH = AngleH + 360;
+        }
+    } else {
+        AngleH = (Ypos >= 0)? 0 : 180;
     }
-    else
-        AngleH = (Ypos >= 0)? AngleH = 0 : 180;
     // -------------------------- Координата по горизонтали
 
     // Координата по вертикали --------------------------
     int pntZ(Z - Zpos);
-    if(pntZ != 0)
-    {
+    if (pntZ != 0) {
         AngleV = (atan2(R, pntZ)*180) / 3.14;
         AngleV = -(AngleV - 90);
-        if(AngleV < 0) { AngleV = AngleV + 360; }
-    }
-    else
+        if (AngleV < 0) {
+            AngleV = AngleV + 360;
+        }
+    } else {
         AngleV = (R >= 0)? 0 : 180;
+    }
     // -------------------------- Координата по вертикали
 
     E = (sqrt(30 * P * G) / R ) * fKoef * RadHorizNorm[int(AngleH)] * RadVertNorm[int(AngleV)];

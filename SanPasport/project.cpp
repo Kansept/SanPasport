@@ -21,10 +21,9 @@ bool Project::init()
         return false;
 
     QSqlQuery query(db);
-    bool init;
 
     // Таблица с заданиями
-    init = query.exec(
+    query.exec(
         "CREATE TABLE tasks ( "
             "  id INTEGER PRIMARY KEY " // 0
             ", enabled INTEGER " // 1

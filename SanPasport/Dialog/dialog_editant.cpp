@@ -148,9 +148,8 @@ void Dialog_EditAnt::initPolarGraph(Prto dan)
     QColor qcVertDN = "#00ff00";
 
     double marker3db[361];
-
-    for (int i=0; i<=361; i++) {
-        marker3db[i]=-3; }
+    for (int i=0; i<=360; i++)
+        marker3db[i]=-3;
 
     gridPolar = new QwtPolarGrid();                            // создаем сетку
 

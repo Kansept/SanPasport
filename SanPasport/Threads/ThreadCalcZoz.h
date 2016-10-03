@@ -16,7 +16,7 @@ class ThreadCalcZoz : public QThread
     bool stop;
 
 public:
-    explicit ThreadCalcZoz(QObject *parent = 0)  { }
+   // explicit ThreadCalcZoz(QObject *parent = 0)  { }
 
 protected:
     void run()
