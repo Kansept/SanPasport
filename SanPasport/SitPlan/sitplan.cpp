@@ -379,7 +379,7 @@ void SitPlan::showEvent(QShowEvent *event)
 
     modelFilesZO = new QSqlTableModel(0, QSqlDatabase::database("project"));
     modelFilesZO->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    modelFilesZO->setTable("filesZO");
+    modelFilesZO->setTable("files_zoz");
     modelFilesZO->select();
     ui->tableView_Pages->setModel(modelFilesZO);
     ui->tableView_Pages->setItemDelegateForColumn(2, new mDelegateHeight);
@@ -404,7 +404,7 @@ void SitPlan::showEvent(QShowEvent *event)
 
     modelOptionsSitPlan = new QSqlTableModel(0, QSqlDatabase::database("project"));
     modelOptionsSitPlan->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    modelOptionsSitPlan->setTable("OptionsSitPlan");
+    modelOptionsSitPlan->setTable("options_sitplan");
     modelOptionsSitPlan->select();
 }
 
@@ -693,10 +693,10 @@ void SitPlan::zozReading(const QString f )
     qbaValues.remove(0,1);
 
     QSqlRecord recordAnt = modelFilesZO->record();
-    recordAnt.setValue("HIGHT", zoZona.Height );
-    recordAnt.setValue("PATH", f );
-    recordAnt.setValue("DATA", qbaValues);
-    recordAnt.setValue("SIZE", zoZona.MaxX );
+    recordAnt.setValue("height", zoZona.Height );
+    recordAnt.setValue("path", f );
+    recordAnt.setValue("data", qbaValues);
+    recordAnt.setValue("size", zoZona.MaxX );
     modelFilesZO->insertRecord(-1,recordAnt);
     recordAnt.clear();
 }
@@ -712,17 +712,17 @@ void SitPlan::zozActivate(const QModelIndex &index)
 
     // читаем данные из таблицы
     QSqlRecord record = modelFilesZO->record(index.row());
-    qsHight = record.value("HIGHT").toString();
-    fZoSide = record.value("SIZE").toFloat();
+    qsHight = record.value("hight").toString();
+    fZoSide = record.value("size").toFloat();
 
-    QStringList strlValues = record.value("DATA").toString().split(";", QString::SkipEmptyParts);
+    QStringList strlValues = record.value("data").toString().split(";", QString::SkipEmptyParts);
     QVector<double> vecValues;
 
     for(int i=0; i<strlValues.size(); i++) {
         vecValues.append(strlValues.at(i).toDouble());}
 
     QSqlRecord recordOpt = modelOptionsSitPlan->record(0);
-    qsTitle = recordOpt.value("TITLE").toString();
+    qsTitle = recordOpt.value("title").toString();
     qsTitle.replace("[H]",qsHight);
     qsTitle.replace("[S]",comboBox_SetZOScale->currentText());
     qsTitle.replace(QRegExp("\\n"), "<br>");

@@ -12,84 +12,92 @@ Project::Project()
 {
 }
 
-/**
- * Новый проект
- *
- * @param trytrytr
- */
 bool Project::init()
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","project");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "project");
     db.setDatabaseName(":memory:");
 
     if (!db.database("project").open())
         return false;
 
     QSqlQuery query(db);
+    bool init;
 
     // Таблица с заданиями
-    query.exec("create table TaskCalc ( "
-                   "id INTEGER PRIMARY KEY, " // 0
-                   "Enabled INTEGER, " // 1
-                   "TYPE INTEGER, "    // 2
-                   "TASK TEXT, "       // 3
-                   "Path TEXT, "       // 4
-                   "Number REAL "      // 5
-               ")");
+    init = query.exec(
+        "CREATE TABLE tasks ( "
+            "  id INTEGER PRIMARY KEY " // 0
+            ", enabled INTEGER " // 1
+            ", type INTEGER "    // 2
+            ", params TEXT "     // 3
+            ", path TEXT "       // 4
+            ", sort REAL "       // 5
+        ")"
+    );
 
     // Таблица с параметрами
-    query.exec("create table Options (Koef REAL, "
-               "KPP REAL, "
-               "COMMENTS REAL)");
-
-    query.exec("insert into Options values(1.22, 3, 0)");
+    query.exec("CREATE TABLE options (koef REAL, kpp REAL)");
+    query.exec("INSERT INTO options VALUES(1.22, 3, 0)");
 
     // Таблица с Антенами
-    query.exec("create table Prto ("
-                   "id INTEGER PRIMARY KEY, " // 0
-                   "Enabled TEXT, "         // 1
-                   "Name TEXT, "            // 2
-                   "Owner TEXT, "           // 3
-                   "Freq REAL, "            // 4
-                   "Gain REAL, "            // 5
-                   "Height REAL, "          // 6
-                   "Polarization TEXT, "    // 7
-                   "PowerTotal REAL, "      // 8
-                   "PowerPRD REAL, "        // 9
-                   "PRD INT, "              // 10
-                   "FeederLeght REAL, "     // 11
-                   "FeederLoss REAL, "      // 12
-                   "Ksvn REAL, "            // 13
-                   "LossOther REAL, "       // 14
-                   "X REAL, "               // 15
-                   "Y REAL, "               // 16
-                   "Z REAL, "               // 17
-                   "Azimut REAL, "          // 18
-                   "Tilt REAL, "            // 19
-                   "Number REAL, "          // 20
-                   "RadHoriz TEXT, "        // 21
-                   "RadVert TEXT, "         // 22
-                   "Pdu INT,"               // 23
-                   "Type INT"               // 24
-               ")");
+    query.exec(
+        "CREATE TABLE antennas ("
+            "  id INTEGER PRIMARY KEY " // 0
+            ", enabled TEXT "           // 1
+            ", name TEXT "              // 2
+            ", owner TEXT "             // 3
+            ", frequency REAL "         // 4
+            ", gain REAL "              // 5
+            ", height REAL "            // 6
+            ", polarization TEXT "      // 7
+            ", power_total REAL "       // 8
+            ", power_trx REAL "         // 9
+            ", count_trx INT "          // 10
+            ", feeder_leght REAL "      // 11
+            ", feeder_loss REAL "       // 12
+            ", ksvn REAL "              // 13
+            ", loss_other REAL "        // 14
+            ", x REAL "                 // 15
+            ", y REAL "                 // 16
+            ", z REAL "                 // 17
+            ", azimut REAL "            // 18
+            ", tilt REAL "              // 19
+            ", sort REAL "              // 20
+            ", rad_horizontal TEXT "    // 21
+            ", rad_vertical TEXT "      // 22
+            ", pdu INT"                 // 23
+            ", type INT"                // 24
+        ")"
+    );
 
     // Таблица СитПлан
-    query.exec("create table filesZO (id INTEGER PRIMARY KEY, "
-               "STATUS TEXT, "
-               "HIGHT INTEGER, "
-               "PATH TEXT, "
-               "DATA TEXT, "
-               "SIZE REAL)"
-               );
+    query.exec(
+        "CREATE TABLE files_zoz ("
+            "  id INTEGER PRIMARY KEY "
+            ", status TEXT "
+            ", height INTEGER "
+            ", path TEXT "
+            ", data TEXT "
+            ", size REAL"
+        ")"
+    );
 
     //  Таблица с параметрами
-    query.exec("create table OptionsSitPlan (TITLE TEXT, "
-               "ZOPEN REAL, "
-               "ZOCOLOR varchar(40), "
-               "ZOGRIND int, "
-               "albumcount int)");
-
-    query.exec("insert into OptionsSitPlan values('Ситуационный22 план ([S]).<br/> Высота среза [H] м', 4, '', 0, 0)");
+    query.exec(
+        "CREATE TABLE options_sitplan ("
+            "  title TEXT "
+            ", zoz_pen REAL "
+            ", zoz_color TEXT "
+            ", zoz_grind INT "
+            ", album_count INT"
+        ")"
+    );
+    query.exec(
+        " INSERT INTO options_sitplan"
+        "   (title, zoz_pen, zoz_color, zoz_grind, album_count) "
+        " VALUES"
+        "   ('Ситуационный план ([S]).<br/> Высота среза [H] м', 4, '', 0, 0)"
+    );
 
     return true;
 }
@@ -303,37 +311,39 @@ bool Project::addAntenna(Prto adIns)
 
     QSqlQuery query(QSqlDatabase::database("project"));
 
-    query.exec("SELECT Number FROM Prto ORDER BY Number DESC");
+    query.exec("SELECT sort FROM antennas ORDER BY sort DESC");
     query.first();
     int Number(query.value(0).toInt() + 1);
 
-    query.prepare(" INSERT INTO Prto (Enabled, Name, Owner, Freq, Gain, Height, Number, PowerTotal, PowerPRD, "
-                  "   FeederLeght, FeederLoss, KSVN, LossOther, PRD, X, Y, Z, Azimut, Tilt, RadHoriz, RadVert, Type) "
-                  " VALUES (:Enabled, :Name, :Owner, :Freq, :Gain, :Height, :Number, :PowerTotal, :PowerPRD, "
-                  "   :FeederLeght, :FeederLoss, :KSVN, :LossOther, :PRD, :X, :Y, :Z, :Azimut, :Tilt, :RadHoriz, "
-                  "   :RadVert, :Type) ");
-    query.bindValue(":Enabled",     adIns.Enabled);
-    query.bindValue(":Name",        adIns.Name);
-    query.bindValue(":Owner",       adIns.Owner);
-    query.bindValue(":Freq",        adIns.Freq);
-    query.bindValue(":Gain",        adIns.Gain);
-    query.bindValue(":Height",      adIns.Height);
-    query.bindValue(":Number",      Number);
-    query.bindValue(":PowerTotal",  adIns.PowerTotal);
-    query.bindValue(":PowerPRD",    adIns.PowerPRD);
-    query.bindValue(":FeederLeght", adIns.FeederLeght);
-    query.bindValue(":FeederLoss",  adIns.FeederLoss);
-    query.bindValue(":KSVN",        adIns.KSVN);
-    query.bindValue(":LossOther",   adIns.LossOther);
-    query.bindValue(":PRD",         adIns.PRD);
-    query.bindValue(":X",           adIns.X);
-    query.bindValue(":Y",           adIns.Y);
-    query.bindValue(":Z",           adIns.Z);
-    query.bindValue(":Azimut",      adIns.Azimut);
-    query.bindValue(":Tilt",        adIns.Tilt);
-    query.bindValue(":RadHoriz",    qsDanHoriz);
-    query.bindValue(":RadVert",     qsDanVert);
-    query.bindValue(":Type",        adIns.Type);
+    query.prepare(" INSERT INTO antennas (enabled, name, owner, frequency, gain, height, sort, power_total, power_trx, "
+                  "   feeder_leght, feeder_loss, ksvn, loss_other, count_trx, x, y, z, azimut, tilt, "
+                  "   rad_horizontal, rad_vertical, type) "
+                  " VALUES (:enabled, :name, :owner, :frequency, :gain, :height, :sort, :power_total, :power_trx, "
+                  "   :feeder_leght, :feeder_loss, :ksvn, :loss_other, :count_trx, :x, :y, :Z, :azimut, :tilt, "
+                  "   :rad_horizontal,  :rad_vertical, :type) ");
+
+    query.bindValue(":enabled",        adIns.Enabled);
+    query.bindValue(":name",           adIns.Name);
+    query.bindValue(":owner",          adIns.Owner);
+    query.bindValue(":frequency",      adIns.Freq);
+    query.bindValue(":gain",           adIns.Gain);
+    query.bindValue(":height",         adIns.Height);
+    query.bindValue(":sort",           Number);
+    query.bindValue(":power_total",    adIns.PowerTotal);
+    query.bindValue(":power_trx",      adIns.PowerPRD);
+    query.bindValue(":feeder_leght",   adIns.FeederLeght);
+    query.bindValue(":feeder_loss",    adIns.FeederLoss);
+    query.bindValue(":ksvn",           adIns.KSVN);
+    query.bindValue(":loss_other",     adIns.LossOther);
+    query.bindValue(":count_trx",      adIns.PRD);
+    query.bindValue(":x",              adIns.X);
+    query.bindValue(":y",              adIns.Y);
+    query.bindValue(":z",              adIns.Z);
+    query.bindValue(":azimut",         adIns.Azimut);
+    query.bindValue(":tilt",           adIns.Tilt);
+    query.bindValue(":rad_horizontal", qsDanHoriz);
+    query.bindValue(":rad_vertical",   qsDanVert);
+    query.bindValue(":type",           adIns.Type);
 
     return query.exec();
 }
@@ -353,37 +363,37 @@ bool Project::prtoEdit(Prto dan)
     QSqlQuery query(QSqlDatabase::database("project"));
 
     query.prepare(
-        " UPDATE Prto SET "
-        "   Type = :Type, Enabled = :Enabled, Name = :Name, Owner = :Owner, Freq = :Freq, Gain = :Gain, "
-        "   Height = :Height, Number = :Number, PowerTotal = :PowerTotal, PowerPRD = :PowerPRD, "
-        "   FeederLeght = :FeederLeght, FeederLoss = :FeederLoss, KSVN = :KSVN, LossOther = :LossOther, "
-        "   PRD = :PRD, X = :X, Y = :Y, Z = :Z, Azimut = :Azimut, Tilt = :Tilt, RadHoriz = :RadHoriz, "
-        "   RadVert = :RadVert, Type = :Type "
+        " UPDATE antennas SET "
+        "   type = :type, enabled = :enabled, name = :name, owner = :owner, frequency = :frequency, gain = :gain, "
+        "   height = :height, sort = :sort, power_total = :power_total, power_trx = :power_trx, "
+        "   feeder_leght = :feeder_leght, feeder_loss = :feeder_loss, ksvn = :ksvn, loss_other = :loss_other, "
+        "   count_trx = :count_trx, x = :x, y = :y, z = :z, azimut = :azimut, tilt = :tilt, "
+        "   rad_horizontal = :rad_horizontal, rad_vertical = :rad_vertical, type = :type "
         " WHERE id = :id"
     );
-    query.bindValue(":Type",        dan.Type);
-    query.bindValue(":Enabled",     dan.Enabled);
-    query.bindValue(":Name",        dan.Name);
-    query.bindValue(":Number",      dan.Number);
-    query.bindValue(":Owner",       dan.Owner);
-    query.bindValue(":Freq",        dan.Freq);
-    query.bindValue(":Gain",        dan.Gain);
-    query.bindValue(":Height",      dan.Height);
-    query.bindValue(":PowerTotal",  dan.PowerTotal);
-    query.bindValue(":PowerPRD",    dan.PowerPRD);
-    query.bindValue(":PRD",         dan.PRD);
-    query.bindValue(":FeederLeght", dan.FeederLeght);
-    query.bindValue(":FeederLoss",  dan.FeederLoss);
-    query.bindValue(":KSVN",        dan.KSVN);
-    query.bindValue(":LossOther",   dan.LossOther);
-    query.bindValue(":X",           dan.X);
-    query.bindValue(":Y",           dan.Y);
-    query.bindValue(":Z",           dan.Z);
-    query.bindValue(":Azimut",      dan.Azimut);
-    query.bindValue(":Tilt",        dan.Tilt);    
-    query.bindValue(":RadHoriz",    dan.RadHorizToString());
-    query.bindValue(":RadVert",     dan.RadVertToString());
-    query.bindValue(":id",          dan.Id);
+    query.bindValue(":type",           dan.Type);
+    query.bindValue(":enabled",        dan.Enabled);
+    query.bindValue(":name",           dan.Name);
+    query.bindValue(":sort",           dan.Number);
+    query.bindValue(":owner",          dan.Owner);
+    query.bindValue(":frequency",      dan.Freq);
+    query.bindValue(":gain",           dan.Gain);
+    query.bindValue(":height",         dan.Height);
+    query.bindValue(":power_total",    dan.PowerTotal);
+    query.bindValue(":power_trx",      dan.PowerPRD);
+    query.bindValue(":count_trx",      dan.PRD);
+    query.bindValue(":feeder_leght",   dan.FeederLeght);
+    query.bindValue(":feeder_loss",    dan.FeederLoss);
+    query.bindValue(":ksvn",           dan.KSVN);
+    query.bindValue(":loss_other",     dan.LossOther);
+    query.bindValue(":x",              dan.X);
+    query.bindValue(":y",              dan.Y);
+    query.bindValue(":z",              dan.Z);
+    query.bindValue(":azimut",         dan.Azimut);
+    query.bindValue(":tilt",           dan.Tilt);
+    query.bindValue(":rad_horizontal", dan.RadHorizToString());
+    query.bindValue(":rad_vertical",   dan.RadVertToString());
+    query.bindValue(":id",             dan.Id);
 
     return query.exec();
 }
@@ -418,38 +428,38 @@ QVector<Prto> Project::prtoFromDb()
     QVector<Prto> vecPrto;
     Prto apRead;
 
-    query.exec("SELECT * FROM Prto ORDER BY Number ASC");
+    query.exec("SELECT * FROM antennas ORDER BY sort ASC");
     while (query.next()) {
         apRead.clear();
 
         apRead.Id = query.value("id").toInt();
-        apRead.Number = query.value("Number").toInt();
-        apRead.Enabled = query.value("Enabled").toBool();
-        apRead.Name = query.value("Name").toString();
-        apRead.Owner = query.value("Owner").toString();
-        apRead.Freq = query.value("Freq").toFloat();
-        apRead.Gain = query.value("Gain").toFloat();
-        apRead.Height = query.value("Height").toFloat();
-        apRead.Type = query.value("Type").toInt();
+        apRead.Number = query.value("sort").toInt();
+        apRead.Enabled = query.value("enabled").toBool();
+        apRead.Name = query.value("name").toString();
+        apRead.Owner = query.value("owner").toString();
+        apRead.Freq = query.value("frequency").toFloat();
+        apRead.Gain = query.value("gain").toFloat();
+        apRead.Height = query.value("height").toFloat();
+        apRead.Type = query.value("type").toInt();
 
-        apRead.PowerTotal = query.value("PowerTotal").toFloat();
-        apRead.PowerPRD = query.value("PowerPRD").toFloat();
-        apRead.FeederLeght = query.value("FeederLeght").toFloat();
-        apRead.FeederLoss = query.value("FeederLoss").toFloat();
-        apRead.KSVN = query.value("KSVN").toFloat();
-        apRead.LossOther = query.value("LossOther").toFloat();
-        apRead.PRD = query.value("PRD").toInt();
+        apRead.PowerTotal = query.value("power_total").toFloat();
+        apRead.PowerPRD = query.value("power_trx").toFloat();
+        apRead.FeederLeght = query.value("feeder_leght").toFloat();
+        apRead.FeederLoss = query.value("feeder_loss").toFloat();
+        apRead.KSVN = query.value("ksvn").toFloat();
+        apRead.LossOther = query.value("loss_other").toFloat();
+        apRead.PRD = query.value("count_trx").toInt();
 
-        apRead.X = query.value("X").toFloat();
-        apRead.Y = query.value("Y").toFloat();
-        apRead.Z = query.value("Z").toFloat();
-        apRead.Azimut = query.value("Azimut").toFloat();
-        apRead.Tilt = query.value("Tilt").toFloat();
+        apRead.X = query.value("x").toFloat();
+        apRead.Y = query.value("y").toFloat();
+        apRead.Z = query.value("z").toFloat();
+        apRead.Azimut = query.value("azimut").toFloat();
+        apRead.Tilt = query.value("tilt").toFloat();
 
         QStringList qslRadHoriz;
         QStringList qslRadVert;
-        qslRadHoriz = query.value("RadHoriz").toString().split(";");
-        qslRadVert = query.value("RadVert").toString().split(";");
+        qslRadHoriz = query.value("rad_horizontal").toString().split(";");
+        qslRadVert = query.value("rad_vertical").toString().split(";");
 
         for (int i = 0; i < 360; i++) {
             apRead.AzHoriz[i] = i;
@@ -470,16 +480,16 @@ QVector<Task> Project::taskFromDb()
     QVector<Task> tasks;
     Task task;
 
-    query.exec("SELECT * FROM TaskCalc ORDER BY Number ASC");
+    query.exec("SELECT * FROM tasks ORDER BY sort ASC");
 
     while (query.next()) {
         task.clear();
         task.Id = query.value("id").toInt();
-        task.Enabled = query.value("Enabled").toBool();
-        task.Number = query.value("Number").toInt();
-        task.Type = query.value("TYPE").toInt();
-        task.Data = query.value("TASK").toString();
-        task.Path = query.value("Path").toString();
+        task.Enabled = query.value("enabled").toBool();
+        task.Number = query.value("sort").toInt();
+        task.Type = query.value("type").toInt();
+        task.Data = query.value("params").toString();
+        task.Path = query.value("path").toString();
         tasks.append(task);
     }
     return tasks;
@@ -491,16 +501,16 @@ QVector<Task> Project::getTasks(int type)
     QSqlQuery query(QSqlDatabase::database("project"));
     QVector<Task> tasks;
     Task task;
-    query.exec("SELECT * FROM TaskCalc WHERE TYPE = " + QString::number(type) + " ORDER BY Number ASC");
+    query.exec("SELECT * FROM tasks WHERE type = " + QString::number(type) + " ORDER BY sort ASC");
 
     while (query.next()) {
         task.clear();
         task.Id = query.value("id").toInt();
-        task.Enabled = query.value("Enabled").toBool();
-        task.Number = query.value("Number").toInt();
-        task.Type = query.value("TYPE").toInt();
-        task.Data = query.value("TASK").toString();
-        task.Path = query.value("Path").toString();
+        task.Enabled = query.value("enabled").toBool();
+        task.Number = query.value("sort").toInt();
+        task.Type = query.value("type").toInt();
+        task.Data = query.value("params").toString();
+        task.Path = query.value("path").toString();
         tasks.append(task);
     }
     return tasks;
@@ -654,10 +664,10 @@ float Project::koef()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
 
-    query.exec("SELECT * FROM Options");
+    query.exec("SELECT * FROM options");
     query.next();
 
-    return query.value("Koef").toFloat();
+    return query.value("koef").toFloat();
 }
 
 
@@ -667,24 +677,26 @@ bool Project::addTask(Task task)
     QSqlQuery query(QSqlDatabase::database("project"));
 
     if (task.Id == -1) {
-        query.exec("SELECT Number FROM TaskCalc ORDER BY Number DESC");
+        query.exec("SELECT sort FROM tasks ORDER BY sort DESC");
         query.first();
         int Number(query.value(0).toInt() + 1);
 
-        query.prepare("INSERT INTO TaskCalc (Enabled, TYPE, TASK, Path, Number) "
-                      "VALUES(:enabled, :type, :task, :path, :number) " );
+        query.prepare("INSERT INTO tasks (enabled, type, params, path, sort) "
+                      "VALUES(:enabled, :type, :params, :path, :number) " );
         query.bindValue(":enabled", task.Enabled);
         query.bindValue(":type",    task.Type);
-        query.bindValue(":task",    task.Data);
+        query.bindValue(":params",    task.Data);
         query.bindValue(":path",    task.Path);
-        query.bindValue(":number",  Number);
+        query.bindValue(":sort",  Number);
     } else {
-        query.prepare ("UPDATE TaskCalc SET Enabled = :enabled, TYPE = :type, TASK = :task, Path = :path, Number = :number WHERE id = :id");
+        query.prepare ("UPDATE taks SET "
+                       "enabled = :enabled, type = :type, params = :params, path = :path, sort = :sort "
+                       "WHERE id = :id");
         query.bindValue(":enabled", task.Enabled);
         query.bindValue(":type",    task.Type);
-        query.bindValue(":task",    task.Data);
+        query.bindValue(":params",    task.Data);
         query.bindValue(":path",    task.Path);
-        query.bindValue(":number",  task.Number);
+        query.bindValue(":sort",  task.Number);
         query.bindValue(":id",  task.Id);
     }
     return query.exec();

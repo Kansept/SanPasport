@@ -332,13 +332,13 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
 {
     modelOptions = new QSqlTableModel(0,db.database("project"));
     modelOptions->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    modelOptions->setTable("Options");
+    modelOptions->setTable("options");
     modelOptions->select();
 
     // modelPrto
     modelPrto = new ModelAntennas(0,db.database("project"));
     modelPrto->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    modelPrto->setTable("Prto");
+    modelPrto->setTable("antennas");
     modelPrto->select();
 
     // Устанавливаем названия столбцов
@@ -414,7 +414,7 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
     // modelTask
     modelTask = new ModelTasks(0,db.database("project"));
     modelTask->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    modelTask->setTable("TaskCalc");
+    modelTask->setTable("tasks");
     modelTask->select();
     ui->tableView_Task->setModel(modelTask);
     ui->tableView_Task->setItemDelegateForColumn(TaskHeader::Enabled, new DelegateStatus);
@@ -740,31 +740,31 @@ Prto MainWindow::prtoFromModel(const int iRow)
     apRead.clear();
 
     apRead.Id = record.value("id").toInt();
-    apRead.Enabled = record.value("Enabled").toBool();
-    apRead.Number = record.value("Number").toInt();
-    apRead.Name = record.value("Name").toString();
-    apRead.Owner = record.value("Owner").toString();
-    apRead.Freq = record.value("Freq").toFloat();
-    apRead.Gain = record.value("Gain").toFloat();
-    apRead.Height = record.value("Height").toFloat();
-    apRead.Type = record.value("Type").toInt();
+    apRead.Enabled = record.value("enabled").toBool();
+    apRead.Number = record.value("sort").toInt();
+    apRead.Name = record.value("name").toString();
+    apRead.Owner = record.value("owner").toString();
+    apRead.Freq = record.value("frequency").toFloat();
+    apRead.Gain = record.value("gain").toFloat();
+    apRead.Height = record.value("height").toFloat();
+    apRead.Type = record.value("type").toInt();
 
-    apRead.PowerTotal = record.value("PowerTotal").toFloat();
-    apRead.PowerPRD = record.value("PowerPRD").toFloat();
-    apRead.FeederLeght = record.value("FeederLeght").toFloat();
-    apRead.FeederLoss = record.value("FeederLoss").toFloat();
-    apRead.KSVN = record.value("KSVN").toFloat();
-    apRead.LossOther = record.value("LossOther").toFloat();
-    apRead.PRD = record.value("PRD").toInt();
+    apRead.PowerTotal = record.value("power_total").toFloat();
+    apRead.PowerPRD = record.value("power_trx").toFloat();
+    apRead.FeederLeght = record.value("feeder_leght").toFloat();
+    apRead.FeederLoss = record.value("feeder_loss").toFloat();
+    apRead.KSVN = record.value("ksvn").toFloat();
+    apRead.LossOther = record.value("loss_other").toFloat();
+    apRead.PRD = record.value("count_trx").toInt();
 
-    apRead.X = record.value("X").toFloat();
-    apRead.Y = record.value("Y").toFloat();
-    apRead.Z = record.value("Z").toFloat();
-    apRead.Azimut = record.value("Azimut").toFloat();
-    apRead.Tilt = record.value("Tilt").toFloat();
+    apRead.X = record.value("x").toFloat();
+    apRead.Y = record.value("y").toFloat();
+    apRead.Z = record.value("z").toFloat();
+    apRead.Azimut = record.value("azimut").toFloat();
+    apRead.Tilt = record.value("tilt").toFloat();
 
-    QStringList qslRadHoriz(record.value("RadHoriz").toString().split(";"));
-    QStringList qslRadVert(record.value("RadVert").toString().split(";"));
+    QStringList qslRadHoriz(record.value("rad_horizontal").toString().split(";"));
+    QStringList qslRadVert(record.value("rad_vertical").toString().split(";"));
 
     for (int i = 0; i < 360; i++) {
         apRead.AzHoriz[i] = i;
@@ -1131,11 +1131,11 @@ Task MainWindow::taskFromModel(int intRow)
     Task task;
 
     task.Id = record.value("id").toInt();
-    task.Enabled = record.value("Enabled").toBool();
-    task.Type = record.value("TYPE").toInt();
-    task.Data = record.value("TASK").toString();
-    task.Path = record.value("Path").toString();
-    task.Number = record.value("Number").toInt();
+    task.Enabled = record.value("enabled").toBool();
+    task.Type = record.value("type").toInt();
+    task.Data = record.value("params").toString();
+    task.Path = record.value("path").toString();
+    task.Number = record.value("sort").toInt();
 
     return task;
 }
@@ -1146,11 +1146,11 @@ void MainWindow::taskView()
     QSqlRecord record = modelTask->record( ui->tableView_Task->selectionModel()->selectedRows().first().row() );
     QString strPath;
 
-    if (QFile(record.value("Path").toString()).exists())
-        strPath = record.value("Path").toString();
+    if (QFile(record.value("path").toString()).exists())
+        strPath = record.value("path").toString();
     else
         strPath = QFileInfo(G_fOpenProj).absolutePath() + "/Result/"
-                + QFileInfo(record.value("Path").toString()).fileName();
+                + QFileInfo(record.value("path").toString()).fileName();
 
     if (QFile(strPath).exists()) {
         ViewPlot *vpNew = new ViewPlot(this);
@@ -1166,7 +1166,7 @@ void MainWindow::taskEnableAll()
 {
     for (int row = 0; row < modelTask->rowCount(); row++) {
         QSqlRecord record = modelTask->record(row);
-        record.setValue("Enabled", true);
+        record.setValue("enabled", true);
         modelTask->setRecord(row, record);
     }
     modelTask->submitAll();
@@ -1180,7 +1180,7 @@ void MainWindow::taskEnable()
     int curRow(ui->tableView_Task->selectionModel()->selectedRows().last().row());
     foreach (index, ui->tableView_Task->selectionModel()->selectedRows()) {
          QSqlRecord record = modelTask->record( index.row() );
-         record.setValue("Enabled", !record.value("Enabled").toBool());
+         record.setValue("enabled", !record.value("enabled").toBool());
          modelTask->setRecord(index.row(), record);
     }
     modelTask->submitAll();
@@ -1193,7 +1193,7 @@ void MainWindow::taskDisableAll()
 {
     for (int row = 0; row < modelTask->rowCount(); row++) {
         QSqlRecord record = modelTask->record(row);
-        record.setValue("Enabled", false);
+        record.setValue("enabled", false);
         modelTask->setRecord(row, record);
     }
     modelTask->submitAll();
@@ -1484,7 +1484,7 @@ void MainWindow::calcResult(QString strResult, int idTask)
 {
     QSqlQuery query(QSqlDatabase::database("project"));
 
-    query.prepare ("UPDATE TaskCalc SET Path = :path WHERE id = :id");
+    query.prepare ("UPDATE tasks SET path = :path WHERE id = :id");
     query.bindValue(":id",  idTask);
     query.bindValue(":path", strResult);
     query.exec();
