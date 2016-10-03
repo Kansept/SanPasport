@@ -43,6 +43,37 @@ namespace TaskHeader
     };
 }
 
+namespace AntennaHeader
+{
+    enum AntennaHeader {
+        Id,
+        Enabled,
+        Name,
+        Owner,
+        Frequency,
+        Gain,
+        Height,
+        Polarization,
+        PowerTotal,
+        PowerTrx,
+        CountTrx,
+        FeederLeght,
+        FeederLoss,
+        Ksvn,
+        LossOther,
+        X,
+        Y,
+        Z,
+        Azimut,
+        Tilt,
+        Sort,
+        RadHorizontal,
+        RadVertical,
+        Pdu,
+        Type
+    };
+}
+
 class Dialog_EditAnt;
 class Dialog_Parametrs;
 class Dialog_TaskZo;
