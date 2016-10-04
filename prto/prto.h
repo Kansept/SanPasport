@@ -89,44 +89,7 @@ public:
     QString RadVerticalToString2();      // Считать вертикальную ДН в строку для ПКАЭМО
 };
 
-/// ------------------------ ВРЕМЕННО РАЗМЕЩЯЕМ ЗДЕСЬ
-class Task
-{
-Q_ENUMS(RequestTypes)
-public:
-    enum TaskType {
-        Zoz = 1,
-        Vs = 2
-    };
 
-    bool Enabled;
-    int Type;
-    float Number;
-    QString Params;
-    QString Path;
-    int Id;
-
-    // ----------------------------------- Конструктор ----------------------------------- //
-    Task()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        Enabled = true;
-        Type = 0;
-        Number = 0;
-        Params.clear();
-        Path.clear();
-        Id = -1;
-    }
-    // ----------------------------------- Деструктор ----------------------------------- //
-    ~Task()
-    {
-    }
-
-};
 
 
 class ZO

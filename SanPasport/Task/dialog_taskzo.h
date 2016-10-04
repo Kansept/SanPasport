@@ -1,10 +1,10 @@
 #ifndef DIALOG_TASKZO_H
 #define DIALOG_TASKZO_H
 
+#include "prto.h"
+#include "task.h"
 #include <QDialog>
 #include <QShowEvent>
-
-#include "prto.h"
 
 namespace Ui {
 class Dialog_TaskZo;

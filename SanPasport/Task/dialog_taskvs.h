@@ -1,11 +1,11 @@
 #ifndef DIALOG_TASKVS_H
 #define DIALOG_TASKVS_H
 
+#include "prto.h"
+#include "task.h"
 #include <QDialog>
 #include <QSettings>
 #include <QShowEvent>
-
-#include "prto.h"
 
 namespace Ui {
 class Dialog_TaskVs;

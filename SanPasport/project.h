@@ -1,12 +1,13 @@
 #ifndef CREATEDB_H
 #define CREATEDB_H
 
+#include "prto.h"
+#include "task.h"
+
 #include <QSqlDatabase>
 #include <QMessageBox>
 #include <QDebug>
 #include <QSqlQuery>
-
-#include <prto.h>
 
 class Project
 {

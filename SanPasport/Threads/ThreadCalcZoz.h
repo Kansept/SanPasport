@@ -1,11 +1,12 @@
 #ifndef THREADCALCZOZ_H
 #define THREADCALCZOZ_H
 
+#include "prto.h"
+#include "task.h"
 #include <QDate>
 #include <QDir>
 #include <QTime>
 #include <QThread>
-#include "prto.h"
 
 class ThreadCalcZoz : public QThread
 {

@@ -1,8 +1,9 @@
 #ifndef DIALOG_TASKPOINT_H
 #define DIALOG_TASKPOINT_H
 
-#include <QDialog>
 #include "prto.h"
+#include "task.h"
+#include <QDialog>
 
 namespace Ui {
 class Dialog_TaskPoint;
