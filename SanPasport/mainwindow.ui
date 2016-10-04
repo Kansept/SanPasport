@@ -48,7 +48,7 @@
           <number>1</number>
          </property>
          <item row="0" column="0">
-          <widget class="TableViewSp" name="tableView_Prto">
+          <widget class="TableViewSp" name="tableView_Antennas">
            <property name="font">
             <font>
              <pointsize>8</pointsize>

@@ -66,7 +66,7 @@ void Dialog_TaskZo::pushButton_Ok()
         tskZo.Number = g_taskZoz.Number;
         tskZo.Enabled = g_taskZoz.Enabled;
         tskZo.Type = 1;
-        tskZo.Data = qsSendZo;
+        tskZo.Params = qsSendZo;
 
         Project cbd;
         cbd.addTask(tskZo);
@@ -108,7 +108,7 @@ void Dialog_TaskZo::clearUI()
 void Dialog_TaskZo::insertData(Task tsk)
 {
     clearUI();
-    QStringList stlTask(tsk.Data.split(";"));
+    QStringList stlTask(tsk.Params.split(";"));
 
     ui->lineEdit_Xmin->setText( stlTask.at(0) );
     ui->lineEdit_Xmax->setText( stlTask.at(1) );

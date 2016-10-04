@@ -52,7 +52,7 @@ void Dialog_TaskVs::pushButton_Ok()
         tskVs.Number = g_taskVS.Number;
         tskVs.Enabled = g_taskVS.Enabled;
         tskVs.Type = 2;
-        tskVs.Data = qsSendVs;
+        tskVs.Params = qsSendVs;
 
         Project cbd;
         cbd.addTask(tskVs);
@@ -100,7 +100,7 @@ void Dialog_TaskVs::clearUI()
 void Dialog_TaskVs::insertData(Task tsk)
 {
     clearUI();
-    QStringList stlTask(tsk.Data.split(";"));
+    QStringList stlTask(tsk.Params.split(";"));
 
     ui->lineEdit_Xpos->setText( stlTask.at(0) );
     ui->lineEdit_Ypos->setText( stlTask.at(1) );

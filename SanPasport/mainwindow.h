@@ -100,11 +100,11 @@ public:
 private:
     Ui::MainWindow *ui;
 
-    ModelAntennas *modelPrto;
+    ModelAntennas *modelAntenna;
     ModelTasks *modelTask;
     QSqlTableModel *modelOptions;
     QFileSystemModel *modelDb;
-    QMenu *menuAnt;
+    QMenu *menuAntenna;
     Project *project;
     // Статус Бар
     QLabel *sb1;
@@ -115,17 +115,17 @@ private:
     void initStatusBar();
 
 signals:
-    void sendIdEditAnt(Prto qsIdSend);
+    void sendIdEditAnt(Antenna qsIdSend);
 
 protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-     /// Общие
+     // Общие
      void dragEnterEvent(QDragEnterEvent* event);      // Реализация Drag'n'Drop
      void dropEvent(QDropEvent* event);                // Реализация Drag'n'Drop
-     void EnableUI(bool b);                            // Вкл/Выкл элементы интерфейса
-     /// ФАЙЛ
+     void enableUI(bool b);                            // Вкл/Выкл элементы интерфейса
+     // ФАЙЛ
      void fileNew();                             // Новый проект
      void fileOpen();                            // Открыть проект
      void fileLoadModel(const QSqlDatabase db);  // Загрузить модель
@@ -136,29 +136,29 @@ private slots:
      void fileImportPkaemo4(const QString pathFile);    // Импорт файла ПКАЭМО
      void fileExportPkaemo4();                   // Экспорт файла ПКАЭМО
      bool fileClose();                           // Закрыть проект
-     /// ПРТО
-     void prtoEnable();                     // Вкл/Выкл антенну
-     void prtoEnableAll();                  // Включить все антенны
-     void prtoDisableAll();                 // Отключить все антенны
-     void prtoAdd(const Prto adIns);        // Добавить антенну в проект
-     void prtoAddPPC();
-     void prtoDublicate();                  // Дублировать антенну
-     bool prtoRemove();                     // Удалить антенну
-     void prtoEdit();                       // Редактировать антенну
-     void prtoSaveAs();                     // Сохранить антенну в файл
-     bool prtoFromFile(const QString &f);   // Добавить из файла
+     // ПРТО
+     void enableAntenna();                     // Вкл/Выкл антенну
+     void enableAllAntennas();                  // Включить все антенны
+     void disableAllAntennas();                 // Отключить все антенны
+     void addAntenna(const Antenna antenna);        // Добавить антенну в проект
+     void addAntennaPPC();
+     void dublicateAntenna();                  // Дублировать антенну
+     bool removeAntenna();                     // Удалить антенну
+     void editAntenna();                       // Редактировать антенну
+     void saveAsPattern();                     // Сохранить антенну в файл
+     bool AntennaFromFile(const QString &f);   // Добавить из файла
      void dbPrtoInsert();                   // Открыть из БД
-     Prto prtoFromModel(const int iRow);    // Прочитать ПРТО из модели
-     void prtoOpenFile();                   // Открыть файл
+     Antenna getAntennaFromModel(const int row);    // Прочитать ПРТО из модели
+     void OpenFileAntenna();                   // Открыть файл
      void selected_ant();
-     void contextMenuPrto(const QPoint &pos);
-     void prtoLoadPPC();                    // Загружаем РРС из фала
-     void prtoKeyPresed(int numKey, int numModifierKey);    // Горячие клавиши
-     void prtoMoveUp();                     // Переместить вверх
-     void prtoMoveDown();                   // Переместить вниз
-     void prtoMoved(int LogicIndex, int OldVisualIndex, int NewVisualIndex); // Переместить
-     void prtoExportCSV();
-     /// База данных
+     void contextMenuAntenna(const QPoint &pos);
+     void loadAntennaPPC();                    // Загружаем РРС из фала
+     void AntennaKeyPresed(int numKey, int numModifierKey);    // Горячие клавиши
+     void moveUpAntenna();                     // Переместить вверх
+     void moveDownAntenna();                   // Переместить вниз
+     void moveAntenna(int LogicIndex, int OldVisualIndex, int NewVisualIndex); // Переместить
+     void exportAntennasToCsv();
+     // База данных
      void dbPrtoView();                     // Просмотр ДН
      void dbPath(const QString strPath);    // Сменить папку базы данных
      void dbBrowse();                       // Открыть в проводнике
@@ -168,7 +168,7 @@ private slots:
      void dbFilter(bool b);                 // Фильтр
      void dbSearch();                       // Поиск
      void dbSearchClear();                  // Очистить поиск
-     /// ЗАДАНИЯ
+     // ЗАДАНИЯ
      void taskView();                 // Просмотр
      void taskEnable();               // Вкл.Выкл
      void taskEnableAll();            // Включить все задания
@@ -184,24 +184,24 @@ private slots:
      void taskMoveDown();             // Переместить вниз
      void taskMoved(int LogicIndex, int OldVisualIndex, int NewVisualIndex); // Переместить
      void sortTasks();
-     /// РАСЧЕТ
+     // РАСЧЕТ
      void calcStart();                               // Старт расчёта
      void UICalc(bool b);                            // Заморозка UI
      void calcResult(QString strResult, int idTask); // Записать результат
      void progresBar(int value);                     // Прогресс бар
-     void showDlgParametrs();                        // Параметры расчета
+     void showDialogParametrs();                        // Параметры расчета
      void signal_SendOptions(QString qsSendOptions); // Параметры расчета
-     /// ГРАФИКА
+     // ГРАФИКА
      void graphcsOpenZo();
      void graphcsSitPlan(); // Открыть ситуационный план
-     /// О программе
+     // О программе
      void helpPpcCsv();
      void helpAbout();
-     /// Дополнительно
+     // Дополнительно
      QString quotedStr(const QString str);  // Кавычки
 
 public slots:
-     void saveEditantPattern(Prto dan);
+     void saveEditantPattern(Antenna antenna);
      void taskInsert();
      void fileOpen(const QString pathFile);
      QString currentPath();

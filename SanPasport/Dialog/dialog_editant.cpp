@@ -14,8 +14,8 @@ const int N1 = 361;     // Размер массива данных ДН
 
 int GraphScale = 25;    // Масштаб графика
 
-Prto g_adnEdit;
-Prto g_adnEditNoEdit;
+Antenna g_adnEdit;
+Antenna g_adnEditNoEdit;
 
 Dialog_EditAnt::Dialog_EditAnt(QWidget *parent) :
     QDialog(parent),
@@ -74,7 +74,7 @@ void Dialog_EditAnt::on_pushButton_Ok_clicked()
 
 
 // ----------------------------------- Открываем форму считываем данные ----------------------------------- //
-void Dialog_EditAnt::insertDataForm(Prto adnEdit)
+void Dialog_EditAnt::insertDataForm(Antenna adnEdit)
 {
     g_adnEdit.clear();
     g_adnEditNoEdit = adnEdit;
@@ -84,11 +84,11 @@ void Dialog_EditAnt::insertDataForm(Prto adnEdit)
 
     ui->lineEdit_Name->setText( adnEdit.Name );
     ui->lineEdit_Owner->setText( adnEdit.Owner );
-    ui->lineEdit_Freq->setText( QString::number(adnEdit.Freq) );
+    ui->lineEdit_Freq->setText( QString::number(adnEdit.Frequency) );
     ui->lineEdit_Gain->setText( QString::number(adnEdit.Gain) );
     ui->lineEdit_Height->setText( QString::number(adnEdit.Height) );
-    ui->lineEdit_PowerPRD->setText( QString::number(adnEdit.PowerPRD) );
-    ui->lineEdit_PRD->setText( QString::number(adnEdit.PRD) );
+    ui->lineEdit_PowerPRD->setText( QString::number(adnEdit.PowerTrx) );
+    ui->lineEdit_PRD->setText( QString::number(adnEdit.CountTrx) );
     ui->lineEdit_LeghtAFT->setText( QString::number(adnEdit.FeederLeght) );
     ui->lineEdit_Loss->setText( QString::number(adnEdit.FeederLoss) );
     ui->lineEdit_KSVN->setText( QString::number(adnEdit.KSVN) );
@@ -99,7 +99,7 @@ void Dialog_EditAnt::insertDataForm(Prto adnEdit)
     ui->lineEdit_Az->setText( QString::number(adnEdit.Azimut) );
     ui->lineEdit_ElTilt->setText( QString::number(adnEdit.Tilt) );
 
-    ui->lineEdit_PowerTotal->setText( QString::number(adnEdit.PowerPRD) );
+    ui->lineEdit_PowerTotal->setText( QString::number(adnEdit.PowerTrx) );
 
     powerCalc();
     initPolarGraph(adnEdit);
@@ -116,12 +116,12 @@ void Dialog_EditAnt::getDataForm()
 {
     g_adnEdit.Name = ui->lineEdit_Name->text();
     g_adnEdit.Owner = ui->lineEdit_Owner->text();
-    g_adnEdit.Freq = ui->lineEdit_Freq->text().toFloat();
+    g_adnEdit.Frequency = ui->lineEdit_Freq->text().toFloat();
     g_adnEdit.Gain = ui->lineEdit_Gain->text().toFloat();;
     g_adnEdit.Height = ui->lineEdit_Height->text().toFloat();
     g_adnEdit.PowerTotal = ui->lineEdit_PowerTotal->text().toFloat();
-    g_adnEdit.PowerPRD = ui->lineEdit_PowerPRD->text().toFloat();
-    g_adnEdit.PRD = ui->lineEdit_PRD->text().toFloat();
+    g_adnEdit.PowerTrx = ui->lineEdit_PowerPRD->text().toFloat();
+    g_adnEdit.CountTrx = ui->lineEdit_PRD->text().toFloat();
     g_adnEdit.FeederLeght = ui->lineEdit_LeghtAFT->text().toFloat();
     g_adnEdit.FeederLoss = ui->lineEdit_Loss->text().toFloat();
     g_adnEdit.KSVN = ui->lineEdit_KSVN->text().toFloat();
@@ -135,12 +135,12 @@ void Dialog_EditAnt::getDataForm()
 
 
 // ----------------------------------- Инициализация полярного графика ----------------------------------- //
-void Dialog_EditAnt::initPolarGraph(Prto dan)
+void Dialog_EditAnt::initPolarGraph(Antenna dan)
 {
-    dan.AzHoriz[360]=360;
-    dan.AzVert[360]=360;
-    dan.RadHoriz[360]=dan.RadHoriz[0];
-    dan.RadVert[360]=dan.RadVert[0];
+    dan.AzimutHorizontal[360]=360;
+    dan.AzimutVertical[360]=360;
+    dan.RadHorizontal[360]=dan.RadHorizontal[0];
+    dan.RadVertical[360]=dan.RadVertical[0];
 
     ui->PlotPolar->detachItems(0,1);
 
@@ -191,11 +191,11 @@ void Dialog_EditAnt::initPolarGraph(Prto dan)
     CurvPolar3db->setPen(QPen(Qt::red,0));                            // назначаем цвет прорисовки - красный
     CurvPolar3db->setPen(QPen(Qt::DashDotLine));
     CurvPolar3db->setStyle(QwtPolarCurve::Lines);
-    CurvPolar3db->setData(new QData(dan.AzHoriz,marker3db,N1));       // передаем кривым подготовленные данные
+    CurvPolar3db->setData(new QData(dan.AzimutHorizontal,marker3db,N1));       // передаем кривым подготовленные данные
     CurvPolar3db->attach(ui->PlotPolar);
 
-    CurvPolarVert->setData(new QData(dan.AzVert,dan.RadVert,N1));     // передаем кривым подготовленные данные
-    CurvPolarHoriz->setData(new QData(dan.AzHoriz,dan.RadHoriz,N1));  // передаем кривым подготовленные данные
+    CurvPolarVert->setData(new QData(dan.AzimutVertical,dan.RadVertical,N1));     // передаем кривым подготовленные данные
+    CurvPolarHoriz->setData(new QData(dan.AzimutHorizontal,dan.RadHorizontal,N1));  // передаем кривым подготовленные данные
 
     CurvPolarHoriz->attach(ui->PlotPolar);
     CurvPolarVert->attach(ui->PlotPolar);
@@ -208,8 +208,8 @@ void Dialog_EditAnt::initPolarGraph(Prto dan)
 void Dialog_EditAnt::powerCalc()
 {
 
-    g_adnEdit.PowerPRD = ui->lineEdit_PowerPRD->text().toFloat();
-    g_adnEdit.PRD = ui->lineEdit_PRD->text().toFloat();
+    g_adnEdit.PowerTrx = ui->lineEdit_PowerPRD->text().toFloat();
+    g_adnEdit.CountTrx = ui->lineEdit_PRD->text().toFloat();
     g_adnEdit.FeederLeght = ui->lineEdit_LeghtAFT->text().toFloat();
     g_adnEdit.FeederLoss = ui->lineEdit_Loss->text().toFloat();
     g_adnEdit.KSVN = ui->lineEdit_KSVN->text().toFloat();
@@ -232,8 +232,8 @@ void Dialog_EditAnt::dnCcw()
 }
 void Dialog_EditAnt::dnMirror()
 {
-    g_adnEdit.mirorrHoriz();
-    g_adnEdit.mirorrsVert();
+    g_adnEdit.mirorrHorizontal();
+    g_adnEdit.mirorrsVertical();
     initPolarGraph(g_adnEdit);
 }
 void Dialog_EditAnt::dnSymmetryTop()
@@ -255,8 +255,8 @@ void Dialog_EditAnt::dnReset()
 {
     for(int i = 0; i < 360; i++)
     {
-        g_adnEdit.RadHoriz[i] = g_adnEditNoEdit.RadHoriz[i];
-        g_adnEdit.RadVert[i] = g_adnEditNoEdit.RadVert[i];
+        g_adnEdit.RadHorizontal[i] = g_adnEditNoEdit.RadHorizontal[i];
+        g_adnEdit.RadVertical[i] = g_adnEditNoEdit.RadVertical[i];
     }
     initPolarGraph(g_adnEdit);
 }

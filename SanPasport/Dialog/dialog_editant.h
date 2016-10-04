@@ -25,7 +25,7 @@ public:
     ~Dialog_EditAnt();
 
 signals:
-    void sendEditAntFromDlgEdit(Prto adnEditFromDlgEdit);
+    void sendEditAntFromDlgEdit(Antenna adnEditFromDlgEdit);
 
 private slots:
     void on_pushButton_Ok_clicked();
@@ -40,8 +40,8 @@ private slots:
     void getDataForm();
 
 public slots:
-    void insertDataForm(Prto adnEdit);
-    void initPolarGraph(Prto dan);
+    void insertDataForm(Antenna adnEdit);
+    void initPolarGraph(Antenna dan);
     void powerCalc();
 
 private:

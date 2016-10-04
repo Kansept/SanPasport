@@ -75,8 +75,8 @@ private slots:
     void action_ColorHorizChange(int iIndex);
 // -------------------------------------------------------------------------
     bool loadedPattern();   // Загрузка даных из файла
-    Prto getDanGraph();                // Берём данные из таблиц
-    void setDanGraph(Prto dan);        // Помощяем данные в таблицы
+    Antenna getDanGraph();                // Берём данные из таблиц
+    void setDanGraph(Antenna dan);        // Помощяем данные в таблицы
 // ------------------------------------------------------------------------
     void isEditPattern();
     void isEditPatternInMenu();
@@ -95,14 +95,14 @@ private slots:
     void on_actionViewPanelData(bool b);        // Показать/Скрыть панель с данными
     void on_actionViewPanelTransform(bool b);   // Показать/Скрыть панель трансформации
 // ------------------------------------------------------------------------
-    void initPolarGraph(Prto dan);       // Инициализация Полярного Графика
-    void initDecartGraph(Prto dan);      // Инициализация Декартового Графика
+    void initPolarGraph(Antenna dan);       // Инициализация Полярного Графика
+    void initDecartGraph(Antenna dan);      // Инициализация Декартового Графика
     void initAllGraph();
     void EnableUI(bool b);                  // Инициализация Панелек и чекбоксов
     void openInTextEdit();
 
     void setDataSheet();  // Сформировать паспорт
-    void passportWord(Prto prtoPassp);
+    void passportWord(Antenna prtoPassp);
 
     void menuPolar_ContextMenu(const QPoint &pos);
     void closeDN();

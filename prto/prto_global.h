@@ -3,7 +3,7 @@
 
 #include <QtCore/qglobal.h>
 
-#if defined(PRTO_LIBRARY)
+#if defined(SANPASPORT_LIBRARY)
 #  define PRTOSHARED_EXPORT Q_DECL_EXPORT
 #else
 #  define PRTOSHARED_EXPORT Q_DECL_IMPORT

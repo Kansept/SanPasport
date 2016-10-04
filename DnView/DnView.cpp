@@ -44,7 +44,7 @@ using namespace std;
 
 // ------- Глобальные переменные ------- >>
 const int N1 = 361;       // Размер массива данных ДН
-Prto g_dan;         // Переменная данных графика
+Antenna g_dan;         // Переменная данных графика
 // ------- Глобальные переменные ------- <<
 
 // ------- Переменные в файле конфигуорации ------- >>
@@ -408,15 +408,15 @@ void DnView:: dropEvent(QDropEvent* event){
 
 
 // --------------------------------------------------- Инициализация полярного графика ------------------------------------------ //
-void DnView::initPolarGraph(Prto g_dan)
+void DnView::initPolarGraph(Antenna g_dan)
 {
-    g_dan.AzHoriz[360]=360;
-    g_dan.AzVert[360]=360;
-    g_dan.RadHoriz[360]=g_dan.RadHoriz[0];
-    g_dan.RadVert[360]=g_dan.RadVert[0];
+    g_dan.AzimutHorizontal[360]=360;
+    g_dan.AzimutVertical[360]=360;
+    g_dan.RadHorizontal[360]=g_dan.RadHorizontal[0];
+    g_dan.RadVertical[360]=g_dan.RadVertical[0];
 
     double marker3db[361];
-    for (int i=0; i<=361; i++) {
+    for (int i=0; i<=360; i++) {
         marker3db[i]=-3;
     }
 
@@ -471,13 +471,13 @@ void DnView::initPolarGraph(Prto g_dan)
     CurvPolar3db->setPen(QPen(Qt::black,1));                       // назначаем цвет прорисовки - красный
     CurvPolar3db->setPen(QPen(Qt::DashDotLine));
     CurvPolar3db->setStyle(QwtPolarCurve::Lines);
-    CurvPolar3db->setData(new QData(g_dan.AzVert,marker3db,N1));   // передаем кривым подготовленные данные
+    CurvPolar3db->setData(new QData(g_dan.AzimutVertical,marker3db,N1));   // передаем кривым подготовленные данные
     CurvPolar3db->attach(ui->PlotPolar);
 
     if(g_GraphScale != 1)
     {
-        CurvPolarVert->setData(new QData(g_dan.AzVert,g_dan.RadVert,N1));     // передаем кривым подготовленные данные
-        CurvPolarHoriz->setData(new QData(g_dan.AzHoriz,g_dan.RadHoriz,N1));  // передаем кривым подготовленные данные
+        CurvPolarVert->setData(new QData(g_dan.AzimutVertical,g_dan.RadVertical,N1));     // передаем кривым подготовленные данные
+        CurvPolarHoriz->setData(new QData(g_dan.AzimutHorizontal,g_dan.RadHorizontal,N1));  // передаем кривым подготовленные данные
     }
     else
     {
@@ -487,11 +487,11 @@ void DnView::initPolarGraph(Prto g_dan)
         fRadVertMin = g_dan.radVertMin();
         for(int i=0; i<361; i++)
         {
-            fRadHoriz[i] = pow((float(fabs(fRadHorizMin)) - float(fabs(g_dan.RadHoriz[i]))) / -fRadHorizMin,2);
-            fRadVert[i]  = pow((float(fabs(fRadVertMin)) - float(fabs(g_dan.RadVert[i]))) / -fRadVertMin,2);
+            fRadHoriz[i] = pow((float(fabs(fRadHorizMin)) - float(fabs(g_dan.RadHorizontal[i]))) / -fRadHorizMin,2);
+            fRadVert[i]  = pow((float(fabs(fRadVertMin)) - float(fabs(g_dan.RadVertical[i]))) / -fRadVertMin,2);
         }
-        CurvPolarVert->setData(new QData(g_dan.AzVert,fRadVert,N1));     // передаем кривым подготовленные данные
-        CurvPolarHoriz->setData(new QData(g_dan.AzHoriz,fRadHoriz,N1));  // передаем кривым подготовленные данные
+        CurvPolarVert->setData(new QData(g_dan.AzimutVertical,fRadVert,N1));     // передаем кривым подготовленные данные
+        CurvPolarHoriz->setData(new QData(g_dan.AzimutHorizontal,fRadHoriz,N1));  // передаем кривым подготовленные данные
     }
     CurvPolarHoriz->attach(ui->PlotPolar);
     CurvPolarVert->attach(ui->PlotPolar);
@@ -508,7 +508,7 @@ void DnView::initPolarGraph(Prto g_dan)
 
 
 // --------------------------------------------------- Инициализация графика в декартовых координатах -------------------------- //
-void DnView::initDecartGraph(Prto g_dan)
+void DnView::initDecartGraph(Antenna g_dan)
 {
     ui->PlotDec->detachItems(0,1);
     gridDec = new QwtPlotGrid;       // создаем сетку
@@ -572,16 +572,16 @@ void DnView::initDecartGraph(Prto g_dan)
     double fRadHoriz[361], fRadVert[361];
     if(g_GraphScale != 1) {
         for(int i=0; i<361; i++) {
-            fRadHoriz[i] = g_dan.RadHoriz[i];
-            fRadVert[i] = g_dan.RadVert[i];
+            fRadHoriz[i] = g_dan.RadHorizontal[i];
+            fRadVert[i] = g_dan.RadVertical[i];
         }
     } else {
         float fRadHorizMin, fRadVertMin;
         fRadHorizMin = g_dan.radHorizMin();
         fRadVertMin = g_dan.radVertMin();
         for(int i=0; i<361; i++) {
-            fRadHoriz[i] = float(1 - (g_dan.RadHoriz[i]/fRadHorizMin));
-            fRadVert[i] = float(1 - (g_dan.RadVert[i]/fRadVertMin));
+            fRadHoriz[i] = float(1 - (g_dan.RadHorizontal[i]/fRadHorizMin));
+            fRadVert[i] = float(1 - (g_dan.RadVertical[i]/fRadVertMin));
         }
     }
 
@@ -668,37 +668,37 @@ bool DnView::loadedPattern()
 
 
 // --------------------------------------------------- Отправляем данные в табличку --------------------------------------------------- //
-void DnView::setDanGraph(Prto g_dan)
+void DnView::setDanGraph(Antenna g_dan)
 {
     QTableWidgetItem* iName = new QTableWidgetItem(g_dan.Name);                     ui->tableWidget_Data1->setItem(0,1,iName);       // Название
-    QTableWidgetItem* iFreq = new QTableWidgetItem(QString::number(g_dan.Freq));    ui->tableWidget_Data1->setItem(1,1,iFreq);       // Частота
+    QTableWidgetItem* iFreq = new QTableWidgetItem(QString::number(g_dan.Frequency));    ui->tableWidget_Data1->setItem(1,1,iFreq);       // Частота
     QTableWidgetItem* iGain = new QTableWidgetItem(QString::number(g_dan.Gain));    ui->tableWidget_Data1->setItem(2,1,iGain);       // КУ
     QTableWidgetItem* iTilt = new QTableWidgetItem(g_dan.ETilt);                     ui->tableWidget_Data1->setItem(3,1,iTilt);       // Угол
     QTableWidgetItem* iCom = new QTableWidgetItem(g_dan.Comment);                   ui->tableWidget_Data1->setItem(4,1,iCom);        // Коментарии
     for (int k=0; k<=360; k++) {
-        QTableWidgetItem* iAzH = new QTableWidgetItem(QString::number(g_dan.AzHoriz[k]));       ui->tableWidget_Data2->setItem(k,0,iAzH);
-        QTableWidgetItem* iRadV = new QTableWidgetItem(QString::number(fabs(g_dan.RadVert[k])));     ui->tableWidget_Data2->setItem(k,1,iRadV);
-        QTableWidgetItem* iRadH = new QTableWidgetItem(QString::number(fabs(g_dan.RadHoriz[k])));     ui->tableWidget_Data2->setItem(k,2,iRadH);
+        QTableWidgetItem* iAzH = new QTableWidgetItem(QString::number(g_dan.AzimutHorizontal[k]));       ui->tableWidget_Data2->setItem(k,0,iAzH);
+        QTableWidgetItem* iRadV = new QTableWidgetItem(QString::number(fabs(g_dan.RadVertical[k])));     ui->tableWidget_Data2->setItem(k,1,iRadV);
+        QTableWidgetItem* iRadH = new QTableWidgetItem(QString::number(fabs(g_dan.RadHorizontal[k])));     ui->tableWidget_Data2->setItem(k,2,iRadH);
     }
 }
 
 
 // --------------------------------------------------- Берём данные из таблички табличку --------------------------------------------------- //
-Prto DnView::getDanGraph()
+Antenna DnView::getDanGraph()
 {
-    Prto getDan;
+    Antenna getDan;
 
     getDan.Name = ui->tableWidget_Data1->item(0,1)->text();
-    getDan.Freq = ui->tableWidget_Data1->item(1,1)->text().toDouble();
+    getDan.Frequency = ui->tableWidget_Data1->item(1,1)->text().toDouble();
     getDan.Gain = ui->tableWidget_Data1->item(2,1)->text().toDouble();
     getDan.ETilt = ui->tableWidget_Data1->item(3,1)->text();
     getDan.Comment = ui->tableWidget_Data1->item(4,1)->text();
 
     for (int k=0; k<=359; k++) {
-        getDan.AzHoriz[k] = ui->tableWidget_Data2->item(k,0)->text().toDouble();
-        getDan.AzVert[k] = ui->tableWidget_Data2->item(k,0)->text().toDouble();
-        getDan.RadVert[k] = -(ui->tableWidget_Data2->item(k,1)->text().toDouble());
-        getDan.RadHoriz[k] = -(ui->tableWidget_Data2->item(k,2)->text().toDouble());
+        getDan.AzimutHorizontal[k] = ui->tableWidget_Data2->item(k,0)->text().toDouble();
+        getDan.AzimutVertical[k] = ui->tableWidget_Data2->item(k,0)->text().toDouble();
+        getDan.RadVertical[k] = -(ui->tableWidget_Data2->item(k,1)->text().toDouble());
+        getDan.RadHorizontal[k] = -(ui->tableWidget_Data2->item(k,2)->text().toDouble());
     }
 
     return getDan;
@@ -796,7 +796,7 @@ void DnView::setDataSheet()
 
 
 /* --------------------------------------------------- Генерация паспорта --------------------------------------------------- */
-void DnView::passportWord(Prto prtoPassp)
+void DnView::passportWord(Antenna prtoPassp)
 {
     settings->beginGroup("settings_DnView");
     int numTemplate = settings->value("DnViewTemplate", "0").toInt();
@@ -873,7 +873,7 @@ void DnView::passportWord(Prto prtoPassp)
     rangeTab->querySubObject("Rows()") ;
     // 1-я строка
     rangeTab->querySubObject("Cell(Row, Column)" , 1,1)->querySubObject("Range()")->dynamicCall("InsertAfter(Text)" ,"Частотный диапозон, МГц:") ;
-    rangeTab->querySubObject("Cell(Row, Column)" , 1,2)->querySubObject("Range()")->dynamicCall("InsertAfter(Text)" ,prtoPassp.Freq) ;
+    rangeTab->querySubObject("Cell(Row, Column)" , 1,2)->querySubObject("Range()")->dynamicCall("InsertAfter(Text)" ,prtoPassp.Frequency) ;
     // 2-я строка
     rangeTab->querySubObject("Cell(Row, Column)" , 2,1)->querySubObject("Range()")->dynamicCall("InsertAfter(Text)" ,"Коэффициент усиления антенны, дБi:");
     rangeTab->querySubObject("Cell(Row, Column)" , 2,2)->querySubObject("Range()")->dynamicCall("InsertAfter(Text)" ,prtoPassp.Gain) ;
@@ -1090,8 +1090,8 @@ void DnView::isEditPatternInMenu()
 void DnView::action_PatternMirror()
 {
     g_dan = getDanGraph();
-    if(ui->checkBox_PatternHoriz->isChecked()) { g_dan.mirorrHoriz(); }
-    if(ui->checkBox_PatternVert->isChecked()) { g_dan.mirorrsVert(); }
+    if(ui->checkBox_PatternHoriz->isChecked()) { g_dan.mirorrHorizontal(); }
+    if(ui->checkBox_PatternVert->isChecked()) { g_dan.mirorrsVertical(); }
     initAllGraph();
 }
 void DnView::enableEditPatterns(bool b)

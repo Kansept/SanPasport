@@ -13,7 +13,7 @@
 #include <QRegExp>
 #include <QFileInfo>
 
-class PRTOSHARED_EXPORT Prto
+class PRTOSHARED_EXPORT Antenna
 {
 
 public:
@@ -22,7 +22,7 @@ public:
     bool Enabled;
     float Number;
     QString Name;
-    double Freq;
+    double Frequency;
     double Gain;
     QString ETilt;
     QString Comment;
@@ -31,34 +31,34 @@ public:
     float X;
     float Y;
     float Z;
-    float PRD;
+    float CountTrx;
     float Tilt;
     QString Owner;
     float FeederLoss;
     float FeederLeght;
     float KSVN;
     float LossOther;
-    float PowerPRD;
+    float PowerTrx;
     float PowerTotal;
     float Height;
     float Azimut;
     int Type;
-    double RadHoriz[361];     // Азимут ДН Гориз
-    double RadVert[361];      // Азимут ДН Верт
-    double AzHoriz[361];      // Радиус ДН Гориз
-    double AzVert[361];       // Радиус ДН Верт
-    double RadHorizNorm[361]; // Азимут Нормированная ДН Гориз
-    double RadVertNorm[361];  // Азимут Нормированная ДН Верт
+    double RadHorizontal[361];     // Азимут ДН Гориз
+    double RadVertical[361];      // Азимут ДН Верт
+    double AzimutHorizontal[361];      // Радиус ДН Гориз
+    double AzimutVertical[361];       // Радиус ДН Верт
+    double RadHorizontalNormalization[361]; // Азимут Нормированная ДН Гориз
+    double RadVerticalNormalization[361];  // Азимут Нормированная ДН Верт
 
 
     /// ------------------------------------------------------------------------- Функции
-    Prto();  // Инициализация
+    Antenna();  // Инициализация
 
     /// Загрузка / Сохранение
-    Prto loadedBdn(const QString &f);           // Загрузка и считывание данных с bdn файла
-    Prto loadNsma(const QString f);             // Загрузить ДН из фала NSMA
-    Prto loadMsi(const QString f);              // Загрузить ДН из фала MSI
-    bool saveAsMsi(const QString filepath);     // Сохранить как MSI
+    Antenna loadedBdn(const QString &f);     // Загрузка и считывание данных с bdn файла
+    Antenna loadNsma(const QString f);       // Загрузить ДН из фала NSMA
+    Antenna loadMsi(const QString f);        // Загрузить ДН из фала MSI
+    bool saveAsMsi(const QString filepath);  // Сохранить как MSI
     bool validate(); // Проверка
 
     ///  Аналитические
@@ -68,8 +68,8 @@ public:
 
     /// Трансформация
     void clear();                                       // Обнуление всех переменных
-    void mirorrHoriz();                                 // Отражение горизонтальной ДН
-    void mirorrsVert();                                 // Отражение вертикальной ДН
+    void mirorrHorizontal();                                 // Отражение горизонтальной ДН
+    void mirorrsVertical();                                 // Отражение вертикальной ДН
     void rotate(int angleHorizPat, int angleVertPat);   // Поворот ДН
     void preloadPatternVert();                          // Поджать ДН
     void symmetryTop(bool horizPat, bool vertPat);      // Симметрия верха ДН
@@ -83,10 +83,10 @@ public:
     float calcPDU(const float Xpos, const float Ypos, const float Zpos, const float fKoef); // Расчет ПДУ
 
     /// Вспомогательные
-    QString RadHorizToString();      // Считать горизонтальную ДН в строку - Стандартная
-    QString RadVertToString();       // Считать вертикальную ДН в строку - Стандартная
-    QString RadHorizToString2();     // Считать горизонтальную ДН в строку для ПКАЭМО
-    QString RadVertToString2();      // Считать вертикальную ДН в строку для ПКАЭМО
+    QString RadHorizontalToString();      // Считать горизонтальную ДН в строку - Стандартная
+    QString RadVerticalToString();       // Считать вертикальную ДН в строку - Стандартная
+    QString RadHorizontalToString2();     // Считать горизонтальную ДН в строку для ПКАЭМО
+    QString RadVerticalToString2();      // Считать вертикальную ДН в строку для ПКАЭМО
 };
 
 /// ------------------------ ВРЕМЕННО РАЗМЕЩЯЕМ ЗДЕСЬ
@@ -102,7 +102,7 @@ public:
     bool Enabled;
     int Type;
     float Number;
-    QString Data;
+    QString Params;
     QString Path;
     int Id;
 
@@ -117,7 +117,7 @@ public:
         Enabled = true;
         Type = 0;
         Number = 0;
-        Data.clear();
+        Params.clear();
         Path.clear();
         Id = -1;
     }
@@ -143,67 +143,8 @@ public:
 
 public slots:
     /* ------- Чтение файла Горизонтального сечения ЗОЗ ------- */
-    void readZoz(const QString f)
-    {
-        // Читаем границы
-        QFile fileOpen(f);
-        QStringList strlLast;
-
-        Type = QFileInfo(f).fileName().left(2);
-
-        if(fileOpen.open(QIODevice::ReadOnly))
-        {
-            QTextStream streamLast(&fileOpen);
-            QString strlLine;
-            int i(0);
-
-            while(!streamLast.atEnd()) {
-                strlLine = streamLast.readLine();
-
-                if(i == 0 and Type == "vs")
-                    Height = strlLine.split(" ", QString::SkipEmptyParts).at(1);
-                if(i == 0 and Type == "zo")
-                    Height = strlLine.split(" ", QString::SkipEmptyParts).at(3);
-                if(i == 1) {
-                    strlLast = strlLine.split(" ", QString::SkipEmptyParts);
-                    MinX = strlLast.at(0).toFloat();
-                    MinY = strlLast.at(1).toFloat();
-                }
-                if(i == 2)
-                    Step = strlLine.split(" ", QString::SkipEmptyParts).at(1).toFloat() - MinY;
-                if(strlLine.split(" ", QString::SkipEmptyParts).size() == 3)
-                    strlLast = strlLine.split(" ", QString::SkipEmptyParts);
-
-                i++;
-            }
-            fileOpen.close();
-            MaxX = strlLast.at(0).toFloat();
-            MaxY = strlLast.at(1).toFloat();
-        }
-
-        // Размер матрицы
-        int numSize( (fabs(MinY)+fabs(MaxY)+1)/Step );
-        if( numSize < int( (fabs(MinX)+fabs(MaxX)+1)/Step ))
-            numSize = int( (fabs(MinX)+fabs(MaxX)+1)/Step );
-
-        Values.insert(0, pow(numSize, 2), 0);
-
-        // Запись значений
-        if(fileOpen.open(QIODevice::ReadOnly))
-        {
-            strlLast.clear();
-            int i(0);
-            QTextStream streamIns(&fileOpen);
-
-            while(!streamIns.atEnd()) {
-                strlLast = streamIns.readLine().split(" ", QString::SkipEmptyParts);
-                if(strlLast.size() == 3 and i != 0)
-                   Values.replace( int(((strlLast.at(1).toFloat()+abs(MinY))/Step)*numSize) + ((strlLast.at(0).toFloat()+abs(MinX))/Step), strlLast.at(2).toFloat());
-                i++;
-            }
-        }
-        fileOpen.close();
-    }
+    void readZoz(const QString f);
 };
+
 
 #endif // PRTO_H

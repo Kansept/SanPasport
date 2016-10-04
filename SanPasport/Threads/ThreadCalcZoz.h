@@ -12,7 +12,7 @@ class ThreadCalcZoz : public QThread
     Q_OBJECT
 
     QVector<Task> tasks;
-    QVector<Prto> antennas;
+    QVector<Antenna> antennas;
     bool stop;
 
 public:
@@ -24,8 +24,8 @@ protected:
         for (int countTask = 0; countTask < this->tasks.count(); countTask++) {
             Task taskZoz(this->tasks.at(countTask));
 
-            QStringList strlTaskZoz(taskZoz.Data.split(";"));
-            Prto prtoCalc;
+            QStringList strlTaskZoz(taskZoz.Params.split(";"));
+            Antenna prtoCalc;
             float Xmin(strlTaskZoz.at(0).toFloat());
             float Xmax(strlTaskZoz.at(1).toFloat());
             float Xd(strlTaskZoz.at(2).toFloat());
@@ -93,7 +93,7 @@ protected:
     }
 
 public:
-    void loadTask(QVector<Task> vecTask, QVector<Prto> vecPrto)
+    void loadTask(QVector<Task> vecTask, QVector<Antenna> vecPrto)
     {
         this->tasks = vecTask;
         this->antennas = vecPrto;

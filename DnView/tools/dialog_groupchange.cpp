@@ -171,7 +171,7 @@ void Dialog_GroupChange::startConvert()
         return;
     }
 
-    Prto pattern;
+    Antenna pattern;
     QStringList strlstFiles;
     for(int i=0; i < ui->tableWidget_Patterns->rowCount(); i++) {
        strlstFiles.append( ui->tableWidget_Patterns->item(i,1)->text()+"/"+ui->tableWidget_Patterns->item(i,0)->text() );

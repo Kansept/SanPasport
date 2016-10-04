@@ -14,19 +14,19 @@ public:
     Project();
 
     static bool init();
-    bool saveAs( QSqlDatabase memdb, QString filename, bool save );
+    bool saveAs(QSqlDatabase memdb, QString filename, bool save);
     bool addTask(Task tsk);
-    bool addAntenna(Prto adIns);
-    bool prtoEdit(Prto dan);
+    bool addAntenna(Antenna antenna);
+    bool editAntenna(Antenna antenna);
     static void importPKAEMO(const QString f);
-    void exportPKAEMO(const QString fileCopy);
-    QVector<Prto> prtoFromDb();
+    void exportToPkaemo(const QString fileCopy);
+    QVector<Antenna> prtoFromDb();
     QVector<Task> taskFromDb();
     float koef();
     bool saveAntennasToCsv(const QString fileName);
 
 public slots:
-    void prtoAddPPC();
+    void addAntennaPPC();
     QVector<Task> getTasks(int type);
 
 private:

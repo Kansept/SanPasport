@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Статус бар
     initStatusBar();
 
-    EnableUI(false);
+    enableUI(false);
 
     ui->toolBar_File->layout()->setSpacing(2);
     ui->toolBar_Edit->layout()->setSpacing(2);
@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     dlg_Preferens = new Dialog_Preferens(this);
     win_SitPlan = new SitPlan(this);
 
-    /// ФАЙЛ
+    // ФАЙЛ
     connect( ui->action_FileProjectNew, SIGNAL(triggered()), this, SLOT(fileNew()) );                          // Новый проект
     connect( ui->action_FileOpen, SIGNAL(triggered()), this, SLOT(fileOpen()) );                               // Файл открыть
     connect( ui->action_FileSave, SIGNAL(triggered()), this, SLOT(fileSave()) );                               // Сохранить проект
@@ -63,27 +63,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect( ui->action_FileClose, SIGNAL(triggered()), this, SLOT(fileClose()) );                             // Закрыть проект
     connect( ui->action_Exit, SIGNAL(triggered()), this, SLOT(close()) );                                      // Выход
     connect( ui->action_Preferens, SIGNAL(triggered()), dlg_Preferens, SLOT(show()) );    // Настройки программы
-    /// ПРТО
-    connect( ui->action_PrtoSaveAs, SIGNAL(triggered()), this, SLOT(prtoSaveAs()) );    // Сохранить ПРТО в файл
-    connect( ui->action_PrtoLoadPPC, SIGNAL(triggered()), SLOT(prtoLoadPPC()) );        // Загружаем РРС из фала
-    connect( ui->tableView_Prto, SIGNAL(keyPressed(int,int)), SLOT(prtoKeyPresed(int, int)) );  // Горячие клавиши
-    connect( ui->tableView_Prto, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenuPrto(QPoint))); // Контекстное меню
-    connect( ui->action_PrtoAddPPC, SIGNAL(triggered()), SLOT(prtoAddPPC()) );          // Добавить РРС
-    connect( ui->action_prtoEnabled, SIGNAL(triggered()), this, SLOT(prtoEnable()) );   // Вкл./Выкл. антенну
-    connect( ui->action_PrtoEnableAll, SIGNAL(triggered()), SLOT(prtoEnableAll()) );    // Включить все антенны
-    connect( ui->action_PrtoDisableAll, SIGNAL(triggered()), SLOT(prtoDisableAll()) );  // Отключить все антенны
-    connect( ui->action_PrtoAdd, SIGNAL(triggered()), this, SLOT(prtoOpenFile()) );
-    connect( ui->tableView_Prto, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(prtoEdit()) );
-    connect( ui->action_EditAnt, SIGNAL(triggered()), this, SLOT(prtoEdit()) );
-    connect( ui->tableView_Prto, SIGNAL(clicked(QModelIndex)), this, SLOT(selected_ant()) );
-    connect( this, SIGNAL(sendIdEditAnt(Prto)), dlg_EditAnt, SLOT(insertDataForm(Prto)) );
-    connect( dlg_EditAnt, SIGNAL(sendEditAntFromDlgEdit(Prto)), this, SLOT(saveEditantPattern(Prto)) );
-    connect( ui->action_EditRemove, SIGNAL(triggered()), this, SLOT(prtoRemove()) );
-    connect( ui->tableView_Prto->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(prtoMoved(int,int,int)) );
-    connect( ui->action_PrtoMoveUp, SIGNAL(triggered()), SLOT(prtoMoveUp()) );
-    connect( ui->action_PrtoMoveDown, SIGNAL(triggered()), SLOT(prtoMoveDown()) );
-    connect( ui->action_PrtoExportCSV, SIGNAL(triggered()), SLOT(prtoExportCSV()) );
-    /// ЗАДАНИЯ
+    // ПРТО
+    connect( ui->action_PrtoSaveAs, SIGNAL(triggered()), this, SLOT(saveAsPattern()) );    // Сохранить ПРТО в файл
+    connect( ui->action_PrtoLoadPPC, SIGNAL(triggered()), SLOT(loadAntennaPPC()) );        // Загружаем РРС из фала
+    connect( ui->tableView_Antennas, SIGNAL(keyPressed(int,int)), SLOT(AntennaKeyPresed(int, int)) );  // Горячие клавиши
+    connect( ui->tableView_Antennas, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenuAntenna(QPoint))); // Контекстное меню
+    connect( ui->action_PrtoAddPPC, SIGNAL(triggered()), SLOT(addAntennaPPC()) );          // Добавить РРС
+    connect( ui->action_prtoEnabled, SIGNAL(triggered()), this, SLOT(enableAntenna()) );   // Вкл./Выкл. антенну
+    connect( ui->action_PrtoEnableAll, SIGNAL(triggered()), SLOT(enableAllAntennas()) );    // Включить все антенны
+    connect( ui->action_PrtoDisableAll, SIGNAL(triggered()), SLOT(disableAllAntennas()) );  // Отключить все антенны
+    connect( ui->action_PrtoAdd, SIGNAL(triggered()), this, SLOT(OpenFileAntenna()) );
+    connect( ui->tableView_Antennas, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(editAntenna()) );
+    connect( ui->action_EditAnt, SIGNAL(triggered()), this, SLOT(editAntenna()) );
+    connect( ui->tableView_Antennas, SIGNAL(clicked(QModelIndex)), this, SLOT(selected_ant()) );
+    connect( this, SIGNAL(sendIdEditAnt(Antenna)), dlg_EditAnt, SLOT(insertDataForm(Antenna)) );
+    connect( dlg_EditAnt, SIGNAL(sendEditAntFromDlgEdit(Antenna)), this, SLOT(saveEditantPattern(Antenna)) );
+    connect( ui->action_EditRemove, SIGNAL(triggered()), this, SLOT(removeAntenna()) );
+    connect( ui->tableView_Antennas->verticalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(moveAntenna(int,int,int)) );
+    connect( ui->action_PrtoMoveUp, SIGNAL(triggered()), SLOT(moveUpAntenna()) );
+    connect( ui->action_PrtoMoveDown, SIGNAL(triggered()), SLOT(moveDownAntenna()) );
+    connect( ui->action_PrtoExportCSV, SIGNAL(triggered()), SLOT(exportAntennasToCsv()) );
+    // ЗАДАНИЯ
     connect( ui->action_TaskView, SIGNAL(triggered()), this, SLOT(taskView()) );          // Показать задание
     connect( ui->action_TaskDelete, SIGNAL(triggered()), this, SLOT(taskRemove()) );      // Удалить задание
     connect( ui->action_TaskEnable, SIGNAL(triggered()), this, SLOT(taskEnable()) );      // Вкл/Выкл задание
@@ -105,13 +105,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect( ui->action_TaskMoveUp, SIGNAL(triggered()), SLOT(taskMoveUp()) );
     connect( ui->action_TaskMoveDown, SIGNAL(triggered()), SLOT(taskMoveDown()) );
     connect( ui->actionTasksVertSort, SIGNAL(triggered()), SLOT(sortTasks()) );
-    /// Параметры проекта
-    connect( ui->action_Param, SIGNAL(triggered()), this, SLOT(showDlgParametrs()) );
+    // Параметры проекта
+    connect( ui->action_Param, SIGNAL(triggered()), this, SLOT(showDialogParametrs()) );
     connect( dlg_Parametrs, SIGNAL(SendOptionsFromDlgOption(QString)), SLOT(signal_SendOptions(QString)) );
-    connect( ui->action_EditDublAnt, SIGNAL(triggered()), this, SLOT(prtoDublicate()) );
+    connect( ui->action_EditDublAnt, SIGNAL(triggered()), this, SLOT(dublicateAntenna()) );
     connect( this, SIGNAL(destroyed()), this, SLOT(fileClose()) );
-    connect( sbKoef, SIGNAL(clicked()), this, SLOT(showDlgParametrs()) );
-    /// База данных
+    connect( sbKoef, SIGNAL(clicked()), this, SLOT(showDialogParametrs()) );
+    // База данных
     connect( ui->toolButtonDb_PrtoView, SIGNAL(clicked()), this, SLOT(dbPrtoView()) );          // Просмотр ДН
     connect( ui->toolButtonDb_PrtoInsert, SIGNAL(clicked()), this, SLOT(dbPrtoInsert()) );        // Добавить Прто
     connect( ui->tableWidgetDbSearch, SIGNAL(doubleClicked(QModelIndex)), SLOT(dbPrtoInsert()) );
@@ -123,17 +123,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect( ui->toolButtonDb_Up, SIGNAL(clicked()), SLOT(dbUp()) );
     connect( ui->toolButtonDb_Filter, SIGNAL(clicked(bool)), SLOT(dbFilter(bool)) );
     connect( ui->lineEditDb_Search, SIGNAL(editingFinished()), SLOT(dbSearch()) );
-    /// Графики
+    // Графики
     connect( ui->action_GraphcsLoadZo, SIGNAL(triggered()), this, SLOT(graphcsOpenZo()) );   // Открыт файл ЗО
     connect( ui->action_SitPlan, SIGNAL(triggered()), this, SLOT(graphcsSitPlan()) );        // Открыть ситуационный план
-    /// Расчет
+    // Расчет
     connect( ui->action_CalcStart, SIGNAL(triggered()), SLOT(calcStart()) );
     connect( ui->action_CalcStop, SIGNAL(triggered()), SLOT(calcStop()) );
-    /// Справка
+    // Справка
     connect( ui->action_HelpPpcCsv, SIGNAL(triggered()), SLOT(helpPpcCsv()) );
     connect( ui->action_HelpAbout, SIGNAL(triggered()), SLOT(helpAbout()) );
     // Разрешаем Контекстное меню
-    ui->tableView_Prto->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->tableView_Antennas->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->tableView_Task->setContextMenuPolicy(Qt::CustomContextMenu);
 
     QSettings *stngSanPasport = new QSettings( (QCoreApplication::applicationDirPath())
@@ -195,10 +195,10 @@ MainWindow::~MainWindow()
 
 
 /* ----------------------------------- Контекстное меню ----------------------------------- */
-void MainWindow::contextMenuPrto(const QPoint &pos)
+void MainWindow::contextMenuAntenna(const QPoint &pos)
 {
-    if (ui->tableView_Prto->selectionModel()->selectedIndexes().size() > 0)
-        ui->menu_Prto->exec( ui->tableView_Prto->mapToGlobal(pos) );
+    if (ui->tableView_Antennas->selectionModel()->selectedIndexes().size() > 0)
+        ui->menu_Prto->exec( ui->tableView_Antennas->mapToGlobal(pos) );
 }
 
 
@@ -257,13 +257,13 @@ void MainWindow:: dropEvent(QDropEvent* event)
         if (fileName.split(".").last().toLower() == "rto" and ui->menu_Prto->isEnabled() == false)
             fileImportPkaemo4(fileName);
         else if (fileName.split(".").last().toLower() == "msi" and ui->menu_Prto->isEnabled() == true)
-           prtoFromFile(fileName);
+           AntennaFromFile(fileName);
     }
 }
 
 
 // ----------------------------------- Включить/Выключить UI ----------------------------------- //
-void MainWindow::EnableUI(bool b)
+void MainWindow::enableUI(bool b)
 {
     ui->action_FileProjectNew->setEnabled(!b);
     ui->action_FileSave->setEnabled(b);
@@ -336,80 +336,80 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
     modelOptions->select();
 
     // modelPrto
-    modelPrto = new ModelAntennas(0,db.database("project"));
-    modelPrto->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    modelPrto->setTable("antennas");
-    modelPrto->select();
+    modelAntenna = new ModelAntennas(0,db.database("project"));
+    modelAntenna->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    modelAntenna->setTable("antennas");
+    modelAntenna->select();
 
     // Устанавливаем названия столбцов
-    modelPrto->setHeaderData(AntennaHeader::Id, Qt::Horizontal, "ИД");
-    modelPrto->setHeaderData(AntennaHeader::Enabled, Qt::Horizontal, "Вкл");
-    modelPrto->setHeaderData(AntennaHeader::Name, Qt::Horizontal, "Название");
-    modelPrto->setHeaderData(AntennaHeader::Owner, Qt::Horizontal, "Сектор");
-    modelPrto->setHeaderData(AntennaHeader::Frequency, Qt::Horizontal, "Частота");
-    modelPrto->setHeaderData(AntennaHeader::Gain, Qt::Horizontal, "КУ");
-    modelPrto->setHeaderData(AntennaHeader::Height, Qt::Horizontal, "Размер");
-    modelPrto->setHeaderData(AntennaHeader::Polarization, Qt::Horizontal, "Поляр.");
-    modelPrto->setHeaderData(AntennaHeader::PowerTotal, Qt::Horizontal, "Мощность \n на входе");
-    modelPrto->setHeaderData(AntennaHeader::PowerTrx, Qt::Horizontal, "Мощность \n передатчика");
-    modelPrto->setHeaderData(AntennaHeader::CountTrx, Qt::Horizontal, "Кол-во \n передатчков");
-    modelPrto->setHeaderData(AntennaHeader::FeederLeght, Qt::Horizontal, "Длина \n фидера");
-    modelPrto->setHeaderData(AntennaHeader::FeederLoss, Qt::Horizontal, "Потери");
-    modelPrto->setHeaderData(AntennaHeader::Ksvn, Qt::Horizontal, "КСВН");
-    modelPrto->setHeaderData(AntennaHeader::LossOther, Qt::Horizontal, "Другие \n потери");
-    modelPrto->setHeaderData(AntennaHeader::X, Qt::Horizontal, "X");
-    modelPrto->setHeaderData(AntennaHeader::Y, Qt::Horizontal, "Y");
-    modelPrto->setHeaderData(AntennaHeader::Z, Qt::Horizontal, "Высота");
-    modelPrto->setHeaderData(AntennaHeader::Azimut, Qt::Horizontal, "Азимут");
-    modelPrto->setHeaderData(AntennaHeader::Tilt, Qt::Horizontal, "Угол \n наклона");
-    modelPrto->setHeaderData(AntennaHeader::Sort, Qt::Horizontal, "Порядок");
-    modelPrto->setHeaderData(AntennaHeader::RadHorizontal, Qt::Horizontal, "ДН Гориз");
-    modelPrto->setHeaderData(AntennaHeader::RadVertical, Qt::Horizontal, "ДН Верт");
+    modelAntenna->setHeaderData(AntennaHeader::Id, Qt::Horizontal, "ИД");
+    modelAntenna->setHeaderData(AntennaHeader::Enabled, Qt::Horizontal, "Вкл");
+    modelAntenna->setHeaderData(AntennaHeader::Name, Qt::Horizontal, "Название");
+    modelAntenna->setHeaderData(AntennaHeader::Owner, Qt::Horizontal, "Сектор");
+    modelAntenna->setHeaderData(AntennaHeader::Frequency, Qt::Horizontal, "Частота");
+    modelAntenna->setHeaderData(AntennaHeader::Gain, Qt::Horizontal, "КУ");
+    modelAntenna->setHeaderData(AntennaHeader::Height, Qt::Horizontal, "Размер");
+    modelAntenna->setHeaderData(AntennaHeader::Polarization, Qt::Horizontal, "Поляр.");
+    modelAntenna->setHeaderData(AntennaHeader::PowerTotal, Qt::Horizontal, "Мощность \n на входе");
+    modelAntenna->setHeaderData(AntennaHeader::PowerTrx, Qt::Horizontal, "Мощность \n передатчика");
+    modelAntenna->setHeaderData(AntennaHeader::CountTrx, Qt::Horizontal, "Кол-во \n передатчков");
+    modelAntenna->setHeaderData(AntennaHeader::FeederLeght, Qt::Horizontal, "Длина \n фидера");
+    modelAntenna->setHeaderData(AntennaHeader::FeederLoss, Qt::Horizontal, "Потери");
+    modelAntenna->setHeaderData(AntennaHeader::Ksvn, Qt::Horizontal, "КСВН");
+    modelAntenna->setHeaderData(AntennaHeader::LossOther, Qt::Horizontal, "Другие \n потери");
+    modelAntenna->setHeaderData(AntennaHeader::X, Qt::Horizontal, "X");
+    modelAntenna->setHeaderData(AntennaHeader::Y, Qt::Horizontal, "Y");
+    modelAntenna->setHeaderData(AntennaHeader::Z, Qt::Horizontal, "Высота");
+    modelAntenna->setHeaderData(AntennaHeader::Azimut, Qt::Horizontal, "Азимут");
+    modelAntenna->setHeaderData(AntennaHeader::Tilt, Qt::Horizontal, "Угол \n наклона");
+    modelAntenna->setHeaderData(AntennaHeader::Sort, Qt::Horizontal, "Порядок");
+    modelAntenna->setHeaderData(AntennaHeader::RadHorizontal, Qt::Horizontal, "ДН Гориз");
+    modelAntenna->setHeaderData(AntennaHeader::RadVertical, Qt::Horizontal, "ДН Верт");
 
-    ui->tableView_Prto->setModel(modelPrto);
+    ui->tableView_Antennas->setModel(modelAntenna);
 
-    ui->tableView_Prto->hideColumn(AntennaHeader::Id);
-    ui->tableView_Prto->hideColumn(AntennaHeader::Polarization);
-    ui->tableView_Prto->hideColumn(AntennaHeader::PowerTrx);
-    ui->tableView_Prto->hideColumn(AntennaHeader::CountTrx);
-    ui->tableView_Prto->hideColumn(AntennaHeader::FeederLeght);
-    ui->tableView_Prto->hideColumn(AntennaHeader::FeederLoss);
-    ui->tableView_Prto->hideColumn(AntennaHeader::Ksvn);
-    ui->tableView_Prto->hideColumn(AntennaHeader::LossOther);
-    ui->tableView_Prto->hideColumn(AntennaHeader::Sort);
-    ui->tableView_Prto->hideColumn(AntennaHeader::RadHorizontal);
-    ui->tableView_Prto->hideColumn(AntennaHeader::RadVertical);
-    ui->tableView_Prto->hideColumn(AntennaHeader::Type);
-    ui->tableView_Prto->hideColumn(AntennaHeader::Pdu);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Id);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Polarization);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::PowerTrx);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::CountTrx);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::FeederLeght);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::FeederLoss);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Ksvn);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::LossOther);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Sort);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::RadHorizontal);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::RadVertical);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Type);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Pdu);
 
-    ui->tableView_Prto->setItemDelegateForColumn(AntennaHeader::Enabled, new DelegateStatus);
-    ui->tableView_Prto->hideColumn(AntennaHeader::Id);
+    ui->tableView_Antennas->setItemDelegateForColumn(AntennaHeader::Enabled, new DelegateStatus);
+    ui->tableView_Antennas->hideColumn(AntennaHeader::Id);
 
     // Ширина названия столбцов
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Id, 30);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Enabled, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Name, 200);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Owner, 100);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Frequency, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Gain, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Height, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Polarization, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::PowerTotal, 75);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::PowerTrx, 40);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::CountTrx, 40);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::FeederLeght, 40);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::FeederLoss, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Ksvn, 60);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::LossOther, 150);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::X, 40);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Y, 40);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Z, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Azimut, 50);
-    ui->tableView_Prto->horizontalHeader()->resizeSection(AntennaHeader::Tilt, 60);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Id, 30);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Enabled, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Name, 200);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Owner, 100);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Frequency, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Gain, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Height, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Polarization, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::PowerTotal, 75);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::PowerTrx, 40);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::CountTrx, 40);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::FeederLeght, 40);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::FeederLoss, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Ksvn, 60);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::LossOther, 150);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::X, 40);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Y, 40);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Z, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Azimut, 50);
+    ui->tableView_Antennas->horizontalHeader()->resizeSection(AntennaHeader::Tilt, 60);
     // Сортировка
-    ui->tableView_Prto->verticalHeader()->setSectionsMovable(true);
-    ui->tableView_Prto->sortByColumn(AntennaHeader::Sort, Qt::AscendingOrder);
-    ui->tableView_Prto->setSortingEnabled(false);
+    ui->tableView_Antennas->verticalHeader()->setSectionsMovable(true);
+    ui->tableView_Antennas->sortByColumn(AntennaHeader::Sort, Qt::AscendingOrder);
+    ui->tableView_Antennas->setSortingEnabled(false);
 
     // modelTask
     modelTask = new ModelTasks(0,db.database("project"));
@@ -440,7 +440,7 @@ void MainWindow::fileLoadModel(const QSqlDatabase db)
 
     sbKoef->setText( "Коэф. " + QSqlRecord(modelOptions->record(0)).value("Koef").toString() );
 
-    EnableUI(true);
+    enableUI(true);
 }
 
 QString MainWindow::currentPath()
@@ -539,7 +539,7 @@ void MainWindow::fileExportPkaemo4()
 {
     QString fileCopy = QFileDialog::getSaveFileName(this, tr("Save As"), "united", tr("(*.rto);; Files PKAEMO(*)"));
     if (!fileCopy.isEmpty())
-        project->exportPKAEMO(fileCopy);
+        project->exportToPkaemo(fileCopy);
 }
 
 
@@ -557,10 +557,10 @@ bool MainWindow::fileClose()
 
     QSqlDatabase db;
     db.database("qt_sql_default_connection").close();
-    delete modelPrto;
+    delete modelAntenna;
     delete modelOptions;
     delete modelTask;
-    EnableUI(false);
+    enableUI(false);
 
     return true;
 }
@@ -572,44 +572,44 @@ bool MainWindow::fileClose()
 // ----------------------------------------------------------------------------------------------------------------- //
 
 // ----------------------------------- ПРТО - Вкл.Выкл ----------------------------------- //
-void MainWindow::prtoEnable()
+void MainWindow::enableAntenna()
 { 
     QModelIndex index;
-    foreach (index, ui->tableView_Prto->selectionModel()->selectedRows()) {
-        QSqlRecord record = modelPrto->record( index.row() );
+    foreach (index, ui->tableView_Antennas->selectionModel()->selectedRows()) {
+        QSqlRecord record = modelAntenna->record( index.row() );
         record.setValue("Enabled", !record.value("Enabled").toBool());
-        modelPrto->setRecord(index.row(), record);
+        modelAntenna->setRecord(index.row(), record);
     }
-    modelPrto->submitAll();
+    modelAntenna->submitAll();
 }
 
 
 /* ------- ПРТО - Включить все антенны ------- */
-void MainWindow::prtoEnableAll()
+void MainWindow::enableAllAntennas()
 {
-    for (int row = 0; row < modelPrto->rowCount(); row++) {
-        QSqlRecord record = modelPrto->record(row);
+    for (int row = 0; row < modelAntenna->rowCount(); row++) {
+        QSqlRecord record = modelAntenna->record(row);
         record.setValue("Enabled", true);
-        modelPrto->setRecord(row, record);
+        modelAntenna->setRecord(row, record);
     }
-    modelPrto->submitAll();
+    modelAntenna->submitAll();
 }
 
 
 /* ------- ПРТО - Отключить все антенны ------- */
-void MainWindow::prtoDisableAll()
+void MainWindow::disableAllAntennas()
 {
-    for (int row = 0; row < modelPrto->rowCount(); row++) {
-        QSqlRecord record = modelPrto->record(row);
+    for (int row = 0; row < modelAntenna->rowCount(); row++) {
+        QSqlRecord record = modelAntenna->record(row);
         record.setValue("Enabled", false);
-        modelPrto->setRecord(row, record);
+        modelAntenna->setRecord(row, record);
     }
-    modelPrto->submitAll();
+    modelAntenna->submitAll();
 }
 
 
 // ----------------------------------- ПРТО - Диалог открытия диаграммы ----------------------------------- //
-void MainWindow::prtoOpenFile()
+void MainWindow::OpenFileAntenna()
 {
     QString f = QFileDialog::getOpenFileName(
             this,
@@ -620,17 +620,17 @@ void MainWindow::prtoOpenFile()
                 "Inside (*.bdn);;"
                 "All files (*)")
     );
-    prtoFromFile(f);
+    AntennaFromFile(f);
 }
 
 
 
 // ----------------------------------- ПРТО - Открыть файл ----------------------------------- //
-bool MainWindow::prtoFromFile(const QString &f)
+bool MainWindow::AntennaFromFile(const QString &f)
 {
     if (ui->menu_Prto->isEnabled() == false)
         return false;
-    Prto dan;
+    Antenna antenna;
 
     if (!f.isEmpty()) {
         if (
@@ -638,9 +638,9 @@ bool MainWindow::prtoFromFile(const QString &f)
           || f.split(".").last().toLower() == "pln"
           || f.split(".").last().toLower() == "txt"
         ) {
-            dan.clear();
-            dan.loadMsi(f);
-            prtoAdd(dan);
+            antenna.clear();
+            antenna.loadMsi(f);
+            addAntenna(antenna);
             return true;
         }
         if (f.split(".").last().toLower() == "bdn") {
@@ -657,41 +657,41 @@ bool MainWindow::prtoFromFile(const QString &f)
 
 
 // ----------------------------------- ПРТО - Сохранить в файл ----------------------------------- //
-void MainWindow::prtoSaveAs()
+void MainWindow::saveAsPattern()
 {
-    if (ui->tableView_Prto->selectionModel()->selectedIndexes().size() > 0) {
-        Prto prtoSave;
-        prtoSave = prtoFromModel(ui->tableView_Prto->selectionModel()->selectedRows().first().row());
+    if (ui->tableView_Antennas->selectionModel()->selectedIndexes().size() > 0) {
+        Antenna saveAntenna;
+        saveAntenna = getAntennaFromModel(ui->tableView_Antennas->selectionModel()->selectedRows().first().row());
         QString fileName = QFileDialog::getSaveFileName(this,
-                 tr("Save As"), prtoSave.Name,
+                 tr("Save As"), saveAntenna.Name,
                  tr("MSI/Nokia (*.msi);;All Files (*)"));
         if (!fileName.isEmpty())
-            prtoSave.saveAsMsi(fileName);
+            saveAntenna.saveAsMsi(fileName);
     }
 }
 
 
 // =================================== ПРТО - Дудлировать =================================== //
-void MainWindow::prtoDublicate()
+void MainWindow::dublicateAntenna()
 {
-    if (ui->tableView_Prto->selectionModel()->selectedIndexes().size() < 0)
+    if (ui->tableView_Antennas->selectionModel()->selectedIndexes().size() < 0)
         return;
 
-    int numLastRow(ui->tableView_Prto->selectionModel()->selectedRows().last().row());
+    int numLastRow(ui->tableView_Antennas->selectionModel()->selectedRows().last().row());
     QModelIndex index;
 
-    foreach (index, ui->tableView_Prto->selectionModel()->selectedRows())
-        prtoAdd( prtoFromModel(index.row()) );
+    foreach (index, ui->tableView_Antennas->selectionModel()->selectedRows())
+        addAntenna( getAntennaFromModel(index.row()) );
 
-    ui->tableView_Prto->selectRow(numLastRow + 1);
+    ui->tableView_Antennas->selectRow(numLastRow + 1);
 }
 
 
 
 // =================================== ПРТО - Удаляем антенну =================================== //
-bool MainWindow::prtoRemove()
+bool MainWindow::removeAntenna()
 {  
-    if (ui->tableView_Prto->selectionModel()->currentIndex().row() == -1)
+    if (ui->tableView_Antennas->selectionModel()->currentIndex().row() == -1)
         return false;
 
     QMessageBox msgBox(QMessageBox::Question, tr("Удалить"), tr("Вы действительно хотите удалить антенну?"),
@@ -706,99 +706,99 @@ bool MainWindow::prtoRemove()
 
     QModelIndex index;
 
-    foreach (index, ui->tableView_Prto->selectionModel()->selectedRows())
-        modelPrto->removeRow(index.row());
+    foreach (index, ui->tableView_Antennas->selectionModel()->selectedRows())
+        modelAntenna->removeRow(index.row());
 
-    modelPrto->submitAll();
+    modelAntenna->submitAll();
     return true;
 }
 
 
 
 // ----------------------------------- Вставить новую антенну из файла ----------------------------------- //
-void MainWindow::prtoAdd(const Prto adIns)
+void MainWindow::addAntenna(const Antenna antenna)
 {
-    project->addAntenna(adIns);
-    modelPrto->submitAll();
+    project->addAntenna(antenna);
+    modelAntenna->submitAll();
 }
 
 
 // ----------------------------------- ПРТО - добавить РРС ----------------------------------- //
-void MainWindow::prtoAddPPC()
+void MainWindow::addAntennaPPC()
 {
-    project->prtoAddPPC();
-    modelPrto->submitAll();
+    project->addAntennaPPC();
+    modelAntenna->submitAll();
 }
 
 
 // ------------------------------------ Чтение ДН из строки таблицы ------------------------------------ //
-Prto MainWindow::prtoFromModel(const int iRow)
+Antenna MainWindow::getAntennaFromModel(const int row)
 {
-    QSqlRecord record = modelPrto->record(iRow);
+    QSqlRecord record = modelAntenna->record(row);
 
-    Prto apRead;
-    apRead.clear();
+    Antenna antenna;
+    antenna.clear();
 
-    apRead.Id = record.value("id").toInt();
-    apRead.Enabled = record.value("enabled").toBool();
-    apRead.Number = record.value("sort").toInt();
-    apRead.Name = record.value("name").toString();
-    apRead.Owner = record.value("owner").toString();
-    apRead.Freq = record.value("frequency").toFloat();
-    apRead.Gain = record.value("gain").toFloat();
-    apRead.Height = record.value("height").toFloat();
-    apRead.Type = record.value("type").toInt();
+    antenna.Id = record.value("id").toInt();
+    antenna.Enabled = record.value("enabled").toBool();
+    antenna.Number = record.value("sort").toInt();
+    antenna.Name = record.value("name").toString();
+    antenna.Owner = record.value("owner").toString();
+    antenna.Frequency = record.value("frequency").toFloat();
+    antenna.Gain = record.value("gain").toFloat();
+    antenna.Height = record.value("height").toFloat();
+    antenna.Type = record.value("type").toInt();
 
-    apRead.PowerTotal = record.value("power_total").toFloat();
-    apRead.PowerPRD = record.value("power_trx").toFloat();
-    apRead.FeederLeght = record.value("feeder_leght").toFloat();
-    apRead.FeederLoss = record.value("feeder_loss").toFloat();
-    apRead.KSVN = record.value("ksvn").toFloat();
-    apRead.LossOther = record.value("loss_other").toFloat();
-    apRead.PRD = record.value("count_trx").toInt();
+    antenna.PowerTotal = record.value("power_total").toFloat();
+    antenna.PowerTrx = record.value("power_trx").toFloat();
+    antenna.FeederLeght = record.value("feeder_leght").toFloat();
+    antenna.FeederLoss = record.value("feeder_loss").toFloat();
+    antenna.KSVN = record.value("ksvn").toFloat();
+    antenna.LossOther = record.value("loss_other").toFloat();
+    antenna.CountTrx = record.value("count_trx").toInt();
 
-    apRead.X = record.value("x").toFloat();
-    apRead.Y = record.value("y").toFloat();
-    apRead.Z = record.value("z").toFloat();
-    apRead.Azimut = record.value("azimut").toFloat();
-    apRead.Tilt = record.value("tilt").toFloat();
+    antenna.X = record.value("x").toFloat();
+    antenna.Y = record.value("y").toFloat();
+    antenna.Z = record.value("z").toFloat();
+    antenna.Azimut = record.value("azimut").toFloat();
+    antenna.Tilt = record.value("tilt").toFloat();
 
     QStringList qslRadHoriz(record.value("rad_horizontal").toString().split(";"));
     QStringList qslRadVert(record.value("rad_vertical").toString().split(";"));
 
     for (int i = 0; i < 360; i++) {
-        apRead.AzHoriz[i] = i;
-        apRead.AzVert[i] = i;
-        apRead.RadHoriz[i] = qslRadHoriz.at(i).toFloat();
-        apRead.RadVert[i] = qslRadVert.at(i).toFloat();
+        antenna.AzimutHorizontal[i] = i;
+        antenna.AzimutVertical[i] = i;
+        antenna.RadHorizontal[i] = qslRadHoriz.at(i).toFloat();
+        antenna.RadVertical[i] = qslRadVert.at(i).toFloat();
     }
-    return apRead;
+    return antenna;
 }
 
 
 // ----------------------------------- Открываем форму для редактирования антенны ---------------------------------- //
-void MainWindow::prtoEdit()
+void MainWindow::editAntenna()
 {
-    if (ui->tableView_Prto->selectionModel()->currentIndex().row() == -1)
+    if (ui->tableView_Antennas->selectionModel()->currentIndex().row() == -1)
         return;
 
-    emit sendIdEditAnt(prtoFromModel(ui->tableView_Prto->currentIndex().row()));
+    emit sendIdEditAnt(getAntennaFromModel(ui->tableView_Antennas->currentIndex().row()));
     dlg_EditAnt->show();
 }
 
 
 
 /* ------ Получаем данныем из формы ------ */
-void MainWindow::saveEditantPattern(Prto dan)
+void MainWindow::saveEditantPattern(Antenna antenna)
 {
-    project->prtoEdit(dan);
-    modelPrto->submitAll();
-    ui->tableView_Prto->selectRow(G_qmiindex.row());
+    project->editAntenna(antenna);
+    modelAntenna->submitAll();
+    ui->tableView_Antennas->selectRow(G_qmiindex.row());
 }
 
 
 /* ------ Загружаем РРС из фала ------ */
-void MainWindow::prtoLoadPPC()
+void MainWindow::loadAntennaPPC()
 {
     QString fOpen = QFileDialog::getOpenFileName(this,
                                              tr("Открыть файл с РРС"), "",
@@ -812,7 +812,7 @@ void MainWindow::prtoLoadPPC()
 
     QStringList srtlAll;
     QStringList srtlLine;
-    Prto prtoPPC;
+    Antenna antenna;
 
     if (fPPC.open(QIODevice::ReadOnly)) {
         QTextStream txtstrem(&fPPC);
@@ -823,22 +823,22 @@ void MainWindow::prtoLoadPPC()
 
         for(int i=1; i < srtlAll.size(); i++) {
             srtlLine = srtlAll.at(i).split(QRegExp(";"));
-            prtoPPC.clear();
+            antenna.clear();
 
-            prtoPPC.Owner = srtlLine.at(0);               // Сектор
-            prtoPPC.Name = srtlLine.at(1);                // Модель антенны
-            prtoPPC.Freq = srtlLine.at(2).toFloat();      // Частота
-            prtoPPC.Height = srtlLine.at(3).toFloat();    // Размер
-            prtoPPC.Gain = srtlLine.at(4).toFloat();      // КУ
-            prtoPPC.Azimut = srtlLine.at(5).toFloat();    // Азимут
-            prtoPPC.X = srtlLine.at(6).toFloat();         // X
-            prtoPPC.Y = srtlLine.at(7).toFloat();         // Y
-            prtoPPC.Z = srtlLine.at(8).toFloat();         // Высота
-            prtoPPC.Tilt = srtlLine.at(9).toFloat();      // Угол наклона
-            prtoPPC.PowerPRD = srtlLine.at(10).toFloat(); // Мощность
-            prtoPPC.PowerTotal = prtoPPC.calcPower();
-            prtoPPC.Type = 15;
-            prtoAdd(prtoPPC);
+            antenna.Owner = srtlLine.at(0);               // Сектор
+            antenna.Name = srtlLine.at(1);                // Модель антенны
+            antenna.Frequency = srtlLine.at(2).toFloat();      // Частота
+            antenna.Height = srtlLine.at(3).toFloat();    // Размер
+            antenna.Gain = srtlLine.at(4).toFloat();      // КУ
+            antenna.Azimut = srtlLine.at(5).toFloat();    // Азимут
+            antenna.X = srtlLine.at(6).toFloat();         // X
+            antenna.Y = srtlLine.at(7).toFloat();         // Y
+            antenna.Z = srtlLine.at(8).toFloat();         // Высота
+            antenna.Tilt = srtlLine.at(9).toFloat();      // Угол наклона
+            antenna.PowerTrx = srtlLine.at(10).toFloat(); // Мощность
+            antenna.PowerTotal = antenna.calcPower();
+            antenna.Type = 15;
+            addAntenna(antenna);
         }
         fPPC.close();
     }
@@ -846,97 +846,97 @@ void MainWindow::prtoLoadPPC()
 
 void MainWindow::selected_ant()
 {
-    G_qmiindex = ui->tableView_Prto->selectionModel()->selectedRows().at(0);
+    G_qmiindex = ui->tableView_Antennas->selectionModel()->selectedRows().at(0);
 }
 
 
 /* ----------------------------------- ПРТО - Переместить вверх ----------------------------------- */
-void MainWindow::prtoMoveUp()
+void MainWindow::moveUpAntenna()
 {
-    int curRuw (ui->tableView_Prto->currentIndex().row());
-    Prto prtoOld (prtoFromModel(curRuw));
+    int currentRow (ui->tableView_Antennas->currentIndex().row());
+    Antenna antennaOld (getAntennaFromModel(currentRow));
 
-    prtoOld.Number = curRuw - 0.5;
-    Project().prtoEdit(prtoOld);
-    modelPrto->submitAll();
+    antennaOld.Number = currentRow - 0.5;
+    Project().editAntenna(antennaOld);
+    modelAntenna->submitAll();
 
-    for (int row = 0; row < modelPrto->rowCount(); row++) {
-        Prto prt(prtoFromModel(row));
-        prt.Number = row + 1;
-        Project().prtoEdit(prt);
+    for (int row = 0; row < modelAntenna->rowCount(); row++) {
+        Antenna antenna(getAntennaFromModel(row));
+        antenna.Number = row + 1;
+        Project().editAntenna(antenna);
     }
-    modelPrto->submitAll();
+    modelAntenna->submitAll();
 
-    ui->tableView_Prto->selectRow(curRuw - 1);
+    ui->tableView_Antennas->selectRow(currentRow - 1);
 }
 
 
 /* ----------------------------------- ПРТО - Переместить вниз ----------------------------------- */
-void MainWindow::prtoMoveDown()
+void MainWindow::moveDownAntenna()
 {
-    int curRuw (ui->tableView_Prto->currentIndex().row());
-    Prto prtoOld (prtoFromModel(curRuw));
+    int currentRow (ui->tableView_Antennas->currentIndex().row());
+    Antenna prtoOld (getAntennaFromModel(currentRow));
 
-    prtoOld.Number = curRuw + 2.5;
-    Project().prtoEdit(prtoOld);
-    modelPrto->submitAll();
+    prtoOld.Number = currentRow + 2.5;
+    Project().editAntenna(prtoOld);
+    modelAntenna->submitAll();
 
-    for (int row = 0; row < modelPrto->rowCount(); row++) {
-        Prto prt(prtoFromModel(row));
+    for (int row = 0; row < modelAntenna->rowCount(); row++) {
+        Antenna prt(getAntennaFromModel(row));
         prt.Number = row + 1;
-        Project().prtoEdit(prt);
+        Project().editAntenna(prt);
     }
-    modelPrto->submitAll();
+    modelAntenna->submitAll();
 
-    ui->tableView_Prto->clearSelection();
-    ui->tableView_Prto->selectRow(curRuw + 1);
+    ui->tableView_Antennas->clearSelection();
+    ui->tableView_Antennas->selectRow(currentRow + 1);
 }
 
 
 // ----------------------------------- ПРТО - Переместить ----------------------------------- //
-void MainWindow::prtoMoved(int LogicIndex,int OldVisualIndex, int NewVisualIndex)
+void MainWindow::moveAntenna(int LogicIndex,int OldVisualIndex, int NewVisualIndex)
 {
-    ui->tableView_Prto->verticalHeader()->blockSignals(true);
-    ui->tableView_Prto->verticalHeader()->moveSection(NewVisualIndex, OldVisualIndex);
-    ui->tableView_Prto->verticalHeader()->blockSignals(false);
+    ui->tableView_Antennas->verticalHeader()->blockSignals(true);
+    ui->tableView_Antennas->verticalHeader()->moveSection(NewVisualIndex, OldVisualIndex);
+    ui->tableView_Antennas->verticalHeader()->blockSignals(false);
 
     if (NewVisualIndex > OldVisualIndex)
         for (int i = 0; i < (NewVisualIndex - OldVisualIndex); i++)
-            prtoMoveDown();
+            moveDownAntenna();
     else
         for (int i = 0; i < (OldVisualIndex - NewVisualIndex); i++)
-            prtoMoveUp();
+            moveUpAntenna();
 }
 
 
 /* ----------------------------------- ПРТО - Горячие клавиши ----------------------------------- */
-void MainWindow::prtoKeyPresed(int numKey, int numModifierKey)
+void MainWindow::AntennaKeyPresed(int numKey, int numModifierKey)
 {
     switch (numKey) {
     case Qt::Key_Delete:
-        prtoRemove();
+        removeAntenna();
         break;
     case Qt::Key_Insert:
-        prtoOpenFile();
+        OpenFileAntenna();
         break;
     case Qt::Key_Space:
-        prtoEnable();
+        enableAntenna();
         break;
     case Qt::Key_Enter:
-        prtoEdit();
+        editAntenna();
         break;
     default:
         break;
     }  
-    if (numKey == Qt::Key_D and numModifierKey == Qt::ControlModifier) prtoDublicate();
-    else if (numKey == Qt::Key_Up and numModifierKey == Qt::ControlModifier)    prtoMoveUp();
-    else if (numKey == Qt::Key_Down and numModifierKey == Qt::ControlModifier)  prtoMoveDown();
-    else if (numKey == Qt::Key_Up)   ui->tableView_Prto->selectRow(ui->tableView_Prto->currentIndex().row() - 1);
-    else if (numKey == Qt::Key_Down) ui->tableView_Prto->selectRow(ui->tableView_Prto->currentIndex().row() + 1);
+    if (numKey == Qt::Key_D and numModifierKey == Qt::ControlModifier) dublicateAntenna();
+    else if (numKey == Qt::Key_Up and numModifierKey == Qt::ControlModifier)    moveUpAntenna();
+    else if (numKey == Qt::Key_Down and numModifierKey == Qt::ControlModifier)  moveDownAntenna();
+    else if (numKey == Qt::Key_Up)   ui->tableView_Antennas->selectRow(ui->tableView_Antennas->currentIndex().row() - 1);
+    else if (numKey == Qt::Key_Down) ui->tableView_Antennas->selectRow(ui->tableView_Antennas->currentIndex().row() + 1);
 }
 
 
-void MainWindow::prtoExportCSV()
+void MainWindow::exportAntennasToCsv()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), "project", tr("CSV (*.csv);;All Files (*)"));
     if (fileName.isEmpty())
@@ -952,7 +952,7 @@ void MainWindow::prtoExportCSV()
 /* ----------------------------------- БД - Просмотр ДН ----------------------------------- */
 void MainWindow::dbPrtoView()
 {
-    QProcess* proc = new QProcess(this);
+    QProcess *proc = new QProcess(this);
 
     if (ui->treeView_Db->isVisible())
         proc->start( "DnView.exe \"" + (modelDb->filePath(ui->treeView_Db->selectionModel()->currentIndex())) + "\"" );
@@ -977,7 +977,7 @@ void MainWindow::dbPrtoInsert()
         if ( QFileInfo(strFile).fileName().split(".").last().toLower() == "pdf" ) {
             dbOpenOutside();
         } else {
-            prtoFromFile(strFile );
+            AntennaFromFile(strFile );
         }
     }
 }
@@ -1133,7 +1133,7 @@ Task MainWindow::taskFromModel(int intRow)
     task.Id = record.value("id").toInt();
     task.Enabled = record.value("enabled").toBool();
     task.Type = record.value("type").toInt();
-    task.Data = record.value("params").toString();
+    task.Params = record.value("params").toString();
     task.Path = record.value("path").toString();
     task.Number = record.value("sort").toInt();
 
@@ -1243,12 +1243,12 @@ bool MainWindow::taskRemove()
 /* ------- Горизонтальные сечения на основе ПРТО ------- */
 void MainWindow::tasZoFromPrto()
 {
-    Prto prtoTask;
+    Antenna prtoTask;
     QList<float> lstTaskZo;
 
-    for (int i=0; i<modelPrto->rowCount(); i++) {
+    for (int i=0; i<modelAntenna->rowCount(); i++) {
         prtoTask.clear();
-        prtoTask = prtoFromModel(i);
+        prtoTask = getAntennaFromModel(i);
         if ( !lstTaskZo.contains(prtoTask.Z) )
             lstTaskZo.append(prtoTask.Z);
     }
@@ -1265,7 +1265,7 @@ void MainWindow::tasZoFromPrto()
 /* ------- Верткальные сечения на основе ПРТО ------- */
 void MainWindow::taskVertFromPrto()
 {
-    Prto prtoTask;
+    Antenna prtoTask;
     QString strTaskVS;
     QString strRange;
     Task tskVs;
@@ -1282,10 +1282,10 @@ void MainWindow::taskVertFromPrto()
     stngVsAll->endGroup();
     delete stngVsAll;
 
-    for (int i=0; i<modelPrto->rowCount(); i++) {
+    for (int i=0; i<modelAntenna->rowCount(); i++) {
         prtoTask.clear();
         strTaskVS.clear();
-        prtoTask = prtoFromModel(i);
+        prtoTask = getAntennaFromModel(i);
 
         strTaskVS.append(QString::number(prtoTask.X)).append(";");
         strTaskVS.append(QString::number(prtoTask.Y)).append(";");
@@ -1300,7 +1300,7 @@ void MainWindow::taskVertFromPrto()
         if (qCount.value(0).toInt() == 0) {
             tskVs.Id = -1;
             tskVs.Type = 2;
-            tskVs.Data = strTaskVS;
+            tskVs.Params = strTaskVS;
 
             Project cbd;
             cbd.addTask(tskVs);
@@ -1309,18 +1309,19 @@ void MainWindow::taskVertFromPrto()
     }
 }
 
-void MainWindow::sortTasks() {
+void MainWindow::sortTasks()
+{
     QList<float> listAzimut;
     QVector<Task> tasksVs (project->getTasks(Task::Vs));
 
     foreach (Task task, tasksVs) {
-        float azimut (task.Data.split(";").at(8).toFloat());
+        float azimut (task.Params.split(";").at(8).toFloat());
         listAzimut.append(azimut);
     }
     qStableSort(listAzimut.begin(), listAzimut.end(), qLess<float>());
 
     foreach (Task task, tasksVs) {
-        task.Number = listAzimut.indexOf(task.Data.split(";").at(8).toFloat());
+        task.Number = listAzimut.indexOf(task.Params.split(";").at(8).toFloat());
         project->addTask(task);
     }
 
@@ -1330,13 +1331,13 @@ void MainWindow::sortTasks() {
     QVector<Task> tasksZoz (project->getTasks(Task::Zoz));
 
     foreach (Task task, tasksZoz) {
-        float height (task.Data.split(";").at(6).toFloat());
+        float height (task.Params.split(";").at(6).toFloat());
         listHeight.append(height);
     }
     qStableSort(listHeight.begin(), listHeight.end(), qGreater<float>());
 
     foreach (Task task, tasksZoz) {
-        task.Number = countVs + listHeight.indexOf(task.Data.split(";").at(6).toFloat());
+        task.Number = countVs + listHeight.indexOf(task.Params.split(";").at(6).toFloat());
         project->addTask(task);
     }
 
@@ -1387,10 +1388,8 @@ void MainWindow::taskMoveDown()
 
 
 // ----------------------------------- ЗАДАНИЕ - Переместить ----------------------------------- //
-void MainWindow::taskMoved(int LogicIndex,int OldVisualIndex, int NewVisualIndex)
+void MainWindow::taskMoved(int LogicIndex, int OldVisualIndex, int NewVisualIndex)
 {
-    qDebug() << "taskMoved - " << LogicIndex;
-
     ui->tableView_Task->verticalHeader()->blockSignals(true);
     ui->tableView_Task->verticalHeader()->moveSection(NewVisualIndex, OldVisualIndex);
     ui->tableView_Task->verticalHeader()->blockSignals(false);
@@ -1439,7 +1438,7 @@ void MainWindow::taskKeyPresed(int numKey, int numModifierKey)
 /// ---------------------------------------------------------------------------------------------------------------- //
 
 // ----------------------------------- РАСЧЕТ - Параметры расчета ----------------------------------- //
-void MainWindow::showDlgParametrs()
+void MainWindow::showDialogParametrs()
 {
     if (ui->menu_Prto->isEnabled()) {
         dlg_Parametrs->loadParam( QSqlRecord(modelOptions->record(0)).value("Koef").toFloat() );
@@ -1451,14 +1450,14 @@ void MainWindow::showDlgParametrs()
 void MainWindow::calcStart()
 {
     QVector<Task> vecTask;
-    QVector<Prto> vecPrto;
+    QVector<Antenna> vecPrto;
     Task taskCalc;
-    Prto prtoCalc;
+    Antenna prtoCalc;
     ThreadCalcZoz *thCalc = new ThreadCalcZoz();
 
-    for (int i=0; i < modelPrto->rowCount(); i++) {
+    for (int i=0; i < modelAntenna->rowCount(); i++) {
         prtoCalc.clear();
-        prtoCalc = prtoFromModel(i);
+        prtoCalc = getAntennaFromModel(i);
 
         if(prtoCalc.Type == 100 and prtoCalc.Enabled == true)
             vecPrto.append(prtoCalc);
@@ -1468,7 +1467,7 @@ void MainWindow::calcStart()
         taskCalc.clear();
         taskCalc = taskFromModel(i);
 
-        if(taskCalc.Type == 1 and taskCalc.Enabled == true and taskCalc.Data.split(";").last() == "0")
+        if(taskCalc.Type == 1 and taskCalc.Enabled == true and taskCalc.Params.split(";").last() == "0")
             vecTask.append(taskCalc);
     }
 
@@ -1497,7 +1496,7 @@ void MainWindow::calcResult(QString strResult, int idTask)
 /* ----------------------------------- РАСЧЕТ - Заморозка UI ----------------------------------- */
 void MainWindow::UICalc(bool b)
 {
-    ui->tableView_Prto->setEnabled(b);
+    ui->tableView_Antennas->setEnabled(b);
     ui->action_CalcStart->setEnabled(b);
     ui->dockWidget_antBd->setEnabled(b);
     ui->menu_Prto->setEnabled(b);
@@ -1524,7 +1523,7 @@ void MainWindow::progresBar(int value)
 void MainWindow::signal_SendOptions(QString qsSendOptions)
 {
     QSqlRecord recordPrmt = modelOptions->record(0);
-    recordPrmt.setValue("Koef", qsSendOptions.replace(",",".").toFloat());
+    recordPrmt.setValue("Koef", qsSendOptions.replace(",", ".").toFloat());
     modelOptions->setRecord(0,recordPrmt);
     recordPrmt.clear();
     modelOptions->submitAll();

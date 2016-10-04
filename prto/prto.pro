@@ -11,10 +11,12 @@ TEMPLATE = lib
 
 DEFINES += PRTO_LIBRARY
 
-SOURCES += prto.cpp
+SOURCES += \
+    prto.cpp
 
-HEADERS += prto.h\
-        prto_global.h
+HEADERS +=\
+    prto_global.h \
+    prto.h
 
 unix {
     target.path = /usr/lib

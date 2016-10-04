@@ -2,19 +2,19 @@
 
 #include <QtMath>
 
-Prto::Prto()
+Antenna::Antenna()
 {
     clear();
 }
 
 
 /* -------- Обнуление всех переменных -------- */
-void Prto::clear()
+void Antenna::clear()
 {  
     Id = -1;
     Enabled = true;
     Name = "";
-    Freq = 0;
+    Frequency = 0;
     Gain = 0;
     ETilt = "";
     Comment = "";
@@ -23,44 +23,43 @@ void Prto::clear()
     X = 0;
     Y = 0;
     Z = 0;
-    PRD = 1;
+    CountTrx = 1;
     Tilt = 0;
     Owner = "";
     FeederLoss = 0;
     FeederLeght = 0;
     KSVN = 1;
     LossOther = 0;
-    PowerPRD = 0;
+    PowerTrx = 0;
     PowerTotal = 0;
     Height = 0;
     Azimut = 0;
     Type = 0;
 
-    for (int i=0; i<=360; i++)
-    {
-        AzHoriz[i] = 0;
-        AzVert[i] = 0;
-        RadHoriz[i] = 0;
-        RadVert[i] = 0;
-        RadHorizNorm[i] = 0;
-        RadVertNorm[i] = 0;
+    for (int i=0; i<=360; i++) {
+        AzimutHorizontal[i] = 0;
+        AzimutVertical[i] = 0;
+        RadHorizontal[i] = 0;
+        RadVertical[i] = 0;
+        RadHorizontalNormalization[i] = 0;
+        RadVerticalNormalization[i] = 0;
     }
 }
 
 /// -------------------------------------------- ЗАГРУЗКА / СОХРАНЕНИЕ -------------------------------------------- ///
 
 /* -------- Загрузить ДН из фала MSI -------- */
-Prto Prto::loadMsi(const QString f)
+Antenna Antenna::loadMsi(const QString f)
 {
     clear();
-    Prto danLoad;
+    Antenna danLoad;
 
     int j=1;
     int trig=0;
     int k=0;
 
     QFile open_file(f);
-    if(open_file.open(QIODevice::ReadOnly)) {
+    if (open_file.open(QIODevice::ReadOnly)) {
 
         QString strFile(open_file.readAll());
         strFile.replace(QRegExp("\\t"), " ");
@@ -69,12 +68,12 @@ Prto Prto::loadMsi(const QString f)
         QStringList splstr;
         strlstString = strFile.split(QRegExp("\\n"), QString::SkipEmptyParts);
 
-        for(int i=0; i < strlstString.size(); i++)
+        for (int i=0; i < strlstString.size(); i++)
         {
             splstr = strlstString.at(i).split(" ", QString::SkipEmptyParts);
             if (splstr.at(0) == "NAME")
             {
-                for(int iat=1; iat <= (splstr.size()-1); iat++ )
+                for (int iat=1; iat <= (splstr.size()-1); iat++ )
                 {
                     Name.append(splstr.at(iat).simplified());
                     if (iat != (splstr.size()-1))
@@ -86,7 +85,7 @@ Prto Prto::loadMsi(const QString f)
             }
             if (splstr.at(0) == "FREQUENCY")
             {
-                Freq = splstr.at(1).toDouble();
+                Frequency = splstr.at(1).toDouble();
             }
             if (splstr.at(0) == "GAIN")
             {
@@ -97,7 +96,7 @@ Prto Prto::loadMsi(const QString f)
             }
             if (splstr.at(0) == "TILT")
             {
-                for(int i=1; i<splstr.size(); i++)
+                for (int i=1; i<splstr.size(); i++)
                 {
                     ETilt = splstr.at(i).simplified() + " ";
                 }
@@ -113,14 +112,14 @@ Prto Prto::loadMsi(const QString f)
             }
             if (trig == 1)
             {
-                AzHoriz[k] = splstr.at(0).toDouble();
-                RadHoriz[k] = splstr.at(1).toDouble();
+                AzimutHorizontal[k] = splstr.at(0).toDouble();
+                RadHorizontal[k] = splstr.at(1).toDouble();
                 k++;
             }
             if (trig == 2)
             {
-                AzVert[k] = splstr.at(0).toDouble();
-                RadVert[k] = splstr.at(1).toDouble();
+                AzimutVertical[k] = splstr.at(0).toDouble();
+                RadVertical[k] = splstr.at(1).toDouble();
                 k++;
             }
             if (splstr.at(0) == "HORIZONTAL") {trig=1; k=0;}
@@ -129,15 +128,15 @@ Prto Prto::loadMsi(const QString f)
 
         } // << for(int i=0; i < strlstString.size(); i++)
 
-        AzHoriz[360]=360;
-        AzVert[360]=360;
-        RadVert[360]=RadVert[0];
-        RadHoriz[360]=RadHoriz[0];
+        AzimutHorizontal[360]=360;
+        AzimutVertical[360]=360;
+        RadVertical[360]=RadVertical[0];
+        RadHorizontal[360]=RadHorizontal[0];
 
         for (k=0; k<361; k++)
         {
-            RadHoriz[k] = -RadHoriz[k];
-            RadVert[k] = -RadVert[k];
+            RadHorizontal[k] = -RadHorizontal[k];
+            RadVertical[k] = -RadVertical[k];
         }
 
     } // << ------ if(open_file.open(QIODevice::ReadOnly))
@@ -150,10 +149,10 @@ Prto Prto::loadMsi(const QString f)
 
 
 /* -------- Загрузить ДН из фала NSMA -------- */
-Prto Prto::loadNsma(const QString f)
+Antenna Antenna::loadNsma(const QString f)
 {
     clear();
-    Prto danLoad;
+    Antenna danLoad;
     QFile open_file(f);
     int intAz;
     int intTrig;
@@ -167,75 +166,75 @@ Prto Prto::loadNsma(const QString f)
 
        strlstString = strFile.split(QRegExp("\\n"), QString::SkipEmptyParts);
 
-       for(int i=0; i < strlstString.size(); i++)
+       for (int i=0; i < strlstString.size(); i++)
        {
-           if( (strlstString.at(i).contains("ENDFIL", Qt::CaseInsensitive) ||
+           if ( (strlstString.at(i).contains("ENDFIL", Qt::CaseInsensitive) ||
                 strlstString.at(i).contains("PATCUT", Qt::CaseInsensitive) )
                 && (intTrig == 10 || intTrig == 20) )
            {
               intTrig = 99;
            }
            // Название антенны
-           if( strlstString.at(i).contains("ANTMAN", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("ANTMAN", Qt::CaseInsensitive) )
            {
                Name = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1);
            }
-           if( strlstString.at(i).contains("MODNUM", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("MODNUM", Qt::CaseInsensitive) )
            {
                Name += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1);
            }
            // Коэфициент усиления
-           if( strlstString.at(i).contains("MDGAIN", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("MDGAIN", Qt::CaseInsensitive) )
            {
                Gain = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
            }
            // Частота
-           if( strlstString.at(i).contains("PATFRE", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("PATFRE", Qt::CaseInsensitive) )
            {
-               Freq = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
+               Frequency = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
            }
            // Угол
-           if( strlstString.at(i).contains("ELTILT", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("ELTILT", Qt::CaseInsensitive) )
            {
                ETilt = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1);
            }
            // Коментарий
-           if(strlstString.at(i).contains("DESCR1", Qt::CaseInsensitive)) { Comment = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
-           if(strlstString.at(i).contains("DESCR2", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
-           if(strlstString.at(i).contains("DESCR3", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
-           if(strlstString.at(i).contains("DESCR4", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
-           if(strlstString.at(i).contains("DESCR5", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
+           if (strlstString.at(i).contains("DESCR1", Qt::CaseInsensitive)) { Comment = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
+           if (strlstString.at(i).contains("DESCR2", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
+           if (strlstString.at(i).contains("DESCR3", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
+           if (strlstString.at(i).contains("DESCR4", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
+           if (strlstString.at(i).contains("DESCR5", Qt::CaseInsensitive)) { Comment += " " + strlstString.at(i).split(",", QString::SkipEmptyParts).at(1); }
            // Ждем горизонтальную диаграмму
-           if( strlstString.at(i).contains("PATCUT:,AZ", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("PATCUT:,AZ", Qt::CaseInsensitive) )
            {
                intTrig = 1;
            }
            // Ждем верикальную диаграмму
-           if( strlstString.at(i).contains("PATCUT:,EL", Qt::CaseInsensitive) )
+           if ( strlstString.at(i).contains("PATCUT:,EL", Qt::CaseInsensitive) )
            {
                intTrig = 2;
            }
            // Считываем горизонтальную ДН
-           if(intTrig == 10)
+           if (intTrig == 10)
            {
                intAz = strlstString.at(i).split(",", QString::SkipEmptyParts).at(0).toFloat();
                if(intAz < 0) { intAz = 360 + intAz; }
-               RadHoriz[intAz] = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
-               AzHoriz[intAz] = intAz;
+               RadHorizontal[intAz] = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
+               AzimutHorizontal[intAz] = intAz;
            }
            // Считываем вертикальную ДН
-           if(intTrig == 20)
+           if (intTrig == 20)
            {
                intAz = strlstString.at(i).split(",", QString::SkipEmptyParts).at(0).toFloat();
                if(intAz < 0) { intAz = 360 + intAz; }
-               RadVert[intAz] = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
-               AzVert[intAz] = intAz;
+               RadVertical[intAz] = strlstString.at(i).split(",", QString::SkipEmptyParts).at(1).toFloat();
+               AzimutVertical[intAz] = intAz;
            }
-           if( strlstString.at(i).contains("FSTLST:", Qt::CaseInsensitive) && intTrig == 1)
+           if ( strlstString.at(i).contains("FSTLST:", Qt::CaseInsensitive) && intTrig == 1)
            {
                intTrig = 10;
            }
-           if( strlstString.at(i).contains("FSTLST:", Qt::CaseInsensitive) && intTrig == 2)
+           if ( strlstString.at(i).contains("FSTLST:", Qt::CaseInsensitive) && intTrig == 2)
            {
                intTrig = 20;
            }
@@ -245,14 +244,14 @@ Prto Prto::loadNsma(const QString f)
        ETilt = ETilt.simplified();
        Comment = Comment.simplified();
 
-       RadVert[360]=RadVert[0];
-       RadHoriz[360]=RadHoriz[0];
+       RadVertical[360]=RadVertical[0];
+       RadHorizontal[360]=RadHorizontal[0];
     }
 
-    if(etilt() > 100 )
+    if (etilt() > 100 )
     {
-       mirorrsVert();
-       mirorrHoriz();
+       mirorrsVertical();
+       mirorrHorizontal();
     }
 
     return danLoad;
@@ -260,9 +259,9 @@ Prto Prto::loadNsma(const QString f)
 
 
 /* -------- Загрузка и считывание данных с bdn файла -------- */
-Prto Prto::loadedBdn(const QString &f)
+Antenna Antenna::loadedBdn(const QString &f)
 {
-    Prto danLoad;
+    Antenna danLoad;
 
          QString mass[800];
          int j=1;
@@ -278,7 +277,7 @@ Prto Prto::loadedBdn(const QString &f)
 
         QFile open_file(f);
 
-        if(open_file.open(QIODevice::ReadOnly))  {
+        if (open_file.open(QIODevice::ReadOnly))  {
              QTextStream stream(&open_file);
              QString linestr;
 
@@ -294,30 +293,30 @@ Prto Prto::loadedBdn(const QString &f)
 
 
                       if (5<=j && j<=364) {
-                             AzHoriz[k1] = splstr.at(0).toDouble();
-                             RadHoriz[k1] = splstr.at(1).toDouble();
+                             AzimutHorizontal[k1] = splstr.at(0).toDouble();
+                             RadHorizontal[k1] = splstr.at(1).toDouble();
                              k1++;
                       } // << if (5<=j && j<=364)
 
-                      if (366<=j && j<=725) {
-                              AzVert[k2] = splstr.at(0).toDouble();
-                              RadVert[k2] = splstr.at(1).toDouble();
+                      if (366 <= j && j <= 725) {
+                              AzimutVertical[k2] = splstr.at(0).toDouble();
+                              RadVertical[k2] = splstr.at(1).toDouble();
                               k2++;
                       } // << if (366<=j && j<=725)
 
-                      if (splstr.at(0).simplified() == "360" && trig == 0) {trig=1; k=0;}
-                      if (splstr.at(0).simplified() == "360" && trig == 1) {trig=2; k=0;}
+                      if (splstr.at(0).simplified() == "360" && trig == 0) {trig = 1; k = 0;}
+                      if (splstr.at(0).simplified() == "360" && trig == 1) {trig = 2; k = 0;}
                       j++;
               } // << while(!stream.atEnd()) <<
 
-            AzHoriz[360]=360;
-            AzVert[360]=360;
-            RadVert[360]=RadVert[0];
-            RadHoriz[360]=RadHoriz[0];
+            AzimutHorizontal[360] = 360;
+            AzimutVertical[360] = 360;
+            RadVertical[360] = RadVertical[0];
+            RadHorizontal[360] = RadHorizontal[0];
 
              for (k=0; k<361; k++){
-                 RadHoriz[k]=-RadHoriz[k];
-                 RadVert[k]=-RadVert[k];
+                 RadHorizontal[k]=-RadHorizontal[k];
+                 RadVertical[k]=-RadVertical[k];
              } // << for (k=0; k<361; k++)
 
 /*             initPolarGraph(dan);
@@ -332,7 +331,7 @@ Prto Prto::loadedBdn(const QString &f)
 
 
 /* -------- Сохранить как MSI -------- */
-bool Prto::saveAsMsi(const QString filepath)
+bool Antenna::saveAsMsi(const QString filepath)
 {
     if (filepath.isEmpty())
            return false;
@@ -344,17 +343,17 @@ bool Prto::saveAsMsi(const QString filepath)
        QTextStream out(&fileSaveAs);
        out.setCodec("Windows-1251");
        out << "NAME " << Name << "\n";
-       out << "FREQUENCY " << (QString::number(Freq)) << "\n";
+       out << "FREQUENCY " << (QString::number(Frequency)) << "\n";
        out << "GAIN " << ( QString::number(Gain) ) << " dBi\n";
        out << "TILT " << ETilt << "\n";
        out << "COMMENT " << Comment << "\n";
        out << "HORIZONTAL 360\n";
        for (int i=0; i<=359; i++) {
-           out << (QString::number(AzHoriz[i])) << ".0 " << (QString::number(fabs(RadHoriz[i]))) << "\n";
+           out << (QString::number(AzimutHorizontal[i])) << ".0 " << (QString::number(fabs(RadHorizontal[i]))) << "\n";
        }
        out << "VERTICAL 360\n";
        for (int i=0; i<=359; i++) {
-           out << (QString::number(AzVert[i])) << ".0 " << (QString::number(fabs(RadVert[i]))) << "\n";
+           out << (QString::number(AzimutVertical[i])) << ".0 " << (QString::number(fabs(RadVertical[i]))) << "\n";
        }
        fileSaveAs.close();
     }
@@ -363,9 +362,9 @@ bool Prto::saveAsMsi(const QString filepath)
 
 
 /* -------- Проверка -------- */
-bool Prto::validate()
+bool Antenna::validate()
 {
-    if(Name == "" || Freq == 0) {
+    if(Name == "" || Frequency == 0) {
         return false;
     } else {
         return true;
@@ -374,11 +373,11 @@ bool Prto::validate()
 /// -------------------------------------------- АНАЛИТИЧЕСКИЕ -------------------------------------------- ///
 
 /* -------- Узнать ширину горизонтальной ДН -------- */
-double Prto::beamwidthHoriz()
+double Antenna::beamwidthHoriz()
 {
       float Beam_H=0;
       for (int i = 0; i<=360; i++) {
-         if(-RadHoriz[i] <= 3) { Beam_H++; }
+         if(-RadHorizontal[i] <= 3) { Beam_H++; }
       }
       if(Beam_H == 361) { Beam_H += -1; }
       return Beam_H;
@@ -386,59 +385,59 @@ double Prto::beamwidthHoriz()
 
 
 /* -------- Узнать ширину вертикальной ДН -------- */
-double Prto::beamwidthVert()
+double Antenna::beamwidthVert()
 {
     float Beam_V=0;
     for (int i = 0; i<=360; i++) {
-        if(-RadVert[i] <= 3) { Beam_V++; }
+        if (-RadVertical[i] <= 3) { Beam_V++; }
     }
     return Beam_V;
 }
 
 
 /* -------- Узнать Электричечкий угол ДН -------- */
-double Prto::etilt()
+double Antenna::etilt()
 {
     int i=0;
-    while (!(RadVert[i] == 0) || i>360) { i=i+1; }
-    return AzVert[i];
+    while (!(RadVertical[i] == 0) || i>360) { i=i+1; }
+    return AzimutVertical[i];
 }
 
 
 /// -------------------------------------------- ТРАНСФОРМАЦИЯ -------------------------------------------- ///
 
 /* -------- Отражение горизонтальной ДН -------- */
-void Prto::mirorrHoriz()
+void Antenna::mirorrHorizontal()
 {
      double tempMirror_Horiz[360];
      int k = 359;
      for (int i=0; i<=359; i++) {
-          tempMirror_Horiz[i] = RadHoriz[k];
+          tempMirror_Horiz[i] = RadHorizontal[k];
           k = k-1;
      }
      for (int j=0; j<=359; j++) {
-          RadHoriz[j] = tempMirror_Horiz[j];
+          RadHorizontal[j] = tempMirror_Horiz[j];
      }
 }
 
 
 /* -------- Отражение вертикальной ДН -------- */
-void Prto::mirorrsVert()
+void Antenna::mirorrsVertical()
 {
     double tempMirror_Vert[360];
     int k = 359;
     for (int i=0; i<=359; i++) {
-         tempMirror_Vert[i] = RadVert[k];
+         tempMirror_Vert[i] = RadVertical[k];
          k = k-1;
     }
     for (int jh=0; jh<=359; jh++) {
-         RadVert[jh] = tempMirror_Vert[jh];
+         RadVertical[jh] = tempMirror_Vert[jh];
     }
 }
 
 
 /* -------- Поворот ДН -------- */
-void Prto::rotate(int angleHorizPat,  int angleVertPat)
+void Antenna::rotate(int angleHorizPat,  int angleVertPat)
 {
     double tempRotate_Horiz[360];
     double tempRotate_Vert[360];
@@ -446,60 +445,59 @@ void Prto::rotate(int angleHorizPat,  int angleVertPat)
     int kV = 0;
 
     for (int i=0; i<=359; i++) {
-         if(angleHorizPat<0) { angleHorizPat=360+angleHorizPat;}
-         if(angleVertPat<0)  { angleVertPat=360+angleVertPat;}
+         if (angleHorizPat<0) { angleHorizPat=360+angleHorizPat;}
+         if (angleVertPat<0)  { angleVertPat=360+angleVertPat;}
 
          if (angleHorizPat-i>0) {kH=360-angleHorizPat+i;}
          if (angleHorizPat-i<=0) {kH=-(angleHorizPat-i);}
-         tempRotate_Horiz[i]=RadHoriz[kH];
+         tempRotate_Horiz[i]=RadHorizontal[kH];
 
          if (angleVertPat-i>0) {kV=360-angleVertPat+i;}
          if (angleVertPat-i<=0) {kV=-(angleVertPat-i);}
-         tempRotate_Vert[i]=RadVert[kV];
+         tempRotate_Vert[i]=RadVertical[kV];
      }
      for (int i=0; i<=359; i++) {
-         RadHoriz[i]=tempRotate_Horiz[i];
-         RadVert[i]=tempRotate_Vert[i];
+         RadHorizontal[i]=tempRotate_Horiz[i];
+         RadVertical[i]=tempRotate_Vert[i];
      }
 }
 
 
 /* -------- Симметрия низа ДН -------- */
-void Prto::symmetryBottom(bool horizPat, bool vertPat)
+void Antenna::symmetryBottom(bool horizPat, bool vertPat)
 {
     double dTempRadHoriz[361]; // Азимут ДН
     double dTempRadVert[361]; // Азимут ДН
 
-    for(int i=0; i < 361; i++) {
-        dTempRadHoriz[i] = RadHoriz[i];
-        dTempRadVert[i] = RadVert[i];
+    for (int i=0; i < 361; i++) {
+        dTempRadHoriz[i] = RadHorizontal[i];
+        dTempRadVert[i] = RadVertical[i];
     }
 
     int intETilt = etilt();
     int intPoint;
     int intPoint2;
 
-    if(horizPat == true || vertPat == true) {
-        for(int i=0; i < 180; i++) {
+    if (horizPat == true || vertPat == true) {
+        for (int i=0; i < 180; i++) {
          intPoint = (180+intETilt)+i; if(intPoint > 359) { intPoint -= 360; }
          intPoint2 = (180+intETilt)-i;  if(intPoint2 > 359) { intPoint2 -= 360; }
-         if(horizPat == true) { RadHoriz[intPoint] = dTempRadHoriz[intPoint2]; }
-         if(vertPat == true) { RadVert[intPoint] = dTempRadVert[intPoint2]; }
+         if (horizPat == true) { RadHorizontal[intPoint] = dTempRadHoriz[intPoint2]; }
+         if (vertPat == true) { RadVertical[intPoint] = dTempRadVert[intPoint2]; }
         }
     }
 }
 
 
 /* -------- Симметрия верха ДН -------- */
-void Prto::symmetryTop(bool horizPat, bool vertPat)
+void Antenna::symmetryTop(bool horizPat, bool vertPat)
 {
     double dTempRadHoriz[361]; // Азимут ДН
     double dTempRadVert[361];  // Азимут ДН
 
-    for(int i=0; i < 361; i++)
-    {
-        dTempRadHoriz[i] = RadHoriz[i];
-        dTempRadVert[i] = RadVert[i];
+    for (int i=0; i < 361; i++) {
+        dTempRadHoriz[i] = RadHorizontal[i];
+        dTempRadVert[i] = RadVertical[i];
     }
 
     int intETilt = etilt();
@@ -511,72 +509,72 @@ void Prto::symmetryTop(bool horizPat, bool vertPat)
         {
             intPoint = (180+intETilt)+i; if(intPoint > 359) { intPoint -= 360; }
             intPoint2 = (180+intETilt)-i;  if(intPoint2 > 359) { intPoint2 -= 360; }
-            if(horizPat == true) { RadHoriz[intPoint2] = dTempRadHoriz[intPoint]; }
-            if(vertPat == true) { RadVert[intPoint2] = dTempRadVert[intPoint]; }
+            if (horizPat == true) { RadHorizontal[intPoint2] = dTempRadHoriz[intPoint]; }
+            if (vertPat == true) { RadVertical[intPoint2] = dTempRadVert[intPoint]; }
         }
 }
 
 
 /* -------- Поджать ДН -------- */
-void Prto::preloadPatternVert()
+void Antenna::preloadPatternVert()
 {
       for (int i = 0; i<=360; i++)
-          if(RadVert[i] < -6)
-              RadVert[i] = (floor(RadVert[i]*10.1))/10;
+          if (RadVertical[i] < -6)
+              RadVertical[i] = (floor(RadVertical[i]*10.1))/10;
 }
 
 
 /// -------------------------------------------- РАСЧЕТ -------------------------------------------- ///
 
 /* -------- Расчет мощности -------- */
-float Prto::calcPower()
+float Antenna::calcPower()
 {
-    return (PowerPRD*(pow(10,(-(FeederLoss)*FeederLeght-LossOther)/10)) * (1-pow((KSVN-1)/(KSVN+1),2))) * PRD;
+    return (PowerTrx*(pow(10,(-(FeederLoss)*FeederLeght-LossOther)/10)) * (1-pow((KSVN-1)/(KSVN+1),2))) * CountTrx;
 }
 
 
 /* -------- Нормирование ДН -------- */
-void Prto::NormalzationPattern()
+void Antenna::NormalzationPattern()
 {
     rotate(Azimut, Tilt);
 
-    for ( int i = 0; i < 361; i++ ) {
-        RadHorizNorm[i] = pow( 10, (RadHoriz[i]/10) );
-        RadVertNorm[i]  = pow( 10, (RadVert[i]/10)  );
+    for (int i = 0; i < 361; i++) {
+        RadHorizontalNormalization[i] = pow( 10, (RadHorizontal[i]/10) );
+        RadVerticalNormalization[i]  = pow( 10, (RadVertical[i]/10)  );
     }
 }
 
 
 /* -------- Горизонтальная минимальная ДН -------- */
-float Prto::radHorizMin()
+float Antenna::radHorizMin()
 {
     float RadMin;
     RadMin = 0;
 
     for (int i=0; i<=359; i++)
-        if(RadHoriz[i] < RadMin)
-            RadMin = RadHoriz[i];
+        if (RadHorizontal[i] < RadMin)
+            RadMin = RadHorizontal[i];
 
     return RadMin;
 }
 
 
 /* -------- Вертикальная минимальная ДН -------- */
-float Prto::radVertMin()
+float Antenna::radVertMin()
 {
     float RadMin;
     RadMin = 0;
 
     for (int i=0; i<=359; i++)
-        if(RadVert[i] < RadMin)
-            RadMin = RadVert[i];
+        if (RadVertical[i] < RadMin)
+            RadMin = RadVertical[i];
 
     return RadMin;
 }
 
 
 /* -------- Расчет ПДУ -------- */
-float Prto::calcPDU(const float Xpos, const float Ypos, const float Zpos, const float fKoef)
+float Antenna::calcPDU(const float Xpos, const float Ypos, const float Zpos, const float fKoef)
 {
     float E, P, G, R, L, AngleH, AngleV;
 
@@ -610,7 +608,7 @@ float Prto::calcPDU(const float Xpos, const float Ypos, const float Zpos, const 
     }
     // -------------------------- Координата по вертикали
 
-    E = (sqrt(30 * P * G) / R ) * fKoef * RadHorizNorm[int(AngleH)] * RadVertNorm[int(AngleV)];
+    E = (sqrt(30 * P * G) / R ) * fKoef * RadHorizontalNormalization[int(AngleH)] * RadVerticalNormalization[int(AngleV)];
 
     return (pow(E,2) / 3.77);
 }
@@ -618,39 +616,39 @@ float Prto::calcPDU(const float Xpos, const float Ypos, const float Zpos, const 
 
 /// -------------------------------------------- ВСПОМОГАТЕЛЬНЫЕ -------------------------------------------- ///
 /* --------  Считать горизонтальную ДН в строку - Стандартная -------- */
-QString Prto::RadHorizToString()
+QString Antenna::RadHorizontalToString()
 {
     QString qsRadHoriz;
     qsRadHoriz.clear();
 
     for (int i=0; i<=360; i++) {
-         qsRadHoriz.append(QString::number(RadHoriz[i])).append(";");
+         qsRadHoriz.append(QString::number(RadHorizontal[i])).append(";");
     }
     return qsRadHoriz;
 }
 
 
 /* --------  Считать вертикальную ДН в строку - Стандартная -------- */
-QString Prto::RadVertToString()
+QString Antenna::RadVerticalToString()
 {
     QString qsRadVert;
     qsRadVert.clear();
 
     for (int i=0; i<=360; i++) {
-         qsRadVert.append(QString::number(RadVert[i])).append(";");
+         qsRadVert.append(QString::number(RadVertical[i])).append(";");
     }
     return qsRadVert;
 }
 
 
 /* --------  Считать горизонтальную ДН в строку для ПКАЭМО -------- */
-QString Prto::RadHorizToString2()
+QString Antenna::RadHorizontalToString2()
 {
     QString qsRadHoriz;
     qsRadHoriz.clear();
 
     for (int i=0; i<=359; i++) {
-         qsRadHoriz.append(QString::number(-RadHoriz[i])).append(";");
+         qsRadHoriz.append(QString::number(-RadHorizontal[i])).append(";");
     }
 
     qsRadHoriz.remove(qsRadHoriz.size()-1,1);
@@ -659,16 +657,78 @@ QString Prto::RadHorizToString2()
 
 
 /* --------  Считать вертикальную ДН в строку для ПКАЭМО -------- */
-QString Prto::RadVertToString2()
+QString Antenna::RadVerticalToString2()
 {
     QString qsRadVert;
     qsRadVert.clear();
 
     for (int i=0; i<=359; i++) {
-         qsRadVert.append(QString::number(-RadVert[i])).append(";");
+         qsRadVert.append(QString::number(-RadVertical[i])).append(";");
     }
 
     qsRadVert.remove(qsRadVert.size()-1,1);
     return qsRadVert;
 }
 
+
+void ZO::readZoz(const QString f)
+{
+    // Читаем границы
+    QFile fileOpen(f);
+    QStringList strlLast;
+
+    Type = QFileInfo(f).fileName().left(2);
+
+    if(fileOpen.open(QIODevice::ReadOnly))
+    {
+        QTextStream streamLast(&fileOpen);
+        QString strlLine;
+        int i(0);
+
+        while(!streamLast.atEnd()) {
+            strlLine = streamLast.readLine();
+
+            if(i == 0 and Type == "vs")
+                Height = strlLine.split(" ", QString::SkipEmptyParts).at(1);
+            if(i == 0 and Type == "zo")
+                Height = strlLine.split(" ", QString::SkipEmptyParts).at(3);
+            if(i == 1) {
+                strlLast = strlLine.split(" ", QString::SkipEmptyParts);
+                MinX = strlLast.at(0).toFloat();
+                MinY = strlLast.at(1).toFloat();
+            }
+            if(i == 2)
+                Step = strlLine.split(" ", QString::SkipEmptyParts).at(1).toFloat() - MinY;
+            if(strlLine.split(" ", QString::SkipEmptyParts).size() == 3)
+                strlLast = strlLine.split(" ", QString::SkipEmptyParts);
+
+            i++;
+        }
+        fileOpen.close();
+        MaxX = strlLast.at(0).toFloat();
+        MaxY = strlLast.at(1).toFloat();
+    }
+
+    // Размер матрицы
+    int numSize( (fabs(MinY)+fabs(MaxY)+1)/Step );
+    if( numSize < int( (fabs(MinX)+fabs(MaxX)+1)/Step ))
+        numSize = int( (fabs(MinX)+fabs(MaxX)+1)/Step );
+
+    Values.insert(0, pow(numSize, 2), 0);
+
+    // Запись значений
+    if(fileOpen.open(QIODevice::ReadOnly))
+    {
+        strlLast.clear();
+        int i(0);
+        QTextStream streamIns(&fileOpen);
+
+        while(!streamIns.atEnd()) {
+            strlLast = streamIns.readLine().split(" ", QString::SkipEmptyParts);
+            if(strlLast.size() == 3 and i != 0)
+                Values.replace( int(((strlLast.at(1).toFloat()+abs(MinY))/Step)*numSize) + ((strlLast.at(0).toFloat()+abs(MinX))/Step), strlLast.at(2).toFloat());
+            i++;
+        }
+    }
+    fileOpen.close();
+}

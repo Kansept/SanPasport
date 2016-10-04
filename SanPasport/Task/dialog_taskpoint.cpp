@@ -33,7 +33,7 @@ void Dialog_TaskPoint::on_pushButton_Ok_clicked()
     tskPoint.Number = g_taskPoint.Number;
     tskPoint.Enabled = g_taskPoint.Enabled;
     tskPoint.Type = 3;
-    tskPoint.Data = qsSendPoint;
+    tskPoint.Params = qsSendPoint;
 
     Project cbd;
     cbd.addTask(tskPoint);
@@ -62,7 +62,7 @@ void Dialog_TaskPoint::clearUI()
 void Dialog_TaskPoint::insertData(Task tsk)
 {
     clearUI();
-    QStringList stlTask(tsk.Data.split(";"));
+    QStringList stlTask(tsk.Params.split(";"));
 
     ui->lineEdit_X->setText( stlTask.at(0) );
     ui->lineEdit_Y->setText( stlTask.at(1) );
