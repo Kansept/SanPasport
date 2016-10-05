@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     ViewPlot/dialog/dialog_confizgraph.cpp \
     MyWidget/plotzoz.cpp \
     project.cpp \
-    Models/ModelTasks.cpp
+    Models/ModelTasks.cpp \
+    Models/ModelAntennas.cpp
 
 HEADERS  += mainwindow.h \
     Dialog/dialog_editant.h \
