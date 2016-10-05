@@ -1,16 +1,11 @@
 #ifndef VIEWPLOT_H
 #define VIEWPLOT_H
 
-#include <QMainWindow>
-#include <QSettings>
-#include <QLabel>
-#include <QDebug>
-
 #include "prto.h"
+#include "zoz.h"
 #include "MyWidget/qsingleitemsquarelayout.h"
 #include "MyWidget/plotzoz.h"
 #include "ViewPlot/dialog/dialog_confizgraph.h"
-
 #include <qwt_color_map.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_spectrogram.h>
@@ -24,9 +19,12 @@
 #include <qwt_plot_renderer.h>
 #include <qwt_legend.h>
 #include <qwt_plot_rescaler.h>
-
 #include <qwt_picker_machine.h>
 #include <qwt_scale_widget.h>
+#include <QMainWindow>
+#include <QSettings>
+#include <QLabel>
+#include <QDebug>
 
 class Dialog_ConfizGraph;
 
@@ -87,7 +85,7 @@ protected:
 
 private slots:
     void copyToBuffer();
-    void ploting(ZO val);
+    void ploting(Zoz val);
     void plotExport();
     void settingFont();
     void settingRead();

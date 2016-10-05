@@ -1,7 +1,7 @@
 #include "sitplan.h"
+#include "zoz.h"
 #include "ui_sitplan.h"
 #include "../mainwindow.h"
-
 #include <QFileDialog>
 #include <QFontDialog>
 #include <QDebug>
@@ -683,7 +683,7 @@ void SitPlan::zozLoadFromProject()
 /* -------  Чтение файла ЗО ------- */
 void SitPlan::zozReading(const QString f )
 {
-    ZO zoZona;
+    Zoz zoZona;
     zoZona.readZoz(f);
     QByteArray qbaValues;
 

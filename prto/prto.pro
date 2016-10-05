@@ -13,12 +13,14 @@ DEFINES += PRTO_LIBRARY
 
 SOURCES += \
     prto.cpp \
-    task.cpp
+    task.cpp \
+    zoz.cpp
 
 HEADERS +=\
     prto_global.h \
     prto.h \
-    task.h
+    task.h \
+    zoz.h
 
 unix {
     target.path = /usr/lib

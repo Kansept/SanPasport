@@ -212,7 +212,7 @@ void ViewPlot::plotOpen()
 /* ------- Загрузка ЗОЗ ------- */
 void ViewPlot::plotLoadZo(const QString f)
 {
-    ZO zoZona;
+    Zoz zoZona;
     zoZona.readZoz(f);
     ploting(zoZona);
     sb1->setText(f);
@@ -235,7 +235,7 @@ void ViewPlot::plotExport()
 
 
 /* ------- Рисование графика ЗОЗ ------- */
-void ViewPlot::ploting(ZO val)
+void ViewPlot::ploting(Zoz val)
 {
     // Легенда
     if(val.Type == "zo")

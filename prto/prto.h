@@ -2,7 +2,6 @@
 #define PRTO_H
 
 #include "prto_global.h"
-
 #include <QDebug>
 #include <math.h>
 #include <QFile>
@@ -15,7 +14,6 @@
 
 class PRTOSHARED_EXPORT Antenna
 {
-
 public:
     // Переменные
     int Id;
@@ -88,26 +86,5 @@ public:
     QString RadHorizontalToString2();     // Считать горизонтальную ДН в строку для ПКАЭМО
     QString RadVerticalToString2();      // Считать вертикальную ДН в строку для ПКАЭМО
 };
-
-
-
-
-class ZO
-{
-public:
-    QString Height;
-    QString Type;
-    float MinX;
-    float MaxX;
-    float MinY;
-    float MaxY;
-    float Step;
-    QVector<double> Values;
-
-public slots:
-    /* ------- Чтение файла Горизонтального сечения ЗОЗ ------- */
-    void readZoz(const QString f);
-};
-
 
 #endif // PRTO_H
