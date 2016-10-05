@@ -3,7 +3,6 @@
 
 #include <QString>
 
-/// ------------------------ ВРЕМЕННО РАЗМЕЩЯЕМ ЗДЕСЬ
 class Task
 {
 public:
@@ -17,7 +16,7 @@ public:
     int Id;
 
     Task();
-   ~Task();
+    ~Task();
     void clear();
 };
 

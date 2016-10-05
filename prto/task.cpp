@@ -1,9 +1,12 @@
 #include "task.h"
 
-
 Task::Task()
 {
     clear();
+}
+
+Task::~Task()
+{
 }
 
 void Task::clear()
@@ -14,8 +17,4 @@ void Task::clear()
     Params.clear();
     Path.clear();
     Id = -1;
-}
-// ----------------------------------- Деструктор ----------------------------------- //
-Task::~Task()
-{
 }
