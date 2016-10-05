@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     MyWidget/qsingleitemsquarelayout.cpp \
     ViewPlot/dialog/dialog_confizgraph.cpp \
     MyWidget/plotzoz.cpp \
-    project.cpp
+    project.cpp \
+    Models/ModelTasks.cpp
 
 HEADERS  += mainwindow.h \
     Dialog/dialog_editant.h \
@@ -67,8 +68,8 @@ HEADERS  += mainwindow.h \
     Delegates/DelegateStatus.h \
     Delegates/DelegateTaskDescription.h \
     Threads/ThreadCalcZoz.h \
-    Models/ModelTasks.h \
-    Models/ModelAntennas.h
+    Models/ModelAntennas.h \
+    Models/ModelTasks.h
 
 FORMS    += mainwindow.ui \
     Dialog/dialog_editant.ui \
