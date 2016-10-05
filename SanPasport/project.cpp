@@ -176,7 +176,7 @@ void Project::importPKAEMO(const QString f)
     Antenna antenna;
 
     QSqlDatabase dbPKAEMO = QSqlDatabase::addDatabase("QODBC","PKAEMO");
-    dbPKAEMO.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DSN='';CharSet='UTF8';DBQ="+f);
+    dbPKAEMO.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DSN='';CharSet='UTF8';DBQ=" + f);
 
     if (dbPKAEMO.database("PKAEMO").open()) {
         QSqlQuery query(dbPKAEMO);
@@ -191,11 +191,11 @@ void Project::importPKAEMO(const QString f)
             antenna.Name = query.value(2).toString();
             antenna.Owner = query.value(3).toString();
             antenna.Frequency = query.value(4).toFloat();
-            antenna.Number = query.value(11).toInt();
+            antenna.Sort = query.value(11).toInt();
 
             strlstParam = query.value(6).toString().split(";");
             // для панельных антенн
-            if (query.value(1).toInt() == 100) {
+            if (query.value(1).toInt() == AntennaType::Panel) {
                 antenna.Gain = query.value(5).toFloat();               // 0 - Тип передатчика (0 - Связной 1 — Вещятельный 2 — Телевизионный ), 0
                 antenna.PowerTrx = strlstParam.at(1).toFloat();    // 1 - Мощность передатчика Вт
                 // 2 - ?
@@ -243,7 +243,7 @@ void Project::importPKAEMO(const QString f)
             }  // конец if для панельных антенн
 
             // для РРС
-            if (query.value(1).toInt() == 15) {
+            if (query.value(1).toInt() == AntennaType::PPC) {
                 antenna.Gain = strlstParam.at(0).toFloat();
                 antenna.Height = strlstParam.at(1).toFloat();
                 antenna.PowerTrx = strlstParam.at(11).toFloat();
@@ -272,7 +272,7 @@ void Project::importPKAEMO(const QString f)
             tskRead.Enabled = query.value(4).toBool();
             tskRead.Path = query.value(3).toString();
             tskRead.Type = strlTask.first().toInt();
-            tskRead.Number = query.value(1).toInt();
+            tskRead.Sort = query.value(1).toInt();
             strlTask.removeFirst();
             strlTask.removeLast();
             tskRead.Params = strlTask.join(";");
@@ -373,7 +373,7 @@ bool Project::editAntenna(Antenna antenna)
     query.bindValue(":type",           antenna.Type);
     query.bindValue(":enabled",        antenna.Enabled);
     query.bindValue(":name",           antenna.Name);
-    query.bindValue(":sort",           antenna.Number);
+    query.bindValue(":sort",           antenna.Sort);
     query.bindValue(":owner",          antenna.Owner);
     query.bindValue(":frequency",      antenna.Frequency);
     query.bindValue(":gain",           antenna.Gain);
@@ -421,7 +421,7 @@ void Project::addAntennaPPC()
 
 
 /* ------------------------------------ Все ПРТО в вектор ------------------------------------ */
-QVector<Antenna> Project::prtoFromDb()
+QVector<Antenna> Project::getAntennas()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
     QVector<Antenna> antennas;
@@ -432,7 +432,7 @@ QVector<Antenna> Project::prtoFromDb()
         antenna.clear();
 
         antenna.Id = query.value("id").toInt();
-        antenna.Number = query.value("sort").toInt();
+        antenna.Sort = query.value("sort").toInt();
         antenna.Enabled = query.value("enabled").toBool();
         antenna.Name = query.value("name").toString();
         antenna.Owner = query.value("owner").toString();
@@ -473,7 +473,7 @@ QVector<Antenna> Project::prtoFromDb()
 
 
 /* ------------------------------------ Все Задания в вектор ------------------------------------ */
-QVector<Task> Project::taskFromDb()
+QVector<Task> Project::getTasks()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
     QVector<Task> tasks;
@@ -485,7 +485,7 @@ QVector<Task> Project::taskFromDb()
         task.clear();
         task.Id = query.value("id").toInt();
         task.Enabled = query.value("enabled").toBool();
-        task.Number = query.value("sort").toInt();
+        task.Sort = query.value("sort").toInt();
         task.Type = query.value("type").toInt();
         task.Params = query.value("params").toString();
         task.Path = query.value("path").toString();
@@ -506,7 +506,7 @@ QVector<Task> Project::getTasks(int type)
         task.clear();
         task.Id = query.value("id").toInt();
         task.Enabled = query.value("enabled").toBool();
-        task.Number = query.value("sort").toInt();
+        task.Sort = query.value("sort").toInt();
         task.Type = query.value("type").toInt();
         task.Params = query.value("params").toString();
         task.Path = query.value("path").toString();
@@ -516,150 +516,140 @@ QVector<Task> Project::getTasks(int type)
 }
 
 /* ------------------------------------ Экспорт в ПКАЭМО ------------------------------------ */
-void Project::exportToPkaemo(const QString fileCopy)
+void Project::exportToPkaemo(const QString filePath)
 {
-    if (QFile(fileCopy).exists())
-        QFile(fileCopy).remove();
+    if (QFile(filePath).exists())
+        QFile(filePath).remove();
 
-    QFile qfExport("pkaemo.rto");
+    QFile fileExport("pkaemo.rto");
 
-    qfExport.copy(fileCopy);
-    qfExport.setFileName(fileCopy);
-    qfExport.rename(fileCopy);
+    fileExport.copy(filePath);
+    fileExport.setFileName(filePath);
+    fileExport.rename(filePath);
 
     QSqlDatabase dbPKAEMO = QSqlDatabase::addDatabase("QODBC","expPKAEMO");
     dbPKAEMO.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DSN='';CharSet='UTF8';DBQ="
-                             + qfExport.fileName());
+                             + fileExport.fileName());
 
     if (dbPKAEMO.database("expPKAEMO").open())
     {
-        QSqlQuery qEdit(dbPKAEMO);
-        Antenna apRead;
-        QVector<Antenna> vecPrtoAll(prtoFromDb());
+        QSqlQuery query(dbPKAEMO);
+        Antenna antenna;
+        QVector<Antenna> antennas(getAntennas());
 
-        for(int i=0; i < vecPrtoAll.count(); i++)
-        {
-            apRead.clear();
-            apRead = vecPrtoAll.at(i);
+        for (int i=0; i < antennas.count(); i++) {
+            antenna.clear();
+            antenna = antennas.at(i);
 
-            QString qsParam;
-            qsParam.clear();
+            QString params;
+            params.clear();
 
-            if( apRead.Type == 100 )
-            {
-                qsParam.append("0").append(";");                                     // 0 - Тип передатчика (0 - Связной 1 — Вещятельный 2 — Телевизионный ), 0
-                qsParam.append( QString::number(apRead.PowerTrx) ).append(";");      // 1 - Мощность передатчика Вт
-                qsParam.append("0").append(";");                                     // 2 - ?
-                qsParam.append("0").append(";");                                     // 3 - ?
-                qsParam.append( QString::number(apRead.FeederLeght) ).append(";");   // 4 - Длина магистрального фидера, м
-                qsParam.append( QString::number(apRead.FeederLoss) ).append(";");    // 5 - Погонное ослабление дБ/м
-                qsParam.append( QString::number(apRead.KSVN) ).append(";");          // 6 - КСВН
-                qsParam.append( QString::number(apRead.LossOther) ).append(";");     // 7 - Прочие потери
-                qsParam.append( QString::number(apRead.CountTrx) ).append(";");           // 8 - Количество предатчиков
-                qsParam.append("0").append(";");                                     // 9 - Тип модуляции
-                qsParam.append( QString::number(apRead.Height) ).append(";");        // 10 - Максимальный линейный размер
-                qsParam.append( QString::number(apRead.X) ).append(";");             // 11 - Координата X
-                qsParam.append( QString::number(apRead.Y) ).append(";");             // 12 - Координата Y
-                qsParam.append( QString::number(apRead.Z) ).append(";");             // 13 - Высота подвеса
-                qsParam.append( QString::number(apRead.Azimut) ).append(";");        // 14 - Установочный азимут
-                qsParam.append( QString::number(apRead.Tilt) ).append(";");          // 15 - Угол наклона
-                qsParam.append("0").append(";");                                     // 16 - ?
-                qsParam.append("0:00").append(";");                                  // 17 - Время начала
-                qsParam.append("24:00").append(";");                                 // 18 - Вреия конца
-                qsParam.append("1").append(";");                                     // 19 - Тип антенны (0 - Всенаправленная 1 — Панельная 2 - Волновой канал (Уда-Яги) 3 — Логопериодическая), 1
-                qsParam.append(QString::number(apRead.beamwidthHoriz())).append(";");// 20 - Ширина ДН по уровню 3
-                qsParam.append("0").append(";");                                     // 21 - Длинна антенны (для Логопериодических)
-                qsParam.append("0").append(";");                                     // 22 - Нижняя частота рабочего диапозона (для Логопериодических)
-                qsParam.append("0");                                                 // 23 - Верхняя частота рабочего диапозона (для Логопериодических)
+            if (antenna.Type == AntennaType::Panel) {
+                params.append("0").append(";");                                     // 0 - Тип передатчика (0 - Связной 1 — Вещятельный 2 — Телевизионный ), 0
+                params.append( QString::number(antenna.PowerTrx) ).append(";");      // 1 - Мощность передатчика Вт
+                params.append("0").append(";");                                     // 2 - ?
+                params.append("0").append(";");                                     // 3 - ?
+                params.append( QString::number(antenna.FeederLeght) ).append(";");   // 4 - Длина магистрального фидера, м
+                params.append( QString::number(antenna.FeederLoss) ).append(";");    // 5 - Погонное ослабление дБ/м
+                params.append( QString::number(antenna.KSVN) ).append(";");          // 6 - КСВН
+                params.append( QString::number(antenna.LossOther) ).append(";");     // 7 - Прочие потери
+                params.append( QString::number(antenna.CountTrx) ).append(";");           // 8 - Количество предатчиков
+                params.append("0").append(";");                                     // 9 - Тип модуляции
+                params.append( QString::number(antenna.Height) ).append(";");        // 10 - Максимальный линейный размер
+                params.append( QString::number(antenna.X) ).append(";");             // 11 - Координата X
+                params.append( QString::number(antenna.Y) ).append(";");             // 12 - Координата Y
+                params.append( QString::number(antenna.Z) ).append(";");             // 13 - Высота подвеса
+                params.append( QString::number(antenna.Azimut) ).append(";");        // 14 - Установочный азимут
+                params.append( QString::number(antenna.Tilt) ).append(";");          // 15 - Угол наклона
+                params.append("0").append(";");                                     // 16 - ?
+                params.append("0:00").append(";");                                  // 17 - Время начала
+                params.append("24:00").append(";");                                 // 18 - Вреия конца
+                params.append("1").append(";");                                     // 19 - Тип антенны (0 - Всенаправленная 1 — Панельная 2 - Волновой канал (Уда-Яги) 3 — Логопериодическая), 1
+                params.append(QString::number(antenna.beamwidthHoriz())).append(";");// 20 - Ширина ДН по уровню 3
+                params.append("0").append(";");                                     // 21 - Длинна антенны (для Логопериодических)
+                params.append("0").append(";");                                     // 22 - Нижняя частота рабочего диапозона (для Логопериодических)
+                params.append("0");                                                 // 23 - Верхняя частота рабочего диапозона (для Логопериодических)
 
-                apRead.mirorrHorizontal();
-                apRead.mirorrsVertical();
+                antenna.mirorrHorizontal();
+                antenna.mirorrsVertical();
 
-                qEdit.prepare("INSERT INTO Sost ( id_type, Name, Vlad, Freq, KU, Params, Dn_vert, Dn_gor, Nmbr, Tpdu, Incl) "
+                query.prepare("INSERT INTO Sost ( id_type, Name, Vlad, Freq, KU, Params, Dn_vert, Dn_gor, Nmbr, Tpdu, Incl) "
                               " VALUES (:id_type, :Name, :Vlad, :Freq, :KU, :Params, :Dn_vert, :Dn_gor, :Nmbr, :Tpdu, :Incl)");
-                qEdit.bindValue(":id_type", apRead.Type);
-                qEdit.bindValue(":Name",    apRead.Name);
-                qEdit.bindValue(":Vlad",    apRead.Owner);
-                qEdit.bindValue(":Freq",    apRead.Frequency);
-                qEdit.bindValue(":KU",      apRead.Gain);
-                qEdit.bindValue(":Params",  qsParam);
-                qEdit.bindValue(":Dn_vert", apRead.RadVerticalToString2());
-                qEdit.bindValue(":Dn_gor",  apRead.RadHorizontalToString2());
-                qEdit.bindValue(":Nmbr",    i);
-                qEdit.bindValue(":Tpdu",    "3");
-                qEdit.bindValue(":Incl",    apRead.Enabled);
-                qEdit.exec();
-            } // if( apRead.Type == 100 )
-            // Для РРС
-            if( apRead.Type == 15 )
-            {
-                qsParam.append( QString::number(apRead.Gain) ).append(";");          // 0 - КУ
-                qsParam.append( QString::number(apRead.Height) ).append(";");        // 1 - Диаметр аппертуры
-                qsParam.append( "180" ).append(";");                                 // 2 - Угол раскрыва град
-                qsParam.append( "0" ).append(";");                                   // 3 - Тип рефлектора ( 0 - сплошной)
-                qsParam.append( "0.02" ).append(";");                                // 4 -
-                qsParam.append( "0.01" ).append(";");                                // 5 -
-                qsParam.append( "0.04" ).append(";");                                // 6 -
-                qsParam.append( "0.02" ).append(";");                                // 7 -
-                qsParam.append( "0.02" ).append(";");                                // 8 -
-                qsParam.append( "0.01").append(";");                                 // 9 -
-                qsParam.append( "0.005" ).append(";");                               // 10 -
-                qsParam.append( QString::number(apRead.PowerTrx) ).append(";");      // 11 - Мощность ПРД
-                qsParam.append( QString::number(apRead.FeederLeght) ).append(";");   // 12 - Длина фидера
-                qsParam.append( QString::number(apRead.FeederLoss) ).append(";");    // 13 - Погонное осл
-                qsParam.append( QString::number(apRead.KSVN) ).append(";");          // 14 - КСВН
-                qsParam.append( QString::number(apRead.LossOther) ).append(";");     // 15 - Прочие потери
-                qsParam.append( QString::number(apRead.CountTrx) ).append(";");           // 16 - Колво ПРД
-                qsParam.append( "" ).append(";");                                    // 17 - Тип Модуляции
-                qsParam.append( QString::number(apRead.Tilt) ).append(";");          // 18 - Угол наклона
-                qsParam.append( QString::number(apRead.X) ).append(";");             // 19 - X
-                qsParam.append( QString::number(apRead.Y) ).append(";");             // 20 - Y
-                qsParam.append( QString::number(apRead.Azimut) ).append(";");        // 21 - Азимут
-                qsParam.append( QString::number(apRead.Z) ).append(";");             // 22 - Высота подвеса
-                qsParam.append("0:00").append(";");                                  // 23 - Время нач
-                qsParam.append("24:00");                                             // 24 - Время кнц
+                query.bindValue(":id_type", antenna.Type);
+                query.bindValue(":Name",    antenna.Name);
+                query.bindValue(":Vlad",    antenna.Owner);
+                query.bindValue(":Freq",    antenna.Frequency);
+                query.bindValue(":KU",      antenna.Gain);
+                query.bindValue(":Params",  params);
+                query.bindValue(":Dn_vert", antenna.RadVerticalToString2());
+                query.bindValue(":Dn_gor",  antenna.RadHorizontalToString2());
+                query.bindValue(":Nmbr",    i);
+                query.bindValue(":Tpdu",    "3");
+                query.bindValue(":Incl",    antenna.Enabled);
+                query.exec();
+            } else if (antenna.Type == AntennaType::PPC) {
+                params.append( QString::number(antenna.Gain) ).append(";");          // 0 - КУ
+                params.append( QString::number(antenna.Height) ).append(";");        // 1 - Диаметр аппертуры
+                params.append( "180" ).append(";");                                 // 2 - Угол раскрыва град
+                params.append( "0" ).append(";");                                   // 3 - Тип рефлектора ( 0 - сплошной)
+                params.append( "0.02" ).append(";");                                // 4 -
+                params.append( "0.01" ).append(";");                                // 5 -
+                params.append( "0.04" ).append(";");                                // 6 -
+                params.append( "0.02" ).append(";");                                // 7 -
+                params.append( "0.02" ).append(";");                                // 8 -
+                params.append( "0.01").append(";");                                 // 9 -
+                params.append( "0.005" ).append(";");                               // 10 -
+                params.append( QString::number(antenna.PowerTrx) ).append(";");      // 11 - Мощность ПРД
+                params.append( QString::number(antenna.FeederLeght) ).append(";");   // 12 - Длина фидера
+                params.append( QString::number(antenna.FeederLoss) ).append(";");    // 13 - Погонное осл
+                params.append( QString::number(antenna.KSVN) ).append(";");          // 14 - КСВН
+                params.append( QString::number(antenna.LossOther) ).append(";");     // 15 - Прочие потери
+                params.append( QString::number(antenna.CountTrx) ).append(";");           // 16 - Колво ПРД
+                params.append( "" ).append(";");                                    // 17 - Тип Модуляции
+                params.append( QString::number(antenna.Tilt) ).append(";");          // 18 - Угол наклона
+                params.append( QString::number(antenna.X) ).append(";");             // 19 - X
+                params.append( QString::number(antenna.Y) ).append(";");             // 20 - Y
+                params.append( QString::number(antenna.Azimut) ).append(";");        // 21 - Азимут
+                params.append( QString::number(antenna.Z) ).append(";");             // 22 - Высота подвеса
+                params.append("0:00").append(";");                                  // 23 - Время нач
+                params.append("24:00");                                             // 24 - Время кнц
 
-                qEdit.prepare("INSERT INTO Sost ( id_type, Name, Vlad, Freq, Params, Nmbr, Tpdu, Incl) "
+                query.prepare("INSERT INTO Sost ( id_type, Name, Vlad, Freq, Params, Nmbr, Tpdu, Incl) "
                               "VALUES (:id_type, :Name, :Vlad, :Freq, :Params, :Nmbr, :Tpdu, :Incl)");
-                qEdit.bindValue(":id_type", apRead.Type);
-                qEdit.bindValue(":Name",    apRead.Name);
-                qEdit.bindValue(":Vlad",    apRead.Owner);
-                qEdit.bindValue(":Freq",    apRead.Frequency);
-                qEdit.bindValue(":Params",  qsParam);
-                qEdit.bindValue(":Nmbr",    i);
-                qEdit.bindValue(":Tpdu",    "3");
-                qEdit.bindValue(":Incl",    apRead.Enabled);
-                qEdit.exec();
+                query.bindValue(":id_type", antenna.Type);
+                query.bindValue(":Name",    antenna.Name);
+                query.bindValue(":Vlad",    antenna.Owner);
+                query.bindValue(":Freq",    antenna.Frequency);
+                query.bindValue(":Params",  params);
+                query.bindValue(":Nmbr",    i);
+                query.bindValue(":Tpdu",    "3");
+                query.bindValue(":Incl",    antenna.Enabled);
+                query.exec();
             }   // if( apRead.Type == 15 )
         } //  for(int i=0; i < vecPrtoAll.count(); i++)
 
         // Экспорт заданий
-        QVector<Task> vecTaskAll(taskFromDb());
+        QVector<Task> tasks(getTasks());
 
-        for(int i=0; i < vecTaskAll.count(); i++)
-        {
-            Task task;
-            task = vecTaskAll.at(i);
-
-            qEdit.prepare("INSERT INTO Calc_Task ( Npp, Nmbr, Task, Path, Incl) VALUES (:Npp, :Nmbr, :Task, :Path, :Incl)");
-            qEdit.bindValue(":Npp",  i);
-            qEdit.bindValue(":Nmbr", i);
-            qEdit.bindValue(":Task", QString(QString::number(task.Type)).append(";").append(task.Params).append(";0") );
-            qEdit.bindValue(":Path", task.Path);
-            qEdit.bindValue(":Incl", task.Enabled);
-            qEdit.exec();
-
-            task.clear();
+        foreach (Task task, tasks) {
+            query.prepare("INSERT INTO Calc_Task ( Npp, Nmbr, Task, Path, Incl) "
+                          "VALUES (:Npp, :Nmbr, :Task, :Path, :Incl)");
+            query.bindValue(":Npp",  task.Sort);
+            query.bindValue(":Nmbr", task.Sort);
+            query.bindValue(":Task", QString(QString::number(task.Type)).append(";").append(task.Params).append(";0") );
+            query.bindValue(":Path", task.Path);
+            query.bindValue(":Incl", task.Enabled);
+            query.exec();
         }
         // Опции
-        qEdit.exec("UPDATE Prmt SET Prmt.Koef_r = " + str(koef()) );
+        query.exec( "UPDATE Prmt SET Prmt.Koef_r = " + QString::number(getKoef()) );
     }
     dbPKAEMO.database("expPKAEMO").close();
 }
 
 
 /* ------------------------------------ Коэфициент ------------------------------------ */
-float Project::koef()
+float Project::getKoef()
 {
     QSqlQuery query(QSqlDatabase::database("project"));
 
@@ -695,17 +685,10 @@ bool Project::addTask(Task task)
         query.bindValue(":type",    task.Type);
         query.bindValue(":params",    task.Params);
         query.bindValue(":path",    task.Path);
-        query.bindValue(":sort",  task.Number);
+        query.bindValue(":sort",  task.Sort);
         query.bindValue(":id",  task.Id);
     }
     return query.exec();
-}
-
-
-/* ------------------------------------ Число в строку ------------------------------------ */
-QString Project::str(double dNum)
-{
-    return QString::number(dNum);
 }
 
 // ------------------------------------ Кавычки ------------------------------------ /
@@ -726,7 +709,7 @@ bool Project::saveAntennasToCsv(const QString fileName)
     out << QString("Название;Сектор;Частота;КУ;Размер;Мощность на входе;X;Y;Высота;Азимут;Угол наклона").toUtf8()
         << "\n";
 
-    QVector<Antenna> antennas ( prtoFromDb() );
+    QVector<Antenna> antennas(getAntennas());
     QStringList line;
     for (int i = 0; i < antennas.count(); i++) {
         line.clear();

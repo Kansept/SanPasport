@@ -3,14 +3,21 @@
 
 #include <QString>
 
+namespace TaskType
+{
+    enum TaskType {
+        Zoz = 1,
+        Vs = 2,
+        Point = 3
+    };
+}
+
 class Task
 {
 public:
-    enum TaskType {Zoz = 1, Vs = 2};
-
     bool Enabled;
     int Type;
-    float Number;
+    float Sort;
     QString Params;
     QString Path;
     int Id;

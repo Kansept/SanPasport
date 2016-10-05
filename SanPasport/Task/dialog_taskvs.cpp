@@ -49,7 +49,7 @@ void Dialog_TaskVs::pushButton_Ok()
         qsSendVs.append( "0" );
 
         tskVs.Id = g_taskVS.Id;
-        tskVs.Number = g_taskVS.Number;
+        tskVs.Sort = g_taskVS.Sort;
         tskVs.Enabled = g_taskVS.Enabled;
         tskVs.Type = 2;
         tskVs.Params = qsSendVs;
@@ -113,6 +113,6 @@ void Dialog_TaskVs::insertData(Task tsk)
     ui->lineEdit_Azimut->setText( stlTask.at(8) );
 
     g_taskVS.Id = tsk.Id;
-    g_taskVS.Number = tsk.Number;
+    g_taskVS.Sort = tsk.Sort;
     g_taskVS.Enabled = tsk.Enabled;
 }

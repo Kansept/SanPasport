@@ -12,13 +12,21 @@
 #include <QRegExp>
 #include <QFileInfo>
 
-class PRTOSHARED_EXPORT Antenna
+namespace AntennaType
+{
+    enum AntennaType {
+        Panel = 100,
+        PPC = 15
+    };
+}
+
+class Antenna
 {
 public:
     // Переменные
     int Id;
     bool Enabled;
-    float Number;
+    float Sort;
     QString Name;
     double Frequency;
     double Gain;

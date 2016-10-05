@@ -664,7 +664,7 @@ void SitPlan::zozLoadFromProject()
 {
     QString strProjPath(QFileInfo(MainWindow().currentPath()).absolutePath());
     Project prjLoadTask;
-    QVector<Task> vecTask(prjLoadTask.taskFromDb());
+    QVector<Task> vecTask(prjLoadTask.getTasks());
     QStringList qslf;
 
     for(int i=0; i < vecTask.count(); i++)

@@ -175,7 +175,7 @@ private slots:
      void taskDisableAll();           // Отключить все задания
      void taskEdit();                 // Редактировать задание
      bool taskRemove();               // Удалить задание
-     Task taskFromModel(int intRow);  // Прочитать задание из модели
+     Task taskFromModel(int row);  // Прочитать задание из модели
      void taskVertFromPrto();         // Верткальные сечения на основе ПРТО
      void tasZoFromPrto();            // Горизонтальные сечения на основе ПРТО
      void taskKeyPresed(int numKey, int numModifierKey);    // Горячие клавиши

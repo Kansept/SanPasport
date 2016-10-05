@@ -20,10 +20,10 @@ public:
     bool addAntenna(Antenna antenna);
     bool editAntenna(Antenna antenna);
     static void importPKAEMO(const QString f);
-    void exportToPkaemo(const QString fileCopy);
-    QVector<Antenna> prtoFromDb();
-    QVector<Task> taskFromDb();
-    float koef();
+    void exportToPkaemo(const QString filePath);
+    QVector<Antenna> getAntennas();
+    QVector<Task> getTasks();
+    float getKoef();
     bool saveAntennasToCsv(const QString fileName);
 
 public slots:

@@ -63,7 +63,7 @@ void Dialog_TaskZo::pushButton_Ok()
 
 
         tskZo.Id = g_taskZoz.Id;
-        tskZo.Number = g_taskZoz.Number;
+        tskZo.Sort = g_taskZoz.Sort;
         tskZo.Enabled = g_taskZoz.Enabled;
         tskZo.Type = 1;
         tskZo.Params = qsSendZo;
@@ -125,7 +125,7 @@ void Dialog_TaskZo::insertData(Task tsk)
         ui->radioButton_Graphics->setChecked(true);
 
     g_taskZoz.Id = tsk.Id;
-    g_taskZoz.Number = tsk.Number;
+    g_taskZoz.Sort = tsk.Sort;
     g_taskZoz.Enabled = tsk.Enabled;
 }
 

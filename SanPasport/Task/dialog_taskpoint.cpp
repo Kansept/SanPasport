@@ -30,7 +30,7 @@ void Dialog_TaskPoint::on_pushButton_Ok_clicked()
     qsSendPoint.append( ui->lineEdit_Z->text() );
 
     tskPoint.Id = g_taskPoint.Id;
-    tskPoint.Number = g_taskPoint.Number;
+    tskPoint.Sort = g_taskPoint.Sort;
     tskPoint.Enabled = g_taskPoint.Enabled;
     tskPoint.Type = 3;
     tskPoint.Params = qsSendPoint;
@@ -69,7 +69,7 @@ void Dialog_TaskPoint::insertData(Task tsk)
     ui->lineEdit_Z->setText( stlTask.at(2) );
 
     g_taskPoint.Id = tsk.Id;
-    g_taskPoint.Number = tsk.Number;
+    g_taskPoint.Sort = tsk.Sort;
     g_taskPoint.Enabled = tsk.Enabled;
 
 }

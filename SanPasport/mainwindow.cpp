@@ -136,11 +136,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tableView_Antennas->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->tableView_Task->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    QSettings *stngSanPasport = new QSettings( (QCoreApplication::applicationDirPath())
+    QSettings *settingSanPasport = new QSettings( (QCoreApplication::applicationDirPath())
                                               + "//configSanPasport.ini",QSettings::IniFormat );
-    stngSanPasport->beginGroup("SanPasport");
-    G_strDbPath = stngSanPasport->value("DbPath", "").toString();
-    stngSanPasport->endGroup();
+    settingSanPasport->beginGroup("SanPasport");
+    G_strDbPath = settingSanPasport->value("DbPath", "").toString();
+    settingSanPasport->endGroup();
 
     // База данных
     modelDb = new QFileSystemModel();
@@ -223,9 +223,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     int iMessage(msgBox.exec());
 
-    if (iMessage==QMessageBox::No) {
+    if (iMessage == QMessageBox::No) {
         event->accept();
-    } else if (iMessage==QMessageBox::Cancel) {
+    } else if (iMessage == QMessageBox::Cancel) {
         event->ignore();
     } else {
         fileSave();
@@ -294,7 +294,8 @@ void MainWindow::enableUI(bool b)
 // ----------------------------------- ФАЙЛ - Новый проект ----------------------------------- //
 void MainWindow::fileNew()
 {
-    Project::init();
+    project->init();
+   // Project::init();
     fileLoadModel(QSqlDatabase::database("project"));
 }
 
@@ -488,7 +489,7 @@ void MainWindow::fileSaveCalc()
         if (!(QDir(strPathNew).exists()))
             QDir().mkdir(strPathNew);
 
-        QVector<Task> vecTaskAll = project->taskFromDb();
+        QVector<Task> vecTaskAll = project->getTasks();
 
         for (int i=0;  i < vecTaskAll.count(); i++)
         {
@@ -741,7 +742,7 @@ Antenna MainWindow::getAntennaFromModel(const int row)
 
     antenna.Id = record.value("id").toInt();
     antenna.Enabled = record.value("enabled").toBool();
-    antenna.Number = record.value("sort").toInt();
+    antenna.Sort = record.value("sort").toInt();
     antenna.Name = record.value("name").toString();
     antenna.Owner = record.value("owner").toString();
     antenna.Frequency = record.value("frequency").toFloat();
@@ -856,13 +857,13 @@ void MainWindow::moveUpAntenna()
     int currentRow (ui->tableView_Antennas->currentIndex().row());
     Antenna antennaOld (getAntennaFromModel(currentRow));
 
-    antennaOld.Number = currentRow - 0.5;
+    antennaOld.Sort = currentRow - 0.5;
     Project().editAntenna(antennaOld);
     modelAntenna->submitAll();
 
     for (int row = 0; row < modelAntenna->rowCount(); row++) {
         Antenna antenna(getAntennaFromModel(row));
-        antenna.Number = row + 1;
+        antenna.Sort = row + 1;
         Project().editAntenna(antenna);
     }
     modelAntenna->submitAll();
@@ -877,13 +878,13 @@ void MainWindow::moveDownAntenna()
     int currentRow (ui->tableView_Antennas->currentIndex().row());
     Antenna prtoOld (getAntennaFromModel(currentRow));
 
-    prtoOld.Number = currentRow + 2.5;
+    prtoOld.Sort = currentRow + 2.5;
     Project().editAntenna(prtoOld);
     modelAntenna->submitAll();
 
     for (int row = 0; row < modelAntenna->rowCount(); row++) {
         Antenna prt(getAntennaFromModel(row));
-        prt.Number = row + 1;
+        prt.Sort = row + 1;
         Project().editAntenna(prt);
     }
     modelAntenna->submitAll();
@@ -1125,9 +1126,9 @@ void MainWindow::taskInsert()
 
 
 // ----------------------------------- ЗАДАНИЕ - прочитать задание из модели ----------------------------------- //
-Task MainWindow::taskFromModel(int intRow)
+Task MainWindow::taskFromModel(int row)
 {
-    QSqlRecord record = modelTask->record(intRow);
+    QSqlRecord record = modelTask->record(row);
     Task task;
 
     task.Id = record.value("id").toInt();
@@ -1135,7 +1136,7 @@ Task MainWindow::taskFromModel(int intRow)
     task.Type = record.value("type").toInt();
     task.Params = record.value("params").toString();
     task.Path = record.value("path").toString();
-    task.Number = record.value("sort").toInt();
+    task.Sort = record.value("sort").toInt();
 
     return task;
 }
@@ -1205,13 +1206,13 @@ void MainWindow::taskEdit()
 { 
     Task task(taskFromModel(ui->tableView_Task->currentIndex().row()));
 
-    if (task.Type == 1) {
+    if (task.Type == TaskType::Zoz) {
         dialogTaskZoz->show();
         dialogTaskZoz->insertData(task);
-    } else if (task.Type == 2) {
+    } else if (task.Type == TaskType::Vs) {
         dlg_TaskVs->show();
         dlg_TaskVs->insertData(task);
-    } else if (task.Type == 3) {
+    } else if (task.Type == TaskType::Point) {
         dlg_TaskPoint->show();
         dlg_TaskPoint->insertData(task);
     }
@@ -1265,45 +1266,45 @@ void MainWindow::tasZoFromPrto()
 /* ------- Верткальные сечения на основе ПРТО ------- */
 void MainWindow::taskVertFromPrto()
 {
-    Antenna prtoTask;
-    QString strTaskVS;
+    Antenna antenna;
+    QString taskParams;
     QString strRange;
-    Task tskVs;
+    Task task;
 
-    QSettings *stngVsAll = new QSettings( (QCoreApplication::applicationDirPath())
+    QSettings *settingVs = new QSettings( (QCoreApplication::applicationDirPath())
                                           + "//configSanPasport.ini",QSettings::IniFormat );
-    stngVsAll->beginGroup("SanPasport");
-    strRange.append( stngVsAll->value("VsRmin", "0").toString() ).append(";");
-    strRange.append( stngVsAll->value("VsRmax", "100").toString() ).append(";");
-    strRange.append( stngVsAll->value("VsRd", "0.5").toString() ).append(";");
-    strRange.append( stngVsAll->value("VsHmin", "0").toString() ).append(";");
-    strRange.append( stngVsAll->value("VsHmax", "40").toString() ).append(";");
-    strRange.append( stngVsAll->value("VsHd", "0.5").toString() ).append(";");
-    stngVsAll->endGroup();
-    delete stngVsAll;
+    settingVs->beginGroup("SanPasport");
+    strRange.append( settingVs->value("VsRmin", "0").toString() ).append(";");
+    strRange.append( settingVs->value("VsRmax", "100").toString() ).append(";");
+    strRange.append( settingVs->value("VsRd", "0.5").toString() ).append(";");
+    strRange.append( settingVs->value("VsHmin", "0").toString() ).append(";");
+    strRange.append( settingVs->value("VsHmax", "40").toString() ).append(";");
+    strRange.append( settingVs->value("VsHd", "0.5").toString() ).append(";");
+    settingVs->endGroup();
+    delete settingVs;
 
     for (int i=0; i<modelAntenna->rowCount(); i++) {
-        prtoTask.clear();
-        strTaskVS.clear();
-        prtoTask = getAntennaFromModel(i);
+        antenna.clear();
+        taskParams.clear();
+        antenna = getAntennaFromModel(i);
 
-        strTaskVS.append(QString::number(prtoTask.X)).append(";");
-        strTaskVS.append(QString::number(prtoTask.Y)).append(";");
-        strTaskVS.append(strRange);
-        strTaskVS.append(QString::number(prtoTask.Azimut)).append(";");
-        strTaskVS.append("0");
+        taskParams.append(QString::number(antenna.X)).append(";");
+        taskParams.append(QString::number(antenna.Y)).append(";");
+        taskParams.append(strRange);
+        taskParams.append(QString::number(antenna.Azimut)).append(";");
+        taskParams.append("0");
 
         QSqlQuery qCount(QSqlDatabase::database("project"));
-        qCount.exec("SELECT COUNT(*) FROM TaskCalc WHERE TASK = '"+strTaskVS+"'");
+        qCount.exec("SELECT COUNT(*) FROM TaskCalc WHERE TASK = '"+taskParams+"'");
         qCount.next();
 
         if (qCount.value(0).toInt() == 0) {
-            tskVs.Id = -1;
-            tskVs.Type = 2;
-            tskVs.Params = strTaskVS;
+            task.Id = -1;
+            task.Type = 2;
+            task.Params = taskParams;
 
             Project cbd;
-            cbd.addTask(tskVs);
+            cbd.addTask(task);
             modelTask->submitAll();
         }
     }
@@ -1312,7 +1313,7 @@ void MainWindow::taskVertFromPrto()
 void MainWindow::sortTasks()
 {
     QList<float> listAzimut;
-    QVector<Task> tasksVs (project->getTasks(Task::Vs));
+    QVector<Task> tasksVs (project->getTasks(TaskType::Vs));
 
     foreach (Task task, tasksVs) {
         float azimut (task.Params.split(";").at(8).toFloat());
@@ -1321,14 +1322,14 @@ void MainWindow::sortTasks()
     qStableSort(listAzimut.begin(), listAzimut.end(), qLess<float>());
 
     foreach (Task task, tasksVs) {
-        task.Number = listAzimut.indexOf(task.Params.split(";").at(8).toFloat());
+        task.Sort = listAzimut.indexOf(task.Params.split(";").at(8).toFloat());
         project->addTask(task);
     }
 
     int countVs (listAzimut.count());
 
     QList<float> listHeight;
-    QVector<Task> tasksZoz (project->getTasks(Task::Zoz));
+    QVector<Task> tasksZoz (project->getTasks(TaskType::Zoz));
 
     foreach (Task task, tasksZoz) {
         float height (task.Params.split(";").at(6).toFloat());
@@ -1337,7 +1338,7 @@ void MainWindow::sortTasks()
     qStableSort(listHeight.begin(), listHeight.end(), qGreater<float>());
 
     foreach (Task task, tasksZoz) {
-        task.Number = countVs + listHeight.indexOf(task.Params.split(";").at(6).toFloat());
+        task.Sort = countVs + listHeight.indexOf(task.Params.split(";").at(6).toFloat());
         project->addTask(task);
     }
 
@@ -1347,43 +1348,43 @@ void MainWindow::sortTasks()
 // ----------------------------------- ЗАДАНИЕ - Переместить вверх ----------------------------------- //
 void MainWindow::taskMoveUp()
 {
-    int curRuw(ui->tableView_Task->currentIndex().row());
-    Task tskOld( taskFromModel(curRuw) );
+    int currentRow(ui->tableView_Task->currentIndex().row());
+    Task tskOld( taskFromModel(currentRow) );
 
-    tskOld.Number = curRuw - 0.5;
+    tskOld.Sort = currentRow - 0.5;
     Project().addTask(tskOld);
     modelTask->submitAll();
 
     for (int row = 0; row < modelTask->rowCount(); row++) {
         Task tsk(taskFromModel(row));
-        tsk.Number = row + 1;
+        tsk.Sort = row + 1;
         Project().addTask(tsk);
     }
     modelTask->submitAll();
 
-    ui->tableView_Task->selectRow(curRuw - 1);
+    ui->tableView_Task->selectRow(currentRow - 1);
 }
 
 
 // ----------------------------------- ЗАДАНИЕ - Переместить вниз ----------------------------------- //
 void MainWindow::taskMoveDown()
 {
-    int curRuw(ui->tableView_Task->currentIndex().row());
-    Task tskOld( taskFromModel(curRuw) );
+    int currentRow(ui->tableView_Task->currentIndex().row());
+    Task tskOld( taskFromModel(currentRow) );
 
-    tskOld.Number = curRuw + 2.5;
+    tskOld.Sort = currentRow + 2.5;
     Project().addTask(tskOld);
     modelTask->submitAll();
 
     for (int row = 0; row < modelTask->rowCount(); row++) {
-        Task tsk(taskFromModel(row));
-        tsk.Number = row + 1;
-        Project().addTask(tsk);
+        Task task(taskFromModel(row));
+        task.Sort = row + 1;
+        Project().addTask(task);
     }
     modelTask->submitAll();
 
     ui->tableView_Task->clearSelection();
-    ui->tableView_Task->selectRow(curRuw + 1);
+    ui->tableView_Task->selectRow(currentRow + 1);
 }
 
 
@@ -1449,29 +1450,29 @@ void MainWindow::showDialogParametrs()
 
 void MainWindow::calcStart()
 {
-    QVector<Task> vecTask;
-    QVector<Antenna> vecPrto;
-    Task taskCalc;
-    Antenna prtoCalc;
+    QVector<Task> tasks;
+    QVector<Antenna> antennas;
+    Task task;
+    Antenna antenna;
     ThreadCalcZoz *thCalc = new ThreadCalcZoz();
 
     for (int i=0; i < modelAntenna->rowCount(); i++) {
-        prtoCalc.clear();
-        prtoCalc = getAntennaFromModel(i);
+        antenna.clear();
+        antenna = getAntennaFromModel(i);
 
-        if(prtoCalc.Type == 100 and prtoCalc.Enabled == true)
-            vecPrto.append(prtoCalc);
+        if(antenna.Type == 100 and antenna.Enabled == true)
+            antennas.append(antenna);
     }
 
     for (int i=0; i < modelTask->rowCount(); i++) {
-        taskCalc.clear();
-        taskCalc = taskFromModel(i);
+        task.clear();
+        task = taskFromModel(i);
 
-        if(taskCalc.Type == 1 and taskCalc.Enabled == true and taskCalc.Params.split(";").last() == "0")
-            vecTask.append(taskCalc);
+        if (task.Type == 1 and task.Enabled == true and task.Params.split(";").last() == "0")
+            tasks.append(task);
     }
 
-    thCalc->loadTask(vecTask, vecPrto);
+    thCalc->loadTask(tasks, antennas);
     connect( thCalc, SIGNAL(startCalc(int)), this, SLOT(progresBar(int)) );
     connect( thCalc, SIGNAL(done(int)), this, SLOT(progresBar(int)) );
     connect( thCalc, SIGNAL(progressChanged(int)), this, SLOT(progresBar(int)) );
