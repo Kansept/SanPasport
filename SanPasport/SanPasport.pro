@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     MyWidget/plotzoz.cpp \
     project.cpp \
     Models/ModelTasks.cpp \
-    Models/ModelAntennas.cpp
+    Models/ModelAntennas.cpp \
+    Threads/ThreadCalcZoz.cpp
 
 HEADERS  += mainwindow.h \
     Dialog/dialog_editant.h \

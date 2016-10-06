@@ -1559,9 +1559,9 @@ void MainWindow::helpPpcCsv()
 // --------------------------------------------------- О Программе --------------------------------------------------- //
 void MainWindow::helpAbout()
 {
-    QString strAbout;
+    QString textAbout;
 
-    strAbout = " <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"> \
+    textAbout = " <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\"> \
                 <html><head><meta name=qrichtext content=1 /> \
                 <style type=text/css> \
                 body { font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; margin:0px;}\
@@ -1576,7 +1576,7 @@ void MainWindow::helpAbout()
                 </body></html>";
 
     QMessageBox *about = new QMessageBox();
-    about->setInformativeText(strAbout);
+    about->setInformativeText(textAbout);
     about->exec();
     delete about;
 }
