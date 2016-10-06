@@ -19,7 +19,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     Dialog/dialog_editant.cpp \
     Dialog/dialog_parametrs.cpp \
     qdata.cpp \
@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     project.cpp \
     Models/ModelTasks.cpp \
     Models/ModelAntennas.cpp \
-    Threads/ThreadCalcZoz.cpp
+    Threads/ThreadCalcZoz.cpp \
+    ../Widget/DotLineEdit.cpp
 
 HEADERS  += mainwindow.h \
     Dialog/dialog_editant.h \
@@ -53,10 +54,7 @@ HEADERS  += mainwindow.h \
     SitPlan/Dialog/dialog_configgrid.h \
     SitPlan/Dialog/dialog_configzo.h \
     SitPlan/config.h \
-    SitPlan/MyTableView.h \
-    ../MyWidget/MySitPlanView.h \
-    MyWidget/DotLineEdit.h \
-    ../MyWidget/DotLineEdit.h \
+    ../Widget/DotLineEdit.h \
     MyWidget/tableviewsp.h \
     ViewPlot/viewplot.h \
     MyWidget/qsingleitemsquarelayout.h \

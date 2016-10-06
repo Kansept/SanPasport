@@ -95,10 +95,10 @@
     </widget>
    </item>
    <item row="8" column="0">
-    <widget class="DotLineEdit" name="lineEdit_inDBm"/>
+    <widget class="QLineEdit" name="lineEdit_inDBm"/>
    </item>
    <item row="10" column="0">
-    <widget class="DotLineEdit" name="lineEdit_inFreq"/>
+    <widget class="QLineEdit" name="lineEdit_inFreq"/>
    </item>
    <item row="10" column="2">
     <widget class="QLineEdit" name="lineEdit_outDlvoln">
@@ -154,7 +154,7 @@
     </spacer>
    </item>
    <item row="12" column="0">
-    <widget class="DotLineEdit" name="lineEdit_inDlvoln"/>
+    <widget class="QLineEdit" name="lineEdit_inDlvoln"/>
    </item>
    <item row="8" column="2">
     <widget class="QLineEdit" name="lineEdit_outWatt">
@@ -219,7 +219,7 @@
   <customwidget>
    <class>DotLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>../MyWidget/DotLineEdit.h</header>
+   <header location="global">../Widget/DotLineEdit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

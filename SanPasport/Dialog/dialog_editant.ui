@@ -622,7 +622,7 @@
   <customwidget>
    <class>DotLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>../MyWidget/DotLineEdit.h</header>
+   <header>../Widget/DotLineEdit.h</header>
   </customwidget>
   <customwidget>
    <class>QwtPolarPlot</class>

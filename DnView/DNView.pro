@@ -19,26 +19,27 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-           tools/dialogconvert.cpp \
-           tools/dialogpreferens.cpp \
-           tools/window_projection_pkaemo4.cpp \
+    tools/dialogconvert.cpp \
+    tools/dialogpreferens.cpp \
+    tools/window_projection_pkaemo4.cpp \
     tools/dialog_groupchange.cpp \
-    DnView.cpp
+    DnView.cpp \
+    ../Widget/DotLineEdit.cpp
 
 HEADERS += \
-           tools/dialogconvert.h \
-           tools/dialogpreferens.h \
-           tools/window_projection_pkaemo4.h \
-           userdelegate.h \
+    tools/dialogconvert.h \
+    tools/dialogpreferens.h \
+    tools/window_projection_pkaemo4.h \
+    userdelegate.h \
     tools/dialog_groupchange.h \
     version.h \
     DnView.h \
-    ../MyWidget/DotLineEdit.h
+    ../Widget/DotLineEdit.h \
 
 FORMS   += \
-           tools/dialogconvert.ui \
-           tools/dialogpreferens.ui \
-           tools/window_projection_pkaemo4.ui \
+    tools/dialogconvert.ui \
+    tools/dialogpreferens.ui \
+    tools/window_projection_pkaemo4.ui \
     tools/dialog_groupchange.ui \
     DnView.ui
 

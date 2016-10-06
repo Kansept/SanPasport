@@ -2,6 +2,7 @@
 #define DIALOGCONVERT_H
 
 #include <QDialog>
+#include "../Widget/DotLineEdit.h"
 
 namespace Ui {
 class DialogConvert;
