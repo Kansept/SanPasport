@@ -15,24 +15,25 @@ public:
     Project();
 
     static bool init();
-    bool saveAs(QSqlDatabase memdb, QString filename, bool save);
-    bool addTask(Task tsk);
-    bool addAntenna(Antenna antenna);
-    bool editAntenna(Antenna antenna);
-    static void importPKAEMO(const QString f);
-    void exportToPkaemo(const QString filePath);
-    QVector<Antenna> getAntennas();
-    QVector<Task> getTasks();
-    float getKoef();
-    bool saveAntennasToCsv(const QString fileName);
+    static bool saveAs(QString filename, bool save);
+    static bool addTask(Task tsk);
+    static bool addAntenna(Antenna antenna);
+    static bool editAntenna(Antenna antenna);
+    static void importFromPkaemo(const QString f);
+    static void exportToPkaemo(const QString filePath);
+    static QVector<Antenna> getAntennas();
+    static QVector<Task> getTasks();
+    static float getKoef();
+    static bool saveAntennasToCsv(const QString fileName);
+    static QSqlDatabase getDatabase();
 
 public slots:
-    void addAntennaPPC();
-    QVector<Task> getTasks(int type);
+    static void addAntennaPPC();
+    static QVector<Task> getTasks(int type);
 
 private:
-    QString str(double dNum);
-    QString quotedStr(const QString str);
+    static QString str(double dNum);
+    static QString quotedStr(const QString str);
 
 signals:
     void sgnlfileNew();

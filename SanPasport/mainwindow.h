@@ -105,7 +105,6 @@ private:
     QSqlTableModel *modelOptions;
     QFileSystemModel *modelDb;
     QMenu *menuAntenna;
-    Project *project;
     // Статус Бар
     QLabel *sb1;
     QPushButton *sbKoef;
@@ -177,7 +176,7 @@ private slots:
      bool taskRemove();               // Удалить задание
      Task taskFromModel(int row);  // Прочитать задание из модели
      void taskVertFromPrto();         // Верткальные сечения на основе ПРТО
-     void tasZoFromPrto();            // Горизонтальные сечения на основе ПРТО
+     void taskZozFromAntennas();            // Горизонтальные сечения на основе ПРТО
      void taskKeyPresed(int numKey, int numModifierKey);    // Горячие клавиши
      void contextMenuTask(const QPoint &pos);               // Контексное меню
      void taskMoveUp();               // Переместить вверх

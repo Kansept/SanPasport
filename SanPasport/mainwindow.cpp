@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "ViewPlot/viewplot.h"
+#include "Delegates/DelegateTaskDescription.h"
+#include "Delegates/DelegateTaskPath.h"
+#include "Delegates/DelegateStatus.h"
 #include <QDebug>
 #include <QFileDialog>
 #include <QSqlRecord>
@@ -14,16 +17,10 @@
 #include <QtConcurrent>
 #include <QTreeWidgetItem>
 
-#include "ViewPlot/viewplot.h"
-#include "Delegates/DelegateTaskDescription.h"
-#include "Delegates/DelegateTaskPath.h"
-#include "Delegates/DelegateStatus.h"
-
 
 using namespace std;
 
 // ------- Глобальные переменные ------- //
-
 QModelIndex G_qmiindex;
 QFile G_fOpenProj;
 QString G_strDbPath;
@@ -45,12 +42,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // ------- Диалоги ------- //
     dialogTaskZoz = new Dialog_TaskZo(this);
-    dlg_TaskVs = new Dialog_TaskVs(this);
+    dlg_TaskVs    = new Dialog_TaskVs(this);
     dlg_TaskPoint = new Dialog_TaskPoint(this);
-    dlg_EditAnt = new Dialog_EditAnt(this);
+    dlg_EditAnt   = new Dialog_EditAnt(this);
     dlg_Parametrs = new Dialog_Parametrs(this);
     dlg_Preferens = new Dialog_Preferens(this);
-    win_SitPlan = new SitPlan(this);
+    win_SitPlan   = new SitPlan(this);
 
     // ФАЙЛ
     connect( ui->action_FileProjectNew, SIGNAL(triggered()), this, SLOT(fileNew()) );                          // Новый проект
@@ -97,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect( dlg_TaskVs, SIGNAL(sendTaskVs()), SLOT(taskInsert()) );        // Добавить задание - Вертикальное сечение
     connect( ui->action_TaskCalcEmpPoint, SIGNAL(triggered()), dlg_TaskPoint, SLOT(show()) ); // Добавить задание - Расчет в точке
     connect( dlg_TaskPoint, SIGNAL(sendTaskPoint()), SLOT(taskInsert()) );      // Добавить задание - Расчет в точке
-    connect( ui->action_TaskZoFromPrto, SIGNAL(triggered()), SLOT(tasZoFromPrto()) );             // ЗО сечения на основе ПРТО
+    connect( ui->action_TaskZoFromPrto, SIGNAL(triggered()), SLOT(taskZozFromAntennas()) );             // ЗО сечения на основе ПРТО
     connect( ui->action_TaskVertFromPrto, SIGNAL(triggered()), this, SLOT(taskVertFromPrto()) );  // Верткальные сечения на основе ПРТО
     connect( ui->tableView_Task, SIGNAL(keyPressed(int,int)), SLOT(taskKeyPresed(int, int)) );
     connect( ui->tableView_Task, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenuTask(QPoint)) ); // Контекстное меню
@@ -294,8 +291,7 @@ void MainWindow::enableUI(bool b)
 // ----------------------------------- ФАЙЛ - Новый проект ----------------------------------- //
 void MainWindow::fileNew()
 {
-    project->init();
-   // Project::init();
+    Project::init();
     fileLoadModel(QSqlDatabase::database("project"));
 }
 
@@ -319,8 +315,8 @@ void MainWindow::fileOpen()
 void MainWindow::fileOpen(const QString pathFile)
 {
     Project::init();
-    project->saveAs(QSqlDatabase::database("project"), pathFile, false );
-    fileLoadModel(QSqlDatabase::database("project"));
+    Project::saveAs(pathFile, false);
+    fileLoadModel(Project::getDatabase());
 
     G_fOpenProj.setFileName(pathFile);
     setWindowTitle("SanPasport - " + pathFile.split("/").last());
@@ -456,8 +452,7 @@ void MainWindow::fileSave()
         fileSaveAs();
         return;
     } else {
-        Project newProject;
-        newProject.saveAs(QSqlDatabase::database("project"), G_fOpenProj.fileName(), true );
+        Project::saveAs(G_fOpenProj.fileName(), true);
     }
 }
 
@@ -469,8 +464,7 @@ void MainWindow::fileSaveAs()
              tr("Сохранить как..."), "untitled",
              tr("SanPasport (*.spp);;All Files (*)"));
 
-    Project newProject;
-    newProject.saveAs(QSqlDatabase::database("project"), strSaveProject, true );
+    Project::saveAs(strSaveProject, true);
 
     G_fOpenProj.setFileName(strSaveProject);
     setWindowTitle("SanPasport - " + strSaveProject.split("/").last());
@@ -482,18 +476,18 @@ void MainWindow::fileSaveCalc()
 {
     if (G_fOpenProj.exists()) {
         QFile flTask;
-        QStringList strlPath(G_fOpenProj.fileName().replace("\\","/").split("/"));
+        QStringList strlPath (G_fOpenProj.fileName().replace("\\","/").split("/"));
         strlPath.removeLast();
-        QString strPathNew(strlPath.join("/")+"/Result/");
+        QString strPathNew (strlPath.join("/")+"/Result/");
 
         if (!(QDir(strPathNew).exists()))
             QDir().mkdir(strPathNew);
 
-        QVector<Task> vecTaskAll = project->getTasks();
+        QVector<Task> tasks (Project::getTasks());
 
-        for (int i=0;  i < vecTaskAll.count(); i++)
+        for (int i=0;  i < tasks.count(); i++)
         {
-            QString strFileName( vecTaskAll.at(i).Path );
+            QString strFileName (tasks.at(i).Path);
             strFileName.replace("\\","/");
             flTask.setFileName(strFileName);
 
@@ -529,8 +523,8 @@ void MainWindow::fileImportPkaemo4_DialogOpen()
 // ------------------------------ Импорт данных из ПК АЭМО 4 ------------------------------ //
 void MainWindow::fileImportPkaemo4(const QString pathFile)
 {
-    Project::importPKAEMO(pathFile);
-    fileLoadModel(QSqlDatabase::database("project"));
+    Project::importFromPkaemo(pathFile);
+    fileLoadModel(Project::getDatabase());
     modelOptions->submitAll();
 }
 
@@ -540,7 +534,7 @@ void MainWindow::fileExportPkaemo4()
 {
     QString fileCopy = QFileDialog::getSaveFileName(this, tr("Save As"), "united", tr("(*.rto);; Files PKAEMO(*)"));
     if (!fileCopy.isEmpty())
-        project->exportToPkaemo(fileCopy);
+        Project::exportToPkaemo(fileCopy);
 }
 
 
@@ -575,8 +569,7 @@ bool MainWindow::fileClose()
 // ----------------------------------- ПРТО - Вкл.Выкл ----------------------------------- //
 void MainWindow::enableAntenna()
 { 
-    QModelIndex index;
-    foreach (index, ui->tableView_Antennas->selectionModel()->selectedRows()) {
+    foreach (QModelIndex index, ui->tableView_Antennas->selectionModel()->selectedRows()) {
         QSqlRecord record = modelAntenna->record( index.row() );
         record.setValue("Enabled", !record.value("Enabled").toBool());
         modelAntenna->setRecord(index.row(), record);
@@ -612,7 +605,7 @@ void MainWindow::disableAllAntennas()
 // ----------------------------------- ПРТО - Диалог открытия диаграммы ----------------------------------- //
 void MainWindow::OpenFileAntenna()
 {
-    QString f = QFileDialog::getOpenFileName(
+    QString filePath = QFileDialog::getOpenFileName(
             this,
             tr("Открыть фаил ДН"), "",
             tr("All support files (*.msi *.pln *.txt *.bdn);;"
@@ -621,7 +614,7 @@ void MainWindow::OpenFileAntenna()
                 "Inside (*.bdn);;"
                 "All files (*)")
     );
-    AntennaFromFile(f);
+    AntennaFromFile(filePath);
 }
 
 
@@ -634,8 +627,7 @@ bool MainWindow::AntennaFromFile(const QString &f)
     Antenna antenna;
 
     if (!f.isEmpty()) {
-        if (
-             f.split(".").last().toLower() == "msi"
+        if ( f.split(".").last().toLower() == "msi"
           || f.split(".").last().toLower() == "pln"
           || f.split(".").last().toLower() == "txt"
         ) {
@@ -678,10 +670,9 @@ void MainWindow::dublicateAntenna()
     if (ui->tableView_Antennas->selectionModel()->selectedIndexes().size() < 0)
         return;
 
-    int numLastRow(ui->tableView_Antennas->selectionModel()->selectedRows().last().row());
-    QModelIndex index;
+    int numLastRow (ui->tableView_Antennas->selectionModel()->selectedRows().last().row());
 
-    foreach (index, ui->tableView_Antennas->selectionModel()->selectedRows())
+    foreach (QModelIndex index, ui->tableView_Antennas->selectionModel()->selectedRows())
         addAntenna( getAntennaFromModel(index.row()) );
 
     ui->tableView_Antennas->selectRow(numLastRow + 1);
@@ -695,19 +686,17 @@ bool MainWindow::removeAntenna()
     if (ui->tableView_Antennas->selectionModel()->currentIndex().row() == -1)
         return false;
 
-    QMessageBox msgBox(QMessageBox::Question, tr("Удалить"), tr("Вы действительно хотите удалить антенну?"),
+    QMessageBox msgBox (QMessageBox::Question, tr("Удалить"), tr("Вы действительно хотите удалить антенну?"),
                        QMessageBox::Yes | QMessageBox::No);
     msgBox.setButtonText(QMessageBox::Yes, trUtf8("Да"));
     msgBox.setButtonText(QMessageBox::No, trUtf8("Нет"));
 
     int iMessage(msgBox.exec());
 
-    if (iMessage==QMessageBox::No)\
+    if (iMessage == QMessageBox::No)\
         return false;
 
-    QModelIndex index;
-
-    foreach (index, ui->tableView_Antennas->selectionModel()->selectedRows())
+    foreach (QModelIndex index, ui->tableView_Antennas->selectionModel()->selectedRows())
         modelAntenna->removeRow(index.row());
 
     modelAntenna->submitAll();
@@ -719,7 +708,7 @@ bool MainWindow::removeAntenna()
 // ----------------------------------- Вставить новую антенну из файла ----------------------------------- //
 void MainWindow::addAntenna(const Antenna antenna)
 {
-    project->addAntenna(antenna);
+    Project::addAntenna(antenna);
     modelAntenna->submitAll();
 }
 
@@ -727,7 +716,7 @@ void MainWindow::addAntenna(const Antenna antenna)
 // ----------------------------------- ПРТО - добавить РРС ----------------------------------- //
 void MainWindow::addAntennaPPC()
 {
-    project->addAntennaPPC();
+    Project::addAntennaPPC();
     modelAntenna->submitAll();
 }
 
@@ -792,7 +781,7 @@ void MainWindow::editAntenna()
 /* ------ Получаем данныем из формы ------ */
 void MainWindow::saveEditantPattern(Antenna antenna)
 {
-    project->editAntenna(antenna);
+    Project::editAntenna(antenna);
     modelAntenna->submitAll();
     ui->tableView_Antennas->selectRow(G_qmiindex.row());
 }
@@ -816,7 +805,7 @@ void MainWindow::loadAntennaPPC()
     Antenna antenna;
 
     if (fPPC.open(QIODevice::ReadOnly)) {
-        QTextStream txtstrem(&fPPC);
+        QTextStream txtstrem (&fPPC);
         txtstrem.setCodec("Windows-1251");
         strAll = txtstrem.readAll();
         strAll.replace(",",".");
@@ -858,13 +847,13 @@ void MainWindow::moveUpAntenna()
     Antenna antennaOld (getAntennaFromModel(currentRow));
 
     antennaOld.Sort = currentRow - 0.5;
-    Project().editAntenna(antennaOld);
+    Project::editAntenna(antennaOld);
     modelAntenna->submitAll();
 
     for (int row = 0; row < modelAntenna->rowCount(); row++) {
         Antenna antenna(getAntennaFromModel(row));
         antenna.Sort = row + 1;
-        Project().editAntenna(antenna);
+        Project::editAntenna(antenna);
     }
     modelAntenna->submitAll();
 
@@ -876,16 +865,16 @@ void MainWindow::moveUpAntenna()
 void MainWindow::moveDownAntenna()
 {
     int currentRow (ui->tableView_Antennas->currentIndex().row());
-    Antenna prtoOld (getAntennaFromModel(currentRow));
+    Antenna antennaOld (getAntennaFromModel(currentRow));
 
-    prtoOld.Sort = currentRow + 2.5;
-    Project().editAntenna(prtoOld);
+    antennaOld.Sort = currentRow + 2.5;
+    Project::editAntenna(antennaOld);
     modelAntenna->submitAll();
 
     for (int row = 0; row < modelAntenna->rowCount(); row++) {
-        Antenna prt(getAntennaFromModel(row));
-        prt.Sort = row + 1;
-        Project().editAntenna(prt);
+        Antenna antenna(getAntennaFromModel(row));
+        antenna.Sort = row + 1;
+        Project::editAntenna(antenna);
     }
     modelAntenna->submitAll();
 
@@ -943,7 +932,7 @@ void MainWindow::exportAntennasToCsv()
     if (fileName.isEmpty())
         return;
 
-    Project().saveAntennasToCsv(fileName);
+    Project::saveAntennasToCsv(fileName);
 }
 
 
@@ -1015,7 +1004,7 @@ void MainWindow::dbBrowse()
 void MainWindow::dbOpenOutside()
 {
     QProcess *procOpen = new QProcess(this);
-    QFileInfo  finfBrowse;
+    QFileInfo finfBrowse;
 
     if (ui->treeView_Db->isVisible())
         finfBrowse.setFile(modelDb->filePath(ui->treeView_Db->selectionModel()->currentIndex()));
@@ -1087,8 +1076,8 @@ void MainWindow::dbSearch()
     ui->tableWidgetDbSearch->setVisible(true);
     ui->treeView_Db->setVisible(false);
 
-    QString dir(modelDb->filePath(ui->treeView_Db->rootIndex()));
-    QString name(ui->lineEditDb_Search->text());
+    QString dir (modelDb->filePath(ui->treeView_Db->rootIndex()));
+    QString name (ui->lineEditDb_Search->text());
     QStringList strlResult;
 
     QDirIterator it(dir, QDirIterator::Subdirectories);
@@ -1177,15 +1166,14 @@ void MainWindow::taskEnableAll()
 // ----------------------------------- ЗАДАНИЕ - Включить все задания ----------------------------------- //
 void MainWindow::taskEnable()
 {
-    QModelIndex index;
-    int curRow(ui->tableView_Task->selectionModel()->selectedRows().last().row());
-    foreach (index, ui->tableView_Task->selectionModel()->selectedRows()) {
+    int currentRow (ui->tableView_Task->selectionModel()->selectedRows().last().row());
+    foreach (QModelIndex index, ui->tableView_Task->selectionModel()->selectedRows()) {
          QSqlRecord record = modelTask->record( index.row() );
          record.setValue("enabled", !record.value("enabled").toBool());
          modelTask->setRecord(index.row(), record);
     }
     modelTask->submitAll();
-    ui->tableView_Task->selectRow(curRow);
+    ui->tableView_Task->selectRow(currentRow);
 }
 
 
@@ -1204,7 +1192,7 @@ void MainWindow::taskDisableAll()
 // ----------------------------------- ЗАДАНИЕ - Редактировать ----------------------------------- //
 void MainWindow::taskEdit()
 { 
-    Task task(taskFromModel(ui->tableView_Task->currentIndex().row()));
+    Task task (taskFromModel(ui->tableView_Task->currentIndex().row()));
 
     if (task.Type == TaskType::Zoz) {
         dialogTaskZoz->show();
@@ -1221,19 +1209,17 @@ void MainWindow::taskEdit()
 // ----------------------------------- ЗАДАНИЕ - Удаляем задание ----------------------------------- //
 bool MainWindow::taskRemove()
 {   
-    QMessageBox msgBox(QMessageBox::Question, tr("Удалить"), tr("Вы действительно хотите удалить задание?"),
-                       QMessageBox::Yes | QMessageBox::No);
+    QMessageBox msgBox (QMessageBox::Question, tr("Удалить"), tr("Вы действительно хотите удалить задание?"),
+                        QMessageBox::Yes | QMessageBox::No);
     msgBox.setButtonText(QMessageBox::Yes, trUtf8("Да"));
     msgBox.setButtonText(QMessageBox::No, trUtf8("Нет"));
 
     int iMessage(msgBox.exec());
 
-    if (iMessage==QMessageBox::No)
+    if (iMessage == QMessageBox::No)
         return false;
 
-    QModelIndex index;
-
-    foreach (index, ui->tableView_Task->selectionModel()->selectedRows())
+    foreach (QModelIndex index, ui->tableView_Task->selectionModel()->selectedRows())
         modelTask->removeRow(index.row());
 
     modelTask->submitAll();
@@ -1242,16 +1228,16 @@ bool MainWindow::taskRemove()
 
 
 /* ------- Горизонтальные сечения на основе ПРТО ------- */
-void MainWindow::tasZoFromPrto()
+void MainWindow::taskZozFromAntennas()
 {
-    Antenna prtoTask;
+    Antenna antenna;
     QList<float> lstTaskZo;
 
     for (int i=0; i<modelAntenna->rowCount(); i++) {
-        prtoTask.clear();
-        prtoTask = getAntennaFromModel(i);
-        if ( !lstTaskZo.contains(prtoTask.Z) )
-            lstTaskZo.append(prtoTask.Z);
+        antenna.clear();
+        antenna = getAntennaFromModel(i);
+        if ( !lstTaskZo.contains(antenna.Z) )
+            lstTaskZo.append(antenna.Z);
     }
     qStableSort(lstTaskZo.begin(), lstTaskZo.end(), qGreater<float>());
 
@@ -1294,8 +1280,8 @@ void MainWindow::taskVertFromPrto()
         taskParams.append(QString::number(antenna.Azimut)).append(";");
         taskParams.append("0");
 
-        QSqlQuery qCount(QSqlDatabase::database("project"));
-        qCount.exec("SELECT COUNT(*) FROM TaskCalc WHERE TASK = '"+taskParams+"'");
+        QSqlQuery qCount (Project::getDatabase());
+        qCount.exec("SELECT COUNT(*) FROM TaskCalc WHERE TASK = '" + taskParams + "'");
         qCount.next();
 
         if (qCount.value(0).toInt() == 0) {
@@ -1303,8 +1289,7 @@ void MainWindow::taskVertFromPrto()
             task.Type = 2;
             task.Params = taskParams;
 
-            Project cbd;
-            cbd.addTask(task);
+            Project::addTask(task);
             modelTask->submitAll();
         }
     }
@@ -1313,7 +1298,7 @@ void MainWindow::taskVertFromPrto()
 void MainWindow::sortTasks()
 {
     QList<float> listAzimut;
-    QVector<Task> tasksVs (project->getTasks(TaskType::Vs));
+    QVector<Task> tasksVs (Project::getTasks(TaskType::Vs));
 
     foreach (Task task, tasksVs) {
         float azimut (task.Params.split(";").at(8).toFloat());
@@ -1323,13 +1308,13 @@ void MainWindow::sortTasks()
 
     foreach (Task task, tasksVs) {
         task.Sort = listAzimut.indexOf(task.Params.split(";").at(8).toFloat());
-        project->addTask(task);
+        Project::addTask(task);
     }
 
     int countVs (listAzimut.count());
 
     QList<float> listHeight;
-    QVector<Task> tasksZoz (project->getTasks(TaskType::Zoz));
+    QVector<Task> tasksZoz (Project::getTasks(TaskType::Zoz));
 
     foreach (Task task, tasksZoz) {
         float height (task.Params.split(";").at(6).toFloat());
@@ -1339,7 +1324,7 @@ void MainWindow::sortTasks()
 
     foreach (Task task, tasksZoz) {
         task.Sort = countVs + listHeight.indexOf(task.Params.split(";").at(6).toFloat());
-        project->addTask(task);
+        Project::addTask(task);
     }
 
     modelTask->submitAll();
@@ -1348,17 +1333,17 @@ void MainWindow::sortTasks()
 // ----------------------------------- ЗАДАНИЕ - Переместить вверх ----------------------------------- //
 void MainWindow::taskMoveUp()
 {
-    int currentRow(ui->tableView_Task->currentIndex().row());
-    Task tskOld( taskFromModel(currentRow) );
+    int currentRow (ui->tableView_Task->currentIndex().row());
+    Task taskOld (taskFromModel(currentRow));
 
-    tskOld.Sort = currentRow - 0.5;
-    Project().addTask(tskOld);
+    taskOld.Sort = currentRow - 0.5;
+    Project::addTask(taskOld);
     modelTask->submitAll();
 
     for (int row = 0; row < modelTask->rowCount(); row++) {
-        Task tsk(taskFromModel(row));
-        tsk.Sort = row + 1;
-        Project().addTask(tsk);
+        Task task (taskFromModel(row));
+        task.Sort = row + 1;
+        Project::addTask(task);
     }
     modelTask->submitAll();
 
@@ -1369,17 +1354,17 @@ void MainWindow::taskMoveUp()
 // ----------------------------------- ЗАДАНИЕ - Переместить вниз ----------------------------------- //
 void MainWindow::taskMoveDown()
 {
-    int currentRow(ui->tableView_Task->currentIndex().row());
-    Task tskOld( taskFromModel(currentRow) );
+    int currentRow (ui->tableView_Task->currentIndex().row());
+    Task taskOld (taskFromModel(currentRow));
 
-    tskOld.Sort = currentRow + 2.5;
-    Project().addTask(tskOld);
+    taskOld.Sort = currentRow + 2.5;
+    Project::addTask(taskOld);
     modelTask->submitAll();
 
     for (int row = 0; row < modelTask->rowCount(); row++) {
         Task task(taskFromModel(row));
         task.Sort = row + 1;
-        Project().addTask(task);
+        Project::addTask(task);
     }
     modelTask->submitAll();
 
@@ -1396,10 +1381,10 @@ void MainWindow::taskMoved(int LogicIndex, int OldVisualIndex, int NewVisualInde
     ui->tableView_Task->verticalHeader()->blockSignals(false);
 
     if (NewVisualIndex > OldVisualIndex)
-        for(int i = 0; i < (NewVisualIndex - OldVisualIndex); i++)
+        for (int i = 0; i < (NewVisualIndex - OldVisualIndex); i++)
             taskMoveDown();
     else
-        for(int i = 0; i < (OldVisualIndex - NewVisualIndex); i++)
+        for (int i = 0; i < (OldVisualIndex - NewVisualIndex); i++)
             taskMoveUp();
 }
 
@@ -1424,14 +1409,14 @@ void MainWindow::taskKeyPresed(int numKey, int numModifierKey)
         break;
     }
 
-    if(numKey == 1056)      dialogTaskZoz->show();
-    else if(numKey == 1052) dlg_TaskVs->show();
-    else if(numKey == 1047) dlg_TaskPoint->show();
-    else if(numKey == Qt::Key_A    and numModifierKey == Qt::ControlModifier) taskView();
-    else if(numKey == Qt::Key_Up   and numModifierKey == Qt::ControlModifier) taskMoveUp();
-    else if(numKey == Qt::Key_Down and numModifierKey == Qt::ControlModifier) taskMoveDown();
-    else if(numKey == Qt::Key_Up)   ui->tableView_Task->selectRow(ui->tableView_Task->currentIndex().row() - 1);
-    else if(numKey == Qt::Key_Down) ui->tableView_Task->selectRow(ui->tableView_Task->currentIndex().row() + 1);
+    if (numKey == 1056)      dialogTaskZoz->show();
+    else if (numKey == 1052) dlg_TaskVs->show();
+    else if (numKey == 1047) dlg_TaskPoint->show();
+    else if (numKey == Qt::Key_A    and numModifierKey == Qt::ControlModifier) taskView();
+    else if (numKey == Qt::Key_Up   and numModifierKey == Qt::ControlModifier) taskMoveUp();
+    else if (numKey == Qt::Key_Down and numModifierKey == Qt::ControlModifier) taskMoveDown();
+    else if (numKey == Qt::Key_Up)   ui->tableView_Task->selectRow(ui->tableView_Task->currentIndex().row() - 1);
+    else if (numKey == Qt::Key_Down) ui->tableView_Task->selectRow(ui->tableView_Task->currentIndex().row() + 1);
 }
 
 /// ---------------------------------------------------------------------------------------------------------------- //
@@ -1484,7 +1469,7 @@ void MainWindow::calcStart()
 /* ----------------------------------- РАСЧЕТ - Записать результат ----------------------------------- */
 void MainWindow::calcResult(QString strResult, int idTask)
 {
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query (Project::getDatabase());
 
     query.prepare ("UPDATE tasks SET path = :path WHERE id = :id");
     query.bindValue(":id",  idTask);
@@ -1511,7 +1496,7 @@ void MainWindow::progresBar(int value)
     if (value == -1) {
         pbar->setEnabled(true);
         UICalc(false);
-    } else if(value == 101) {
+    } else if (value == 101) {
         pbar->setValue(0);
         UICalc(true);
         pbar->setEnabled(false);
@@ -1529,7 +1514,7 @@ void MainWindow::signal_SendOptions(QString qsSendOptions)
     recordPrmt.clear();
     modelOptions->submitAll();
 
-    sbKoef->setText( "Коэф. " + QSqlRecord(modelOptions->record(0)).value("Koef").toString() );
+    sbKoef->setText("Коэф. " + QSqlRecord(modelOptions->record(0)).value("Koef").toString());
 }
 
 

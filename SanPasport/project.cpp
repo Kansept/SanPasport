@@ -1,5 +1,4 @@
 #include "project.h"
-
 #include <sqlite3.h>
 #include <QVariant>
 #include <QSqlDriver>
@@ -8,9 +7,11 @@
 
 using namespace std;
 
+
 Project::Project()
 {
 }
+
 
 bool Project::init()
 {
@@ -102,9 +103,9 @@ bool Project::init()
 }
 
 
-// ------------------------------ Сохранить (SQLite API) ------------------------------ //
-bool Project::saveAs( QSqlDatabase memdb, QString filename, bool save )
+bool Project::saveAs(QString filename, bool save)
 {
+    QSqlDatabase memdb = Project::getDatabase();
     bool state = false;
     QVariant v = memdb.driver()->handle();
     if (v.isValid() && qstrcmp(v.typeName(),"sqlite3*") == 0)
@@ -167,12 +168,9 @@ bool Project::saveAs( QSqlDatabase memdb, QString filename, bool save )
 }
 
 
-/* ------------------------------------ Импорт из ПКАЭМО ------------------------------------ */
-void Project::importPKAEMO(const QString f)
+void Project::importFromPkaemo(const QString f)
 {
     QVector<Antenna> antennas;
-    QVector<Task> tasks;
-
     Antenna antenna;
 
     QSqlDatabase dbPKAEMO = QSqlDatabase::addDatabase("QODBC","PKAEMO");
@@ -196,7 +194,8 @@ void Project::importPKAEMO(const QString f)
             strlstParam = query.value(6).toString().split(";");
             // для панельных антенн
             if (query.value(1).toInt() == AntennaType::Panel) {
-                antenna.Gain = query.value(5).toFloat();               // 0 - Тип передатчика (0 - Связной 1 — Вещятельный 2 — Телевизионный ), 0
+                // 0 - Тип передатчика (0 - Связной 1 — Вещятельный 2 — Телевизионный ), 0
+                antenna.Gain = query.value(5).toFloat();
                 antenna.PowerTrx = strlstParam.at(1).toFloat();    // 1 - Мощность передатчика Вт
                 // 2 - ?
                 // 3 - ?
@@ -215,7 +214,8 @@ void Project::importPKAEMO(const QString f)
                 // 16 - ?
                 // 17 - Время начала
                 // 18 - Вреия конца
-                // 19 - Тип антенны (0 - Всенаправленная 1 — Панельная 2 - Волновой канал (Уда-Яги) 3 — Логопериодическая), 1
+                // 19 - Тип антенны (0 - Всенаправленная 1 — Панельная 2 - Волновой канал (Уда-Яги)
+                //      3 — Логопериодическая), 1
                 // 20 - Ширина ДН по уровню 3
                 // 21 - Длинна антенны (для Логопериодических)
                 // 22 - Нижняя частота рабочего диапозона (для Логопериодических)
@@ -264,21 +264,23 @@ void Project::importPKAEMO(const QString f)
         } // while ( q.next() )
 
         // Задания
-        Task tskRead;
+        QVector<Task> tasks;
+        Task task;
+
         query.exec("SELECT * FROM Calc_Task ORDER BY Nmbr Asc");
-        while ( query.next() ) {
-            QStringList strlTask(query.value(2).toString().split(";"));
+        while (query.next()) {
+            QStringList taskParams(query.value(2).toString().split(";"));
 
-            tskRead.Enabled = query.value(4).toBool();
-            tskRead.Path = query.value(3).toString();
-            tskRead.Type = strlTask.first().toInt();
-            tskRead.Sort = query.value(1).toInt();
-            strlTask.removeFirst();
-            strlTask.removeLast();
-            tskRead.Params = strlTask.join(";");
-            tasks.append(tskRead);
+            task.Enabled = query.value(4).toBool();
+            task.Path = query.value(3).toString();
+            task.Type = taskParams.first().toInt();
+            task.Sort = query.value(1).toInt();
+            taskParams.removeFirst();
+            taskParams.removeLast();
+            task.Params = taskParams.join(";");
+            tasks.append(task);
 
-            strlTask.clear();
+            taskParams.clear();
         }
         query.exec("SELECT * FROM Prmt");
         query.next();
@@ -288,14 +290,14 @@ void Project::importPKAEMO(const QString f)
         init();
 
         for (int i=0; i<antennas.size(); i++)
-            Project().addAntenna(antennas.at(i));
+            addAntenna(antennas.at(i));
 
         for (int i=0; i<tasks.size(); i++)
-            Project().addTask(tasks.at(i));
+            addTask(tasks.at(i));
     }
 }
 
-/* ------------------------------------ Добавить ПРТО ------------------------------------ */
+
 bool Project::addAntenna(Antenna antenna)
 {
     QString qsDanHoriz = "";
@@ -308,7 +310,7 @@ bool Project::addAntenna(Antenna antenna)
         qsDanVert = qsDanVert.append(";");
     }
 
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
 
     query.exec("SELECT sort FROM antennas ORDER BY sort DESC");
     query.first();
@@ -347,19 +349,18 @@ bool Project::addAntenna(Antenna antenna)
     return query.exec();
 }
 
+
 bool Project::editAntenna(Antenna antenna)
 {
-    QString qsDanHoriz = "";
-    QString qsDanVert = "";
+    QString radHorizontal = "";
+    QString radVertical = "";
 
     for (int i=0; i<=360; i++) {
-        qsDanHoriz = qsDanHoriz.append( QString::number(antenna.RadHorizontal[i]) );
-        qsDanHoriz = qsDanHoriz.append(";");
-        qsDanVert = qsDanVert.append( QString::number(antenna.RadVertical[i]) );
-        qsDanVert = qsDanVert.append(";");
+        radHorizontal = radHorizontal.append( QString::number(antenna.RadHorizontal[i]) ).append(";");
+        radVertical = radVertical.append( QString::number(antenna.RadVertical[i]) ).append(";");
     }
 
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
 
     query.prepare(
         " UPDATE antennas SET "
@@ -398,7 +399,6 @@ bool Project::editAntenna(Antenna antenna)
 }
 
 
-/* ------------------------------------ Добавить ПРТО РРС ------------------------------------ */
 void Project::addAntennaPPC()
 {
     Antenna antenna;
@@ -420,10 +420,9 @@ void Project::addAntennaPPC()
 }
 
 
-/* ------------------------------------ Все ПРТО в вектор ------------------------------------ */
 QVector<Antenna> Project::getAntennas()
 {
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
     QVector<Antenna> antennas;
     Antenna antenna;
 
@@ -468,14 +467,14 @@ QVector<Antenna> Project::getAntennas()
         }
         antennas.append(antenna);
     }
+
     return antennas;
 }
 
 
-/* ------------------------------------ Все Задания в вектор ------------------------------------ */
 QVector<Task> Project::getTasks()
 {
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
     QVector<Task> tasks;
     Task task;
 
@@ -494,10 +493,10 @@ QVector<Task> Project::getTasks()
     return tasks;
 }
 
-/* ------------------------------------ Все Задания в вектор ------------------------------------ */
+
 QVector<Task> Project::getTasks(int type)
 {
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
     QVector<Task> tasks;
     Task task;
     query.exec("SELECT * FROM tasks WHERE type = " + QString::number(type) + " ORDER BY sort ASC");
@@ -515,7 +514,7 @@ QVector<Task> Project::getTasks(int type)
     return tasks;
 }
 
-/* ------------------------------------ Экспорт в ПКАЭМО ------------------------------------ */
+
 void Project::exportToPkaemo(const QString filePath)
 {
     if (QFile(filePath).exists())
@@ -573,8 +572,11 @@ void Project::exportToPkaemo(const QString filePath)
                 antenna.mirorrHorizontal();
                 antenna.mirorrsVertical();
 
-                query.prepare("INSERT INTO Sost ( id_type, Name, Vlad, Freq, KU, Params, Dn_vert, Dn_gor, Nmbr, Tpdu, Incl) "
-                              " VALUES (:id_type, :Name, :Vlad, :Freq, :KU, :Params, :Dn_vert, :Dn_gor, :Nmbr, :Tpdu, :Incl)");
+                query.prepare("INSERT INTO Sost "
+                              "  (id_type, Name, Vlad, Freq, KU, Params, Dn_vert, Dn_gor, Nmbr, Tpdu, Incl) "
+                              " VALUES "
+                              "  (:id_type, :Name, :Vlad, :Freq, :KU, :Params, :Dn_vert, :Dn_gor, :Nmbr, :Tpdu, :Incl)"
+                              );
                 query.bindValue(":id_type", antenna.Type);
                 query.bindValue(":Name",    antenna.Name);
                 query.bindValue(":Vlad",    antenna.Owner);
@@ -648,10 +650,9 @@ void Project::exportToPkaemo(const QString filePath)
 }
 
 
-/* ------------------------------------ Коэфициент ------------------------------------ */
 float Project::getKoef()
 {
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
 
     query.exec("SELECT * FROM options");
     query.next();
@@ -660,10 +661,9 @@ float Project::getKoef()
 }
 
 
-/* ------------------------------------ Добавить задание ------------------------------------ */
 bool Project::addTask(Task task)
 {
-    QSqlQuery query(QSqlDatabase::database("project"));
+    QSqlQuery query(getDatabase());
 
     if (task.Id == -1) {
         query.exec("SELECT sort FROM tasks ORDER BY sort DESC");
@@ -688,15 +688,17 @@ bool Project::addTask(Task task)
         query.bindValue(":sort",  task.Sort);
         query.bindValue(":id",  task.Id);
     }
+
     return query.exec();
 }
 
-// ------------------------------------ Кавычки ------------------------------------ /
+
 QString Project::quotedStr(const QString str)
 {
     QString result;
     return result.append("'").append(str).append("'");
 }
+
 
 bool Project::saveAntennasToCsv(const QString fileName)
 {
@@ -728,7 +730,13 @@ bool Project::saveAntennasToCsv(const QString fileName)
             out << line.join(";") << "\n";
         }
     }
-
     fileCsv.close();
+
     return true;
+}
+
+
+QSqlDatabase Project::getDatabase()
+{
+    return QSqlDatabase::database("project");
 }
