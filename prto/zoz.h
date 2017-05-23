@@ -2,6 +2,7 @@
 #define ZOZ_H
 
 #include <QVector>
+#include <QString>
 
 class Zoz
 {
