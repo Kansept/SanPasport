@@ -19,7 +19,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    mainwindow.cpp \
     Dialog/dialog_editant.cpp \
     Dialog/dialog_parametrs.cpp \
     qdata.cpp \
@@ -39,9 +38,10 @@ SOURCES += main.cpp\
     Models/ModelTasks.cpp \
     Models/ModelAntennas.cpp \
     Threads/ThreadCalcZoz.cpp \
-    ../Widget/DotLineEdit.cpp
+    ../Widget/DotLineEdit.cpp \
+    SanPasport.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     Dialog/dialog_editant.h \
     Dialog/dialog_parametrs.h \
     qdata.h \
@@ -69,7 +69,8 @@ HEADERS  += mainwindow.h \
     Delegates/DelegateTaskDescription.h \
     Threads/ThreadCalcZoz.h \
     Models/ModelAntennas.h \
-    Models/ModelTasks.h
+    Models/ModelTasks.h \
+    SanPasport.h
 
 FORMS    += mainwindow.ui \
     Dialog/dialog_editant.ui \

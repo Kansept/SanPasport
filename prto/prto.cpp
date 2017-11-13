@@ -83,18 +83,18 @@ Antenna Antenna::loadMsi(const QString f)
                 }
                 Name = Name.simplified();
             }
-            if (splstr.at(0) == "FREQUENCY")
+            else if (splstr.at(0) == "FREQUENCY")
             {
                 Frequency = splstr.at(1).toDouble();
             }
-            if (splstr.at(0) == "GAIN")
+            else if (splstr.at(0) == "GAIN")
             {
                 if (splstr.size() == 3 && splstr.at(2).simplified() == "dBd")
                     Gain = splstr.at(1).toFloat() + 2.14;
                 else
                     Gain = splstr.at(1).toFloat();
             }
-            if (splstr.at(0) == "TILT")
+            else if (splstr.at(0) == "TILT")
             {
                 for (int i=1; i<splstr.size(); i++)
                 {
@@ -102,7 +102,7 @@ Antenna Antenna::loadMsi(const QString f)
                 }
                 ETilt = ETilt.simplified();
             }
-            if (splstr.at(0) == "COMMENT")
+            else if (splstr.at(0) == "COMMENT")
             {
                 for(int i=1; i<splstr.size(); i++)
                 {
@@ -112,15 +112,19 @@ Antenna Antenna::loadMsi(const QString f)
             }
             if (trig == 1)
             {
-                AzimutHorizontal[k] = splstr.at(0).toDouble();
-                RadHorizontal[k] = splstr.at(1).toDouble();
-                k++;
+                if (k < 360) {
+                    AzimutHorizontal[k] = splstr.at(0).toDouble();
+                    RadHorizontal[k] = splstr.at(1).toDouble();
+                    k++;
+                }
             }
             if (trig == 2)
             {
-                AzimutVertical[k] = splstr.at(0).toDouble();
-                RadVertical[k] = splstr.at(1).toDouble();
-                k++;
+                if (k < 360) {
+                    AzimutVertical[k] = splstr.at(0).toDouble();
+                    RadVertical[k] = splstr.at(1).toDouble();
+                    k++;
+                }
             }
             if (splstr.at(0) == "HORIZONTAL") {trig=1; k=0;}
             if (splstr.at(0) == "VERTICAL") {trig=2; k=0;}

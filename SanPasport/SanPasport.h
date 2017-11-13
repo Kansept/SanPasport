@@ -185,6 +185,7 @@ private slots:
      void sortTasks();
      // РАСЧЕТ
      void calcStart();                               // Старт расчёта
+     void calcStop();                                // Остановка расчёта
      void UICalc(bool b);                            // Заморозка UI
      void calcResult(QString strResult, int idTask); // Записать результат
      void progresBar(int value);                     // Прогресс бар

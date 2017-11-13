@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-POLAR_VER = 1.1.0
+POLAR_VER = 1.1.1
 
 contains(QWT_VER,^5\\..*\\..*) {
     POLAR_VER = 0.1.0
@@ -19,7 +19,7 @@ win32 {
     win32-x-g++ {
         POLAR_PATH = /usr/qwtpolar$${VER_SFX}-win
     } else {
-        POLAR_PATH = D:/Qt/QwtPolar-$${POLAR_VER}
+        POLAR_PATH = D:/Dev/Qt/QwtPolar-$${POLAR_VER}
     }
     POLAR_INC_PATH = $${POLAR_PATH}/include
     CONFIG(debug,debug|release) {

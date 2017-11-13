@@ -837,6 +837,8 @@ void DnView::passportWord(Antenna prtoPassp)
     on_actionViewVertDn(true);
     on_actionViewHorizDn(true);
 
+  //  return;
+
     QAxObject* WordApplication = new QAxObject("Word.Application");                  // Создем интерфейс к MSWord
     WordApplication->querySubObject( "Documents()" )->querySubObject("Add()");       // Создаю новый документ
     WordApplication->setProperty("Visible", false);                                  // Делаем Word видимым
@@ -864,7 +866,7 @@ void DnView::passportWord(Antenna prtoPassp)
     Range->dynamicCall( "Expand(wdTable)" );
     Range->dynamicCall( "Collapse(0)" );
 
-    ActiveDocument->querySubObject("Tables()")->querySubObject("Add(QVariant&, QVariant&, QVariant&, QVariant&, QVariant&)", Range->asVariant(),5,2,1,2);;
+    ActiveDocument->querySubObject("Tables()")->querySubObject("Add(Range,NumRows,NumColumns,DefaultTableBehavior,AutoFitBehavior)", Range->asVariant(),5,2,1,2);
     Range->dynamicCall( "Expand(wdTable)" );
     Range->dynamicCall( "Collapse(0)" );
 

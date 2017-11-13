@@ -50,7 +50,8 @@ Q_OBJECT
 public:
     PlotZozPicker( QWidget *canvas );
 
-// Незабыть убрать const в qwt_picker.h
+    //! TODO Найти более элегантное решение
+    // !!! Незабыть убрать const в qwt_picker.h
     virtual void drawTracker( QPainter *painter );
 
 signals:

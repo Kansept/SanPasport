@@ -17,7 +17,7 @@ class Task
 public:
     bool Enabled;
     int Type;
-    float Sort;
+    int Sort;
     QString Params;
     QString Path;
     int Id;

@@ -37,7 +37,7 @@ bool Project::init()
 
     // Таблица с параметрами
     query.exec("CREATE TABLE options (koef REAL, kpp REAL)");
-    query.exec("INSERT INTO options VALUES(1.22, 3, 0)");
+    query.exec("INSERT INTO options VALUES(1.22, 3)");
 
     // Таблица с Антенами
     query.exec(
@@ -313,14 +313,13 @@ bool Project::addAntenna(Antenna antenna)
     QSqlQuery query(getDatabase());
 
     query.exec("SELECT sort FROM antennas ORDER BY sort DESC");
-    query.first();
-    int Number(query.value(0).toInt() + 1);
+    int sort = (query.first())? (query.value(0).toInt() + 1) : 1;
 
     query.prepare(" INSERT INTO antennas (enabled, name, owner, frequency, gain, height, sort, power_total, power_trx, "
                   "   feeder_leght, feeder_loss, ksvn, loss_other, count_trx, x, y, z, azimut, tilt, "
                   "   rad_horizontal, rad_vertical, type) "
                   " VALUES (:enabled, :name, :owner, :frequency, :gain, :height, :sort, :power_total, :power_trx, "
-                  "   :feeder_leght, :feeder_loss, :ksvn, :loss_other, :count_trx, :x, :y, :Z, :azimut, :tilt, "
+                  "   :feeder_leght, :feeder_loss, :ksvn, :loss_other, :count_trx, :x, :y, :z, :azimut, :tilt, "
                   "   :rad_horizontal,  :rad_vertical, :type) ");
 
     query.bindValue(":enabled",        antenna.Enabled);
@@ -329,7 +328,7 @@ bool Project::addAntenna(Antenna antenna)
     query.bindValue(":frequency",      antenna.Frequency);
     query.bindValue(":gain",           antenna.Gain);
     query.bindValue(":height",         antenna.Height);
-    query.bindValue(":sort",           Number);
+    query.bindValue(":sort",           sort);
     query.bindValue(":power_total",    antenna.PowerTotal);
     query.bindValue(":power_trx",      antenna.PowerTrx);
     query.bindValue(":feeder_leght",   antenna.FeederLeght);
@@ -490,6 +489,7 @@ QVector<Task> Project::getTasks()
         task.Path = query.value("path").toString();
         tasks.append(task);
     }
+
     return tasks;
 }
 
@@ -533,8 +533,8 @@ void Project::exportToPkaemo(const QString filePath)
     if (dbPKAEMO.database("expPKAEMO").open())
     {
         QSqlQuery query(dbPKAEMO);
-        Antenna antenna;
         QVector<Antenna> antennas(getAntennas());
+        Antenna antenna;
 
         for (int i=0; i < antennas.count(); i++) {
             antenna.clear();
@@ -632,12 +632,15 @@ void Project::exportToPkaemo(const QString filePath)
 
         // Экспорт заданий
         QVector<Task> tasks(getTasks());
+        Task task;
 
-        foreach (Task task, tasks) {
-            query.prepare("INSERT INTO Calc_Task ( Npp, Nmbr, Task, Path, Incl) "
-                          "VALUES (:Npp, :Nmbr, :Task, :Path, :Incl)");
-            query.bindValue(":Npp",  task.Sort);
-            query.bindValue(":Nmbr", task.Sort);
+        for (int i=0; i < tasks.count(); i++) {
+            task.clear();
+            task = tasks.at(i);
+
+            query.prepare("INSERT INTO Calc_Task (Nmbr, Task, Path, Incl) "
+                          "VALUES (:Nmbr, :Task, :Path, :Incl)");
+            query.bindValue(":Nmbr", i);
             query.bindValue(":Task", QString(QString::number(task.Type)).append(";").append(task.Params).append(";0") );
             query.bindValue(":Path", task.Path);
             query.bindValue(":Incl", task.Enabled);
@@ -667,26 +670,25 @@ bool Project::addTask(Task task)
 
     if (task.Id == -1) {
         query.exec("SELECT sort FROM tasks ORDER BY sort DESC");
-        query.first();
-        int Number(query.value(0).toInt() + 1);
+        int sort = (query.first())? (query.value(0).toInt() + 1) : 1;
 
         query.prepare("INSERT INTO tasks (enabled, type, params, path, sort) "
-                      "VALUES(:enabled, :type, :params, :path, :number) " );
+                      "VALUES(:enabled, :type, :params, :path, :sort) " );
         query.bindValue(":enabled", task.Enabled);
         query.bindValue(":type",    task.Type);
-        query.bindValue(":params",    task.Params);
+        query.bindValue(":params",  task.Params);
         query.bindValue(":path",    task.Path);
-        query.bindValue(":sort",  Number);
+        query.bindValue(":sort",    sort);
     } else {
-        query.prepare ("UPDATE taks SET "
+        query.prepare ("UPDATE tasks SET "
                        "enabled = :enabled, type = :type, params = :params, path = :path, sort = :sort "
                        "WHERE id = :id");
         query.bindValue(":enabled", task.Enabled);
         query.bindValue(":type",    task.Type);
-        query.bindValue(":params",    task.Params);
+        query.bindValue(":params",  task.Params);
         query.bindValue(":path",    task.Path);
-        query.bindValue(":sort",  task.Sort);
-        query.bindValue(":id",  task.Id);
+        query.bindValue(":sort",    task.Sort);
+        query.bindValue(":id",      task.Id);
     }
 
     return query.exec();

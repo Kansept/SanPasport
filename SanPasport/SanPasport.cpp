@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "SanPasport.h"
 #include "ui_mainwindow.h"
 #include "ViewPlot/viewplot.h"
 #include "Delegates/DelegateTaskDescription.h"
@@ -672,8 +672,14 @@ void MainWindow::dublicateAntenna()
 
     int numLastRow (ui->tableView_Antennas->selectionModel()->selectedRows().last().row());
 
-    foreach (QModelIndex index, ui->tableView_Antennas->selectionModel()->selectedRows())
-        addAntenna( getAntennaFromModel(index.row()) );
+    foreach (QModelIndex index, ui->tableView_Antennas->selectionModel()->selectedRows()) {
+        Antenna antenna = getAntennaFromModel(index.row());
+        int lastNumber = antenna.Owner.right(1).toInt();
+        if (lastNumber != 0) {
+           antenna.Owner = antenna.Owner.left(antenna.Owner.count() - 1).append(QString::number(lastNumber + 1));
+        }
+        addAntenna( antenna );
+    }
 
     ui->tableView_Antennas->selectRow(numLastRow + 1);
 }
@@ -844,20 +850,22 @@ void MainWindow::selected_ant()
 void MainWindow::moveUpAntenna()
 {
     int currentRow (ui->tableView_Antennas->currentIndex().row());
-    Antenna antennaOld (getAntennaFromModel(currentRow));
+    if (currentRow != 0) {
+        Antenna antennaOld (getAntennaFromModel(currentRow));
+        antennaOld.Sort = currentRow - 0.5;
+        Project::editAntenna(antennaOld);
+        modelAntenna->submitAll();
 
-    antennaOld.Sort = currentRow - 0.5;
-    Project::editAntenna(antennaOld);
-    modelAntenna->submitAll();
+        for (int row = 0; row < modelAntenna->rowCount(); row++) {
+            Antenna antenna(getAntennaFromModel(row));
+            antenna.Sort = row + 1;
+            Project::editAntenna(antenna);
+        }
+        modelAntenna->submitAll();
 
-    for (int row = 0; row < modelAntenna->rowCount(); row++) {
-        Antenna antenna(getAntennaFromModel(row));
-        antenna.Sort = row + 1;
-        Project::editAntenna(antenna);
+        ui->tableView_Antennas->clearSelection();
+        ui->tableView_Antennas->selectRow(currentRow - 1);
     }
-    modelAntenna->submitAll();
-
-    ui->tableView_Antennas->selectRow(currentRow - 1);
 }
 
 
@@ -865,21 +873,24 @@ void MainWindow::moveUpAntenna()
 void MainWindow::moveDownAntenna()
 {
     int currentRow (ui->tableView_Antennas->currentIndex().row());
-    Antenna antennaOld (getAntennaFromModel(currentRow));
 
-    antennaOld.Sort = currentRow + 2.5;
-    Project::editAntenna(antennaOld);
-    modelAntenna->submitAll();
+    if (modelAntenna->rowCount() > currentRow + 1) {
+        Antenna antennaOld (getAntennaFromModel(currentRow));
 
-    for (int row = 0; row < modelAntenna->rowCount(); row++) {
-        Antenna antenna(getAntennaFromModel(row));
-        antenna.Sort = row + 1;
-        Project::editAntenna(antenna);
+        antennaOld.Sort = currentRow + 2.5;
+        Project::editAntenna(antennaOld);
+        modelAntenna->submitAll();
+
+        for (int row = 0; row < modelAntenna->rowCount(); row++) {
+            Antenna antenna(getAntennaFromModel(row));
+            antenna.Sort = row + 1;
+            Project::editAntenna(antenna);
+        }
+        modelAntenna->submitAll();
+
+        ui->tableView_Antennas->clearSelection();
+        ui->tableView_Antennas->selectRow(currentRow + 1);
     }
-    modelAntenna->submitAll();
-
-    ui->tableView_Antennas->clearSelection();
-    ui->tableView_Antennas->selectRow(currentRow + 1);
 }
 
 
@@ -1281,7 +1292,7 @@ void MainWindow::taskVertFromPrto()
         taskParams.append("0");
 
         QSqlQuery qCount (Project::getDatabase());
-        qCount.exec("SELECT COUNT(*) FROM TaskCalc WHERE TASK = '" + taskParams + "'");
+        qCount.exec("SELECT COUNT(*) FROM tasks WHERE params = '" + taskParams + "'");
         qCount.next();
 
         if (qCount.value(0).toInt() == 0) {
@@ -1334,20 +1345,23 @@ void MainWindow::sortTasks()
 void MainWindow::taskMoveUp()
 {
     int currentRow (ui->tableView_Task->currentIndex().row());
-    Task taskOld (taskFromModel(currentRow));
+    if (currentRow != 0) {
+        Task taskOld (taskFromModel(currentRow));
 
-    taskOld.Sort = currentRow - 0.5;
-    Project::addTask(taskOld);
-    modelTask->submitAll();
+        taskOld.Sort = currentRow - 0.5;
+        Project::addTask(taskOld);
+        modelTask->submitAll();
 
-    for (int row = 0; row < modelTask->rowCount(); row++) {
-        Task task (taskFromModel(row));
-        task.Sort = row + 1;
-        Project::addTask(task);
+        for (int row = 0; row < modelTask->rowCount(); row++) {
+            Task task (taskFromModel(row));
+            task.Sort = row + 1;
+            Project::addTask(task);
+        }
+        modelTask->submitAll();
+
+        ui->tableView_Task->clearSelection();
+        ui->tableView_Task->selectRow(currentRow - 1);
     }
-    modelTask->submitAll();
-
-    ui->tableView_Task->selectRow(currentRow - 1);
 }
 
 
@@ -1355,21 +1369,24 @@ void MainWindow::taskMoveUp()
 void MainWindow::taskMoveDown()
 {
     int currentRow (ui->tableView_Task->currentIndex().row());
-    Task taskOld (taskFromModel(currentRow));
 
-    taskOld.Sort = currentRow + 2.5;
-    Project::addTask(taskOld);
-    modelTask->submitAll();
+    if (modelTask->rowCount() > currentRow + 1) {
+        Task taskOld (taskFromModel(currentRow));
 
-    for (int row = 0; row < modelTask->rowCount(); row++) {
-        Task task(taskFromModel(row));
-        task.Sort = row + 1;
-        Project::addTask(task);
+        taskOld.Sort = currentRow + 2.5;
+        Project::addTask(taskOld);
+        modelTask->submitAll();
+
+        for (int row = 0; row < modelTask->rowCount(); row++) {
+            Task task(taskFromModel(row));
+            task.Sort = row + 1;
+            Project::addTask(task);
+        }
+        modelTask->submitAll();
+
+        ui->tableView_Task->clearSelection();
+        ui->tableView_Task->selectRow(currentRow + 1);
     }
-    modelTask->submitAll();
-
-    ui->tableView_Task->clearSelection();
-    ui->tableView_Task->selectRow(currentRow + 1);
 }
 
 
@@ -1466,6 +1483,11 @@ void MainWindow::calcStart()
     thCalc->start();
 }
 
+//! TODO пустая функция
+void MainWindow::calcStop()
+{
+}
+
 /* ----------------------------------- РАСЧЕТ - Записать результат ----------------------------------- */
 void MainWindow::calcResult(QString strResult, int idTask)
 {
@@ -1550,8 +1572,8 @@ void MainWindow::helpPpcCsv()
     if (filePPC.open(QIODevice::WriteOnly)) {
         QTextStream txtstrem(&filePPC);
         txtstrem.setCodec("UTF-8");
-        txtstrem << QString("Сектор;Модель антенны;Частота;Размер;КУ;Азимут;"
-                            "X;Y;Высота;Угол наклона;Мощность;").toUtf8();
+        txtstrem << QString("Sector;Name;Freq;Size;Gain;Azimut;X;Y;Height;Titl;Power;").toUtf8();
+        txtstrem.setGenerateByteOrderMark(false);
         filePPC.close();
     }
 }
@@ -1569,7 +1591,7 @@ void MainWindow::helpAbout()
                 </style> \
                 </head> \
                 <body> \
-                <p>SanPasport 0.1 (Тестовая версия)</p> \
+                <p>SanPasport 0.2b (Тестовая версия)</p> \
                 <p>Автор Владимир Kansept</p> \
                 <p>email:<a href=\"mailto:kansept@yandex.ru\">kansept@yandex.ru</a></p> \
                 <p><a href=\"http://www.soft.kansept.ru/\">www.soft.kansept.ru</a></p> \

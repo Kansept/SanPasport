@@ -1,7 +1,7 @@
 #include "sitplan.h"
 #include "zoz.h"
 #include "ui_sitplan.h"
-#include "../mainwindow.h"
+#include "../SanPasport.h"
 #include <QFileDialog>
 #include <QFontDialog>
 #include <QDebug>
@@ -295,7 +295,8 @@ SitPlan::SitPlan(QWidget *parent) :
     connect( ui->toolButton_TitleFontMask, SIGNAL(clicked(bool)), this, SLOT(titleCursorPositionChanged(bool)) ); // Маскировка текста
     connect( TitleInsertHeight, SIGNAL(triggered()), this, SLOT(titleInsertHeight()) );
     connect( TitleInsertScale, SIGNAL(triggered()), this, SLOT(titleInsertScale()) );
-    connect( ui->textEdit_Title, SIGNAL(cursorPositionChanged()), SLOT(titleCursorPositionChanged()) );
+    //! TODO вызывается функция без параметра
+    // connect( ui->textEdit_Title, SIGNAL(cursorPositionChanged()), SLOT(titleCursorPositionChanged()) );
     // Страницы
     connect( ui->toolButton_ZoMoveUp, SIGNAL(clicked()), this, SLOT(pageMoveTop()) );
     connect( ui->toolButton_ZoMoveDown, SIGNAL(clicked()), this, SLOT(pageMoveBottom()) );

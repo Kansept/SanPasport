@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QWT_VER = 6.1.0
+QWT_VER = 6.1.3
 
 contains(QWT_VER,^5\\..*\\..*) {
     VER_SFX     = 5
@@ -24,7 +24,7 @@ win32 {
     win32-x-g++ {
         QWT_PATH = /usr/qwt$${VER_SFX}-win
     } else {
-        QWT_PATH = D:/Qt/Qwt-$${QWT_VER}
+        QWT_PATH = D:/Dev/Qt/Qwt-$${QWT_VER}
     }
     QWT_INC_PATH = $${QWT_PATH}/include
     CONFIG(debug,debug|release) {

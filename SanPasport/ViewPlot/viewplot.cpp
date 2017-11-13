@@ -55,9 +55,11 @@ ViewPlot::ViewPlot(QWidget *parent) :
     ui->qwtPlot_spectrogram->axisScaleDraw(QwtPlot::yRight)->enableComponent(QwtScaleDraw::Labels, false);
     ui->qwtPlot_spectrogram->setAxisEnableForAll(true);
     // Позиция курсора
+
     picker = new PlotZozPicker( ui->qwtPlot_spectrogram->canvas() );
     connect( picker, SIGNAL(position(QString)), SLOT(plotPos(QString)) );
     connect( ui->qwtPlot_spectrogram, SIGNAL(sgnlOutCanvas()), SLOT(plotPosReset())  );
+
     plotPosReset();
     // Кривая для легенды
     curve = new QwtPlotCurve();
@@ -178,7 +180,7 @@ void ViewPlot::plotPos(QString strPosition)
     } else
         Angle = 0;
 
-    QString strR,strAzimut;
+    QString strR, strAzimut;
     strR.sprintf("%.2f", R);
     strAzimut.sprintf("%.2f", Angle);
 
@@ -187,6 +189,7 @@ void ViewPlot::plotPos(QString strPosition)
     else if(QFileInfo(sb1->text()).fileName().left(2).toLower() == "zo")
         ui->label->setText( "X = " + QString::number(Xpos) + " м; Y =" + QString::number(Ypos) + " м; R = " +
                            strR + " м; Аз.-т = " +strAzimut + " град.; ПДУ = " + strPDU );
+    qDebug() << strAzimut;
 }
 
 
